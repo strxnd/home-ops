@@ -20,7 +20,7 @@ spec:
               repository: ghcr.io/openclaw/openclaw
               tag: latest
             env:
-              TZ: ${TIMEZONE}
+              TZ: UTC
             envFrom:
               - secretRef:
                   name: openclaw-secret
