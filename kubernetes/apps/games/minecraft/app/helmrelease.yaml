@@ -1,0 +1,57 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app minecraft
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  values:
+    fullnameOverride: *app
+    image:
+      repository: ghcr.io/itzg/minecraft-server
+      tag: java21
+    resources:
+      requests:
+        cpu: 500m
+        memory: 8Gi
+      limits:
+        cpu: 8000m
+        memory: 8Gi
+    podSecurityContext:
+      runAsUser: 1000
+      fsGroup: 1000
+    persistence:
+      dataDir:
+        enabled: true
+        storageClass: local-path
+        size: 50Gi
+    livenessProbe:
+      initialDelaySeconds: 60
+    readinessProbe:
+      initialDelaySeconds: 60
+    startupProbe:
+      enabled: true
+    extraEnv:
+      TZ: Asia/Singapore
+      ENABLE_ROLLING_LOGS: "true"
+    serviceAnnotations:
+      lbipam.cilium.io/ips: "192.168.20.11"
+      external-dns.alpha.kubernetes.io/hostname: "mc.${SECRET_DOMAIN}"
+      external-dns.alpha.kubernetes.io/target: "${SECRET_PUBLIC_IP}"
+    minecraftServer:
+      eula: true
+      difficulty: hard
+      type: VANILLA
+      mode: survival
+      pvp: true
+      motd: "vanilla smp"
+      memory: 7G
+      serviceType: LoadBalancer
+      servicePort: 25565
+      rcon:
+        enabled: true
+        serviceType: ClusterIP

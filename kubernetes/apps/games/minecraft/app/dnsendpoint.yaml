@@ -1,0 +1,16 @@
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: minecraft
+  annotations:
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+spec:
+  endpoints:
+    - dnsName: "mc.${SECRET_DOMAIN}"
+      recordType: A
+      targets:
+        - "${SECRET_PUBLIC_IP}"
+      providerSpecific:
+        - name: "external-dns.alpha.kubernetes.io/cloudflare-proxied"
+          value: "false"
