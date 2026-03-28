@@ -13,7 +13,7 @@ spec:
     fullnameOverride: *app
     image:
       repository: ghcr.io/itzg/minecraft-server
-      tag: java25
+      tag: java21
     resources:
       requests:
         cpu: 500m
@@ -48,6 +48,7 @@ spec:
       type: VANILLA
       mode: survival
       pvp: true
+      version: "1.21.11"
       motd: "vanilla smp"
       memory: 7G
       serviceType: LoadBalancer
