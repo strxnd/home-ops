@@ -11,8 +11,8 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: grafana
-    - name: openebs
-      namespace: storage
+    - name: local-path-provisioner
+      namespace: kube-system
   interval: 1h
   path: ./kubernetes/apps/observability/victoria-logs/app
   prune: true

@@ -7,8 +7,8 @@ metadata:
   namespace: &namespace observability
 spec:
   dependsOn:
-    - name: openebs
-      namespace: storage
+    - name: local-path-provisioner
+      namespace: kube-system
   interval: 1h
   path: ./kubernetes/apps/observability/gatus/app
   prune: true

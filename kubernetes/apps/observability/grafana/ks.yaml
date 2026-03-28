@@ -32,8 +32,8 @@ metadata:
 spec:
   dependsOn:
     - name: grafana
-    - name: openebs
-      namespace: storage
+    - name: local-path-provisioner
+      namespace: kube-system
   interval: 1h
   path: ./kubernetes/apps/observability/grafana/instance
   prune: true
