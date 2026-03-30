@@ -42,7 +42,10 @@ spec:
               {
                 "gateway": {
                   "port": 18789,
-                  "mode": "local"
+                  "mode": "local",
+                  "controlUi": {
+                    "allowedOrigins": ["https://jarvis.${SECRET_DOMAIN}"]
+                  }
                 },
                 "browser": {
                   "enabled": true,
