@@ -1,0 +1,123 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: jarvis
+spec:
+  chart:
+    spec:
+      chart: openclaw
+      sourceRef:
+        kind: HelmRepository
+        name: openclaw-helm
+  interval: 1h
+  values:
+    app-template:
+      openclawVersion: "2026.3.28"
+      chromiumVersion: "147.0.7727.24"
+      configMode: merge
+
+      controllers:
+        main:
+          replicas: 1
+          strategy: Recreate
+          containers:
+            main:
+              envFrom:
+                - secretRef:
+                    name: jarvis-secret
+
+      configMaps:
+        config:
+          enabled: true
+          data:
+            openclaw.json: |
+              {
+                "gateway": {
+                  "port": 18789,
+                  "mode": "local"
+                },
+                "browser": {
+                  "enabled": true,
+                  "defaultProfile": "default",
+                  "profiles": {
+                    "default": {
+                      "cdpUrl": "http://localhost:9222",
+                      "color": "#4285F4"
+                    }
+                  }
+                },
+                "agents": {
+                  "defaults": {
+                    "workspace": "/home/node/.openclaw/workspace",
+                    "model": {
+                      "primary": "anthropic/claude-opus-4-6"
+                    },
+                    "userTimezone": "Asia/Singapore",
+                    "timeoutSeconds": 600,
+                    "maxConcurrent": 1
+                  },
+                  "list": [
+                    {
+                      "id": "main",
+                      "default": true,
+                      "identity": {
+                        "name": "Jarvis",
+                        "emoji": "🤖"
+                      }
+                    }
+                  ]
+                },
+                "session": {
+                  "scope": "per-sender",
+                  "store": "/home/node/.openclaw/sessions",
+                  "reset": {
+                    "mode": "idle",
+                    "idleMinutes": 60
+                  }
+                },
+                "logging": {
+                  "level": "info",
+                  "consoleLevel": "info",
+                  "consoleStyle": "compact",
+                  "redactSensitive": "tools"
+                },
+                "tools": {
+                  "profile": "full",
+                  "web": {
+                    "search": {
+                      "enabled": false
+                    },
+                    "fetch": {
+                      "enabled": true
+                    }
+                  }
+                }
+              }
+
+      persistence:
+        data:
+          enabled: true
+          type: persistentVolumeClaim
+          accessMode: ReadWriteOnce
+          size: 10Gi
+          storageClass: local-path
+
+      service:
+        main:
+          controller: main
+          ports:
+            http:
+              port: 18789
+
+    route:
+      app:
+        hostnames: ["jarvis.${SECRET_DOMAIN}"]
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: main
+                port: 18789
