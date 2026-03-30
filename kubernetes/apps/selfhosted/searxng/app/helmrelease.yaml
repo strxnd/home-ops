@@ -114,7 +114,6 @@ spec:
               secret_key: "397ac7172af69baf39ea068fc89b945a3f484ec3cd07fba56c459468bb575d9a"
               public_instance: false
               limiter: true
-              image_proxy: true
               method: GET
 
             search:
