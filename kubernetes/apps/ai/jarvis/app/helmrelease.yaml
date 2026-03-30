@@ -120,14 +120,14 @@ spec:
             http:
               port: 18789
 
-    route:
-      app:
-        hostnames: ["jarvis.${SECRET_DOMAIN}"]
-        parentRefs:
-          - name: envoy-external
-            namespace: network
-            sectionName: https
-        rules:
-          - backendRefs:
-              - identifier: main
-                port: 18789
+      route:
+        app:
+          hostnames: ["jarvis.${SECRET_DOMAIN}"]
+          parentRefs:
+            - name: envoy-external
+              namespace: network
+              sectionName: https
+          rules:
+            - backendRefs:
+                - identifier: main
+                  port: 18789
