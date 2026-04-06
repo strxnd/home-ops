@@ -1,0 +1,16 @@
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: peacesmp
+  annotations:
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+spec:
+  endpoints:
+    - dnsName: "peace.${SECRET_DOMAIN}"
+      recordType: A
+      targets:
+        - "${SECRET_PUBLIC_IP}"
+      providerSpecific:
+        - name: "external-dns.alpha.kubernetes.io/cloudflare-proxied"
+          value: "false"
