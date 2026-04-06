@@ -40,7 +40,7 @@ spec:
       ENABLE_ROLLING_LOGS: "true"
       MODRINTH_PROJECTS: "grimac,luckperms,chunky"
     serviceAnnotations:
-      lbipam.cilium.io/ips: "192.168.20.13"
+      lbipam.cilium.io/ips: "192.168.20.12"
       external-dns.alpha.kubernetes.io/hostname: "peace.${SECRET_DOMAIN}"
       external-dns.alpha.kubernetes.io/target: "${SECRET_PUBLIC_IP}"
     minecraftServer:
