@@ -38,7 +38,7 @@ spec:
     extraEnv:
       TZ: Asia/Singapore
       ENABLE_ROLLING_LOGS: "true"
-      MODRINTH_PROJECTS: "grimac,luckperms,chunky"
+      MODRINTH_PROJECTS: "grimac,chunky"
     serviceAnnotations:
       lbipam.cilium.io/ips: "192.168.20.12"
       external-dns.alpha.kubernetes.io/hostname: "peace.${SECRET_DOMAIN}"
