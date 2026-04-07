@@ -38,7 +38,7 @@ spec:
     extraEnv:
       TZ: Asia/Singapore
       ENABLE_ROLLING_LOGS: "true"
-      MODRINTH_PROJECTS: "grimac,chunky"
+      MODRINTH_PROJECTS: "grimac"
       MODRINTH_ALLOWED_VERSION_TYPE: alpha
     serviceAnnotations:
       lbipam.cilium.io/ips: "192.168.20.12"
