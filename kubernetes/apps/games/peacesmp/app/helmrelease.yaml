@@ -42,8 +42,6 @@ spec:
       MODRINTH_ALLOWED_VERSION_TYPE: alpha
     serviceAnnotations:
       lbipam.cilium.io/ips: "192.168.20.12"
-      external-dns.alpha.kubernetes.io/hostname: "peace.${SECRET_DOMAIN}"
-      external-dns.alpha.kubernetes.io/target: "${SECRET_PUBLIC_IP}"
     minecraftServer:
       eula: true
       difficulty: hard
