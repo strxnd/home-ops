@@ -49,6 +49,7 @@ spec:
       mode: survival
       pvp: true
       version: "1.21.11"
+      levelSeed: "4167799982467607063"
       motd: "peace smp"
       memory: 7G
       serviceType: LoadBalancer
