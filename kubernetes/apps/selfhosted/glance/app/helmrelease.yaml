@@ -1,0 +1,158 @@
+---
+# yaml-language-server: $schema=https://k8s-versioned-schemas.pages.dev/flux/2.8.3/helmrelease_v2.json?values=app-template/4.6.2
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: glance
+spec:
+  interval: 1h
+  maxHistory: 1
+  chartRef:
+    kind: OCIRepository
+    name: glance
+  install:
+    timeout: 2m
+    remediation:
+      retries: 1
+  upgrade:
+    timeout: 2m
+    remediation:
+      retries: 1
+  values:
+    controllers:
+      glance:
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: &uid 1000
+            runAsGroup: *uid
+            fsGroup: *uid
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+        strategy: RollingUpdate
+        containers:
+          main:
+            image:
+              repository: ghcr.io/glanceapp/glance
+              tag: v0.8.4
+            env:
+              TZ: Asia/Singapore
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: &port 8080
+                  initialDelaySeconds: 1
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 2
+              readiness: *probes
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+    service:
+      main:
+        controller: glance
+        ports:
+          http:
+            port: *port
+    route:
+      main:
+        hostnames:
+          - glance.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: main
+                port: *port
+    persistence:
+      config:
+        type: configMap
+        name: glance-config
+        globalMounts:
+          - path: /app/glance.yml
+            subPath: glance.yml
+            readOnly: true
+      tmp:
+        type: emptyDir
+    configMaps:
+      config:
+        data:
+          glance.yml: |
+            theme:
+              background-color: "#000000"
+              primary-color: "#89b4fa"
+              positive-color: "#a6e3a1"
+              negative-color: "#f38ba8"
+              contrast-multiplier: 1.1
+              text-saturation-multiplier: 0.9
+
+            pages:
+              - name: Home
+                columns:
+                  - size: small
+                    widgets:
+                      - type: weather
+                        location: Singapore
+                        units: metric
+                        hour-format: "24h"
+                      - type: bookmarks
+                        groups:
+                          - title: Homelab
+                            links:
+                              - title: Grafana
+                                url: https://grafana.${SECRET_DOMAIN}
+                              - title: Router
+                                url: https://router.${SECRET_DOMAIN}
+                              - title: Home Ops
+                                url: https://github.com/kumaraarav/home-ops
+                      - type: calendar
+
+                  - size: full
+                    widgets:
+                      - type: videos
+                        title: YouTube
+                        channels:
+                          - UCsBjURrPoezykLs9EqgamOA  # Fireship
+                          - UC8ENHE5xdFSwx71u3fDH5Xw  # ThePrimeagen
+                          - UC9x0AN7BWHpCDHSm9NiJFJQ  # NetworkChuck
+                          - UCbRP3c757lWg9M-U7TyEkXA  # Theo (t3.gg)
+                          - UCywwEsnSmADUyhtSaq5dKNg  # ZeiBytes
+                          - UCQSz3z66PIDG2ubVLEwiSGQ  # jakkuh
+                          - UC1acS1ETGlVRXBRQ25BNzVG  # Alex Ziskind
+                          - UCR-DXc1voovS8nhAvccRZhg  # Jeff Geerling
+                          - UCXuqSBlHAE6Xw-yeJA0Tunw  # Linus Tech Tips
+                          - UCld68syR8Wi-GY_n4CaoJGA  # Brodie Robertson
+                          - UCcaTUtGzOiS4cqrgtcsHYWg  # jvscholz
+                          - UCjSEJkpGbcZhvo0lr-44X_w  # TechHut
+                        limit: 18
+                        collapse-after: 6
+                      - type: rss
+                        title: Tech News
+                        feeds:
+                          - url: https://feeds.arstechnica.com/arstechnica/index
+                          - url: https://www.theverge.com/rss/index.xml
+                          - url: https://hnrss.org/best
+                        limit: 15
+                        collapse-after: 5
+
+                  - size: small
+                    widgets:
+                      - type: hacker-news
+                        limit: 15
+                        collapse-after: 5
