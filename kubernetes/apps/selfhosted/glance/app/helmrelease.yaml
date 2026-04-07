@@ -33,7 +33,7 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/glanceapp/glance
+              repository: docker.io/glanceapp/glance
               tag: v0.8.4
             env:
               TZ: Asia/Singapore
