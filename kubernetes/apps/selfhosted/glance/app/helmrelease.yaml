@@ -95,10 +95,10 @@ spec:
         data:
           glance.yml: |
             theme:
-              background-color: "#000000"
-              primary-color: "#89b4fa"
-              positive-color: "#a6e3a1"
-              negative-color: "#f38ba8"
+              background-color: 0 0 0
+              primary-color: 217 92 76
+              positive-color: 115 54 76
+              negative-color: 343 81 75
               contrast-multiplier: 1.1
               text-saturation-multiplier: 0.9
 
