@@ -52,7 +52,7 @@ spec:
             embedded: false
             type: LoadBalancer
             annotations:
-              lbipam.cilium.io/ips: "192.168.20.12"
+              lbipam.cilium.io/ips: "192.168.20.13"
             port: 24454
       eula: true
       difficulty: hard
