@@ -40,6 +40,14 @@ spec:
       ENABLE_ROLLING_LOGS: "true"
       MODRINTH_PROJECTS: "grimac,simpletpaplugin,voxy-server-side,viaversion,simple-voice-chat"
       MODRINTH_ALLOWED_VERSION_TYPE: alpha
+    extraPorts:
+      - name: voice-chat
+        containerPort: 24454
+        protocol: UDP
+        service:
+          enabled: true
+          type: LoadBalancer
+          port: 24454
     serviceAnnotations:
       lbipam.cilium.io/ips: "192.168.20.12"
     minecraftServer:
