@@ -38,7 +38,7 @@ spec:
     extraEnv:
       TZ: Asia/Singapore
       ENABLE_ROLLING_LOGS: "true"
-      MODRINTH_PROJECTS: "grimac,simpletpaplugin,voxy-server-side"
+      MODRINTH_PROJECTS: "grimac,simpletpaplugin,voxy-server-side,viaversion"
       MODRINTH_ALLOWED_VERSION_TYPE: alpha
     serviceAnnotations:
       lbipam.cilium.io/ips: "192.168.20.12"
