@@ -38,7 +38,6 @@ spec:
     extraEnv:
       TZ: Asia/Singapore
       ENABLE_ROLLING_LOGS: "true"
-      MODRINTH_DOWNLOAD_DEPENDENCIES: required
       MODRINTH_PROJECTS: >-
         fabric-api,fabric-language-kotlin,
         carpet,carpet-extra,carpet-tis-addition,
