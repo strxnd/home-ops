@@ -38,25 +38,17 @@ spec:
     extraEnv:
       TZ: Asia/Singapore
       ENABLE_ROLLING_LOGS: "true"
-      MODRINTH_PROJECTS: "clickvillagers,grimac,simpletpaplugin,voxy-server-side,viaversion,simple-voice-chat"
-      MODRINTH_ALLOWED_VERSION_TYPE: alpha
+      MODRINTH_PROJECTS: >-
+        fabric-api,carpet,carpet-extra,carpet-tis-addition,
+        lithium,ferrite-core,krypton,spark,
+        syncmatica,servux,no-chat-reports,
+        luckperms,vanilla-permissions,elytra-trims
     serviceAnnotations:
       lbipam.cilium.io/ips: "192.168.20.12"
     minecraftServer:
-      extraPorts:
-        - name: voice-chat
-          containerPort: 24454
-          protocol: UDP
-          service:
-            enabled: true
-            embedded: false
-            type: LoadBalancer
-            annotations:
-              lbipam.cilium.io/ips: "192.168.20.13"
-            port: 24454
       eula: true
       difficulty: hard
-      type: PAPER
+      type: FABRIC
       mode: survival
       pvp: true
       version: "1.21.11"
