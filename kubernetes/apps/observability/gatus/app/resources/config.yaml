@@ -28,7 +28,7 @@ endpoints:
 
   - name: Status Page
     group: status
-    url: http://gatus.observability:80/health
+    url: https://status.${SECRET_DOMAIN}/health
     interval: 1m
     conditions:
       - "[STATUS] == 200"
