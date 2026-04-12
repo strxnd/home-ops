@@ -44,7 +44,6 @@ spec:
         lithium,ferrite-core,krypton,spark,
         syncmatica,servux,no-chat-reports,
         luckperms,vanilla-permissions,elytra-trims,
-        voxy-worldgen
     serviceAnnotations:
       lbipam.cilium.io/ips: "192.168.20.12"
     minecraftServer:
