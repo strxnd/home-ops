@@ -26,20 +26,6 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
-  - name: Status Page
-    group: status
-    url: https://status.${SECRET_DOMAIN}/health
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-
-  - name: Alertmanager
-    group: status
-    url: http://alertmanager-operated.observability:9093/-/healthy
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-
 metrics: true
 
 storage:

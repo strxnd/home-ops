@@ -11,15 +11,7 @@ _... managed with Flux, Renovate, and GitHub Actions_ <img src="https://fonts.gs
 [![Talos](https://img.shields.io/badge/Talos-blue?style=for-the-badge&logo=talos&logoColor=white)](https://www.talos.dev/)&nbsp;&nbsp;
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-blue?style=for-the-badge&logo=kubernetes&logoColor=white)](https://kubernetes.io/)&nbsp;&nbsp;
 [![Flux](https://img.shields.io/badge/Flux-blue?style=for-the-badge&logo=flux&logoColor=white)](https://fluxcd.io/)&nbsp;&nbsp;
-[![Renovate](https://img.shields.io/badge/Renovate-blue?style=for-the-badge&logo=renovatebot&logoColor=white)](https://github.com/renovatebot/renovate)
-
-</div>
-
-<div align="center">
-
-[![Home-Internet](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatus.kumaraarav.dev%2Fapi%2Fv1%2Fendpoints%2Fconnectivity_cloudflare%2Fhealth%2Fbadge.shields&style=for-the-badge&logo=ubiquiti&logoColor=white&label=Home%20Internet)](https://status.kumaraarav.dev)&nbsp;&nbsp;
-[![Status-Page](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatus.kumaraarav.dev%2Fapi%2Fv1%2Fendpoints%2Fstatus_status-page%2Fhealth%2Fbadge.shields&style=for-the-badge&logo=statuspage&logoColor=white&label=Status%20Page)](https://status.kumaraarav.dev)&nbsp;&nbsp;
-[![Alertmanager](https://img.shields.io/endpoint?url=https%3A%2F%2Fstatus.kumaraarav.dev%2Fapi%2Fv1%2Fendpoints%2Fstatus_alertmanager%2Fhealth%2Fbadge.shields&style=for-the-badge&logo=prometheus&logoColor=white&label=Alertmanager)](https://status.kumaraarav.dev)
+[![Renovate](https://img.shields.io/github/actions/workflow/status/strxnd/home-ops/renovate.yaml?branch=main&label=&logo=renovatebot&style=for-the-badge&color=blue)](https://github.com/strxnd/home-ops/actions/workflows/renovate.yaml)
 
 </div>
 
