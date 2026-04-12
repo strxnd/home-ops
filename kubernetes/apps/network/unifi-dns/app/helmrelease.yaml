@@ -44,7 +44,7 @@ spec:
     sources: ["gateway-httproute", "service"]
     txtPrefix: k8s.
     txtOwnerId: unifi
-    domainFilters: ["kumaraarav.dev"]
+    domainFilters: ["${SECRET_DOMAIN}"]
     serviceMonitor:
       enabled: true
     podAnnotations:

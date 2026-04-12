@@ -120,7 +120,7 @@ spec:
                               - title: Router
                                 url: https://router.${SECRET_DOMAIN}
                               - title: Home Ops
-                                url: https://github.com/kumaraarav/home-ops
+                                url: https://github.com/strxnd/home-ops
                       - type: calendar
 
                   - size: full
