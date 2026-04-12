@@ -86,14 +86,6 @@ There are two instances of [ExternalDNS](https://github.com/kubernetes-sigs/exte
 
 </details>
 
-| Name     | VLAN ID | Subnet            | Purpose                    |
-|----------|---------|-------------------|----------------------------|
-| Default  | 1       | `192.168.0.0/24`  | Management                 |
-| Trusted  | 10      | `192.168.10.0/24` | Trusted devices            |
-| Homelab  | 20      | `192.168.20.0/24` | Kubernetes nodes & services|
-| IoT      | 30      | `192.168.30.0/24` | Smart home devices         |
-| Guest    | 40      | `192.168.40.0/24` | Guest network              |
-
 ---
 
 ## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f64f/512.gif" alt="🙏" width="20" height="20"> Gratitude and Thanks
