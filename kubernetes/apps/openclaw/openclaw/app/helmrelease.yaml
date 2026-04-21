@@ -18,7 +18,8 @@ spec:
           app:
             image:
               repository: ghcr.io/openclaw/openclaw
-              tag: latest
+              # renovate: datasource=docker depName=ghcr.io/openclaw/openclaw
+              tag: 2026.3.1
             env:
               TZ: UTC
             envFrom:
