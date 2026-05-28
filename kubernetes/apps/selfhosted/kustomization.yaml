@@ -8,5 +8,6 @@ components:
 
 resources:
   - ./namespace.yaml
-  - ./searxng/ks.yaml
   - ./glance/ks.yaml
+  - ./forgejo/ks.yaml
+  - ./searxng/ks.yaml

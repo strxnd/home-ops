@@ -4,24 +4,26 @@ Guidance for pi and other coding agents working in this repository.
 
 ## Repository Purpose
 
-This is a home operations GitOps repository for a single-node Talos Kubernetes cluster. Infrastructure and applications are managed as code using Flux, Renovate, GitHub Actions, SOPS, and age.
+This is a home operations GitOps repository for a single-node Talos Kubernetes cluster. Infrastructure and applications are managed as code with Flux, Renovate, GitHub Actions, External Secrets Operator, 1Password Connect, SOPS, and age.
 
-Flux reconciles the `kubernetes/` directory from Git into the cluster. Most day-to-day changes should be made as declarative manifests, reviewed with `git diff`, validated locally when possible, then committed and pushed for Flux to apply.
+Flux reconciles `kubernetes/` from Git into the cluster. Most changes should be declarative manifests, locally validated where possible, reviewed with `git diff`, then committed and pushed for Flux to apply.
 
-## Important Directories and Files
+## Architecture and Important Paths
 
-- `README.md` — high-level architecture and repo overview.
-- `Taskfile.yaml` — main task entrypoint.
-- `.taskfiles/bootstrap/Taskfile.yaml` — cluster/app bootstrap tasks.
-- `.taskfiles/talos/Taskfile.yaml` — Talos generation, apply, upgrade, and reset tasks.
-- `.mise.toml` — pinned CLI tools and environment variables.
-- `kubernetes/apps/` — Flux-managed applications grouped by namespace/category.
-- `kubernetes/apps/*/kustomization.yaml` — namespace-level Kustomize entries that include `namespace.yaml` and child app `ks.yaml` files.
-- `kubernetes/flux/cluster/ks.yaml` — Flux Kustomization that points at `./kubernetes/apps` and applies common defaults.
-- `kubernetes/components/sops/` — SOPS-related Kustomize component.
-- `talos/` — Talos cluster configuration and generated config inputs.
-- `bootstrap/` and `scripts/` — bootstrap support files and scripts.
-- `.github/` — repository automation metadata.
+- `README.md` — high-level repo, cluster, DNS, hardware, and GitOps overview.
+- `Taskfile.yaml` — main Task entrypoint; includes bootstrap and Talos taskfiles.
+- `.mise.toml` — pinned CLI tools and sensitive env var paths (`KUBECONFIG`, `SOPS_AGE_KEY_FILE`, `TALOSCONFIG`).
+- `kubernetes/flux/cluster/ks.yaml` — root Flux `Kustomization` for `./kubernetes/apps`; applies common SOPS and HelmRelease defaults.
+- `kubernetes/apps/` — Flux-managed apps grouped by namespace/category (`ai`, `cert-manager`, `default`, `external-secrets`, `flux-system`, `games`, `kube-system`, `network`, `observability`, `openclaw`, `selfhosted`).
+- `kubernetes/apps/*/kustomization.yaml` — namespace-level Kustomize entries with `namespace.yaml`, optional components, and child app `ks.yaml` files.
+- `kubernetes/components/sops/` — legacy SOPS component and encrypted cluster secret manifests; do not use for new app secrets unless explicitly asked.
+- `kubernetes/apps/external-secrets/` — External Secrets Operator and 1Password Connect integration; preferred secret pattern for new app credentials.
+- `talos/` — Talos/talhelper config, generated cluster config location, version pins, and machine patches.
+- `bootstrap/` — bootstrap inputs, including encrypted SOPS/age material.
+- `scripts/` and `scripts/lib/` — bootstrap/support scripts.
+- `.taskfiles/bootstrap/Taskfile.yaml` — cluster and app bootstrap tasks.
+- `.taskfiles/talos/Taskfile.yaml` — Talos generate/apply/upgrade/reset tasks.
+- `.github/` — repo automation; `flux-local.yaml` validates/diffs Kubernetes changes in PRs.
 
 ## Common Commands
 
@@ -34,44 +36,52 @@ task --list
 find kubernetes/apps -maxdepth 2 -name kustomization.yaml -print | sort
 ```
 
+Useful local validation commands when available:
+
+```sh
+kustomize build kubernetes/apps/<namespace> >/tmp/kustomize-build.yaml
+kubeconform -strict -summary /tmp/kustomize-build.yaml
+# CI uses flux-local against kubernetes/flux/cluster for Kubernetes changes
+```
+
 Useful project tasks:
 
 ```sh
 task reconcile              # Force Flux reconcile; touches the cluster
 task bootstrap:apps         # Bootstrap apps; touches the cluster
 task bootstrap:talos        # Bootstrap Talos; destructive/cluster-affecting
-task talos:generate-config  # Generate Talos config locally
+task talos:generate-config  # Generate Talos config locally; needs SOPS age key
 task talos:apply-node IP=... MODE=auto
 task talos:upgrade-node IP=...
 task talos:upgrade-k8s
 task talos:reset            # Destructive
 ```
 
-Before suggesting or running cluster-affecting commands, explain what they do and ask for explicit confirmation.
+Before suggesting or running any cluster-affecting command, explain what it does and ask for explicit confirmation.
 
-## GitOps Workflow
+## GitOps / Infrastructure Workflow
 
-1. Inspect the relevant area under `kubernetes/apps/` or `talos/`.
-2. Follow existing layout and naming conventions.
-3. Make the smallest declarative change possible.
-4. Run safe local checks where available.
-5. Review `git diff`.
-6. Commit and push.
-7. Reconcile with Flux only after the user confirms cluster access is intended.
+1. Start with `git status --short` and avoid overwriting user changes.
+2. Inspect nearby manifests, existing app layout, and relevant task/config files before editing.
+3. Make the smallest declarative change possible under `kubernetes/` or `talos/`.
+4. Follow existing naming, namespace, Kustomize, Flux, HelmRelease, and ExternalSecret patterns.
+5. Run safe local validation where practical; prefer local checks over live-cluster commands.
+6. Review `git diff` and call out any risky, destructive, or placeholder values.
+7. Commit and push only when asked. Flux reconciliation should happen only after explicit confirmation.
 
-Application namespaces generally have this pattern:
+Application namespaces generally follow this pattern:
 
 ```text
-kubernetes/apps/<area>/
+kubernetes/apps/<namespace>/
 ├── namespace.yaml
 ├── kustomization.yaml
 └── <app>/
     └── ks.yaml
 ```
 
-Child app directories commonly contain Flux `Kustomization`, `HelmRelease`, `HelmRepository`/source references, config, and secrets references.
+Child app directories commonly contain Flux `Kustomization`, `HelmRelease`, source references, config, and secret references.
 
-## Secrets and Safety Rules
+## Secrets and Cluster Safety
 
 Do not reveal, decrypt, print, or modify secrets unless the user explicitly asks and confirms the exact operation.
 
@@ -81,51 +91,33 @@ Treat these as sensitive:
 - `kubeconfig`
 - `.sops.yaml`
 - `*.sops.yaml`
-- Talos secrets and generated Talos configs
-- Cluster credentials, tokens, API keys, kubeconfigs, and 1Password references
+- `talos/clusterconfig/*`, Talos secrets, and generated Talos configs
+- Cluster credentials, tokens, API keys, kubeconfigs, Cloudflare/UniFi credentials, and 1Password references
 
 Safe handling expectations:
 
 - Do not run `sops --decrypt` unless explicitly requested and confirmed.
-- Do not print secret values to chat or logs.
+- Do not print secret values, kubeconfigs, Talos secrets, or decrypted manifests to chat/logs.
 - Do not commit raw Kubernetes `Secret` values.
-- Prefer `ExternalSecret` or encrypted SOPS-managed files following existing repo patterns.
-- Placeholder secret item names, such as `REPLACE_WITH_...`, should be called out before commit.
-- Be careful with `task bootstrap:*`, `task talos:*`, `kubectl`, `flux`, and `talosctl`; these can affect live infrastructure.
-
-## Commit Message Conventions
-
-When suggesting or creating commits, prefer plain Conventional Commit-style prefixes without scopes:
-
-- `feat: ...` for adding a new app, service, capability, or meaningful behavior.
-- `fix: ...` for broken behavior, regressions, security fixes, or incorrect configuration.
-- `chore: ...` for maintenance, cleanup, migrations, dependency/repo upkeep, and routine infrastructure changes.
-
-Do not add scope parentheses such as `feat(app): ...` or `fix(container): ...` unless the user explicitly asks for them. The user's default preference is `chore: ...` when a change does not clearly need `feat:` or `fix:`.
-
-Examples:
-
-```sh
-feat: add gatus monitoring
-fix: correct unifi dns secret reference
-chore: migrate unifi-dns to external secrets
-```
+- For new app credentials, prefer `ExternalSecret` backed by the `onepassword-connect` `ClusterSecretStore`.
+- Some older manifests still use SOPS, but do not create new `*.sops.yaml` app secrets unless the user explicitly asks.
+- ExternalSecret item/key placeholders such as `REPLACE_WITH_...`, missing 1Password item names, or assumed property names must be called out before commit.
+- Be careful with `task bootstrap:*`, `task talos:*`, `kubectl`, `flux`, `helm`, `helmfile`, and `talosctl`; these can affect live infrastructure or external services.
 
 ## Editing Conventions
 
 - Preserve YAML document starts (`---`) where present.
-- Keep manifests concise and consistent with neighboring files.
-- Prefer existing repo patterns over introducing new structure.
-- Use Kustomize resources/components consistently.
-- Keep namespace-level `kustomization.yaml` files sorted or grouped consistently with existing entries.
-- For Flux resources, check existing `ks.yaml` and `HelmRelease` examples before creating new ones.
+- Keep YAML concise and consistent with neighboring files.
+- Prefer existing repo structure over introducing new patterns.
+- Use Kustomize resources/components consistently; keep namespace `kustomization.yaml` files sorted or grouped like nearby files.
+- For Flux resources, inspect existing `ks.yaml`, `HelmRelease`, source, and `externalsecret.yaml` examples before creating new ones.
 - Avoid broad rewrites; make targeted edits.
+- Always pin chart, image, and dependency versions/tags; do not use `latest` because Renovate cannot reliably manage latest tags in this repo.
+- Do not add scope parentheses in commit messages unless asked. Prefer `feat:`, `fix:`, or `chore:`; use `chore:` for routine maintenance.
 
 ## Agent Behavior
 
-- Start by checking `git status --short` so existing user changes are visible.
-- Read nearby files before editing.
-- Ask before overwriting or restructuring user work.
-- For infrastructure changes, explain risk and validation steps.
-- Prefer local validation over live-cluster operations.
-- After edits, summarize changed files and suggest next safe commands.
+- Read relevant files before editing and summarize changed paths afterward.
+- Ask before destructive operations, live-cluster access, secret decryption, or restructuring.
+- Explain infrastructure risk and validation steps for cluster/Talos changes.
+- After edits, suggest safe next commands rather than running cluster-affecting commands automatically.
