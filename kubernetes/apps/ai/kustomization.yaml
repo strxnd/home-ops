@@ -8,4 +8,5 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./hermes/ks.yaml
   - ./jarvis/ks.yaml
