@@ -60,8 +60,8 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /
-                    port: *dashboardPort
+                    path: /health
+                    port: *apiPort
                   initialDelaySeconds: 30
                   periodSeconds: 30
                   timeoutSeconds: 5
@@ -72,8 +72,8 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /
-                    port: *dashboardPort
+                    path: /health
+                    port: *apiPort
                   initialDelaySeconds: 30
                   periodSeconds: 10
                   timeoutSeconds: 5
