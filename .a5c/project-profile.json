@@ -1,0 +1,478 @@
+{
+  "projectName": "home-ops",
+  "description": "GitOps home operations repository for a single-node Talos Kubernetes homelab cluster. The project aims to build enterprise-grade self-hosted infrastructure, maintain future-proof infrastructure skills, and replace big-tech/subscription services with privacy-respecting alternatives.",
+  "goals": [
+    {
+      "id": "goal-infrastructure-1",
+      "description": "Develop enterprise-grade homelab infrastructure using GitOps, Talos, Kubernetes, Flux, and strong operational practices.",
+      "category": "infrastructure",
+      "priority": "high",
+      "status": "active"
+    },
+    {
+      "id": "goal-skills-1",
+      "description": "Maintain useful future infrastructure, security, automation, and self-hosting skills through practical operation of the cluster.",
+      "category": "skills",
+      "priority": "high",
+      "status": "active"
+    },
+    {
+      "id": "goal-privacy-1",
+      "description": "Replace big-tech and subscription services with self-hosted, privacy-respecting, low-lock-in alternatives where practical.",
+      "category": "privacy",
+      "priority": "high",
+      "status": "active"
+    },
+    {
+      "id": "goal-reliability-1",
+      "description": "Keep the single-node cluster understandable, recoverable, observable, and safely change-managed.",
+      "category": "reliability",
+      "priority": "high",
+      "status": "active"
+    }
+  ],
+  "techStack": {
+    "languages": [
+      {
+        "name": "YAML",
+        "role": "primary manifests"
+      },
+      {
+        "name": "Bash",
+        "role": "automation scripts"
+      },
+      {
+        "name": "Markdown",
+        "role": "documentation"
+      },
+      {
+        "name": "JSON5",
+        "role": "Renovate config"
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "Kubernetes"
+      },
+      {
+        "name": "Talos Linux"
+      },
+      {
+        "name": "Flux CD"
+      },
+      {
+        "name": "Kustomize"
+      },
+      {
+        "name": "Helm"
+      },
+      {
+        "name": "Helmfile"
+      },
+      {
+        "name": "External Secrets Operator"
+      },
+      {
+        "name": "SOPS/age"
+      },
+      {
+        "name": "Renovate"
+      },
+      {
+        "name": "GitHub Actions"
+      }
+    ],
+    "databases": [],
+    "infrastructure": [
+      {
+        "name": "Cilium",
+        "category": "networking"
+      },
+      {
+        "name": "Envoy Gateway",
+        "category": "ingress"
+      },
+      {
+        "name": "Cloudflare Tunnel",
+        "category": "ingress"
+      },
+      {
+        "name": "ExternalDNS",
+        "category": "dns"
+      },
+      {
+        "name": "1Password Connect",
+        "category": "secrets"
+      },
+      {
+        "name": "local-path-provisioner",
+        "category": "storage"
+      },
+      {
+        "name": "kube-prometheus-stack/Grafana/Victoria Logs/Fluent Bit/Gatus",
+        "category": "observability"
+      }
+    ],
+    "buildTools": [
+      "task",
+      "kustomize",
+      "kubeconform",
+      "flux-local",
+      "helm",
+      "helmfile",
+      "talhelper",
+      "sops",
+      "age",
+      "yq",
+      "jq"
+    ],
+    "packageManagers": [
+      "mise/aqua",
+      "Renovate",
+      "Helm/OCI chart sources"
+    ]
+  },
+  "architecture": {
+    "pattern": "Infrastructure-as-code GitOps monorepo for a single-node Talos Kubernetes cluster.",
+    "modules": [
+      {
+        "name": "Flux root",
+        "path": "kubernetes/flux/cluster",
+        "description": "Root cluster Kustomization for kubernetes/apps"
+      },
+      {
+        "name": "Kubernetes apps",
+        "path": "kubernetes/apps",
+        "description": "Namespace-grouped application definitions"
+      },
+      {
+        "name": "Talos",
+        "path": "talos",
+        "description": "Talos and talhelper configuration and patches"
+      },
+      {
+        "name": "Bootstrap",
+        "path": "bootstrap",
+        "description": "Bootstrap Helmfile and encrypted bootstrap material"
+      },
+      {
+        "name": "Tasks/scripts",
+        "path": "Taskfile.yaml .taskfiles scripts",
+        "description": "Operational command wrappers and bootstrap helpers"
+      },
+      {
+        "name": "Automation",
+        "path": ".github .renovaterc.json5",
+        "description": "GitHub Actions and Renovate automation"
+      }
+    ],
+    "entryPoints": [
+      "Taskfile.yaml",
+      "kubernetes/flux/cluster/ks.yaml",
+      "kubernetes/apps/*/kustomization.yaml",
+      "talos/talconfig.yaml",
+      ".github/workflows/flux-local.yaml"
+    ],
+    "dataFlow": "Local declarative manifest changes are validated, reviewed, committed to Git, and then applied by Flux after push/merge. HelmRelease resources pull charts from HelmRepository/OCIRepository sources. Secrets are provided through SOPS or External Secrets backed by 1Password Connect."
+  },
+  "team": [
+    {
+      "name": "Kumar Aarav",
+      "role": "owner/operator",
+      "responsibilities": [
+        "infrastructure design",
+        "GitOps changes",
+        "validation",
+        "self-hosted app operations",
+        "privacy/security decisions"
+      ]
+    },
+    {
+      "name": "Dad",
+      "role": "collaborator/reviewer",
+      "responsibilities": [
+        "household stakeholder",
+        "review/support when useful"
+      ]
+    }
+  ],
+  "workflows": [
+    {
+      "name": "development",
+      "description": "Direct-to-main local workflow with self-review gate and manual commit/push/apply decisions.",
+      "steps": [
+        "git status --short",
+        "inspect relevant files",
+        "make minimal declarative change",
+        "run safe local validation",
+        "review git diff",
+        "commit/push only after explicit user approval"
+      ],
+      "triggers": [
+        "user request"
+      ]
+    },
+    {
+      "name": "GitOps apply",
+      "description": "Flux applies committed repository state to the cluster after push/merge.",
+      "steps": [
+        "commit to main",
+        "push",
+        "Flux reconciles",
+        "observe result if explicitly requested"
+      ],
+      "triggers": [
+        "manual push/merge"
+      ]
+    },
+    {
+      "name": "secret management",
+      "description": "Prefer ExternalSecret + 1Password Connect for new app credentials; avoid secret decryption and raw Secret commits.",
+      "steps": [
+        "identify required keys",
+        "create ExternalSecret manifest",
+        "call out placeholder/assumed item names",
+        "validate locally"
+      ],
+      "triggers": [
+        "new app credentials"
+      ]
+    },
+    {
+      "name": "cluster-affecting operations",
+      "description": "Live cluster/Talos/bootstrap commands are gated by explicit confirmation.",
+      "steps": [
+        "explain command impact",
+        "ask for confirmation",
+        "run only if approved",
+        "summarize results"
+      ],
+      "triggers": [
+        "explicit operational request"
+      ]
+    }
+  ],
+  "processes": [
+    {
+      "name": "Plan-first infrastructure change",
+      "description": "Research chart/app, inspect repo patterns, draft plan, ask decisions, implement only after sufficient clarity."
+    },
+    {
+      "name": "Safe GitOps app deployment",
+      "description": "Add namespace/app manifests following existing Flux/Kustomize/ExternalSecret conventions and validate locally."
+    },
+    {
+      "name": "Secret-safe troubleshooting",
+      "description": "Diagnose without decrypting or printing secrets unless explicitly confirmed."
+    }
+  ],
+  "tools": {
+    "linting": [
+      "kubeconform",
+      "flux-local",
+      "shellcheck"
+    ],
+    "testing": [
+      "flux-local test/diff",
+      "kustomize build"
+    ],
+    "formatting": [
+      "EditorConfig",
+      "yq",
+      "jq"
+    ]
+  },
+  "services": [
+    {
+      "name": "Flux",
+      "type": "gitops"
+    },
+    {
+      "name": "Talos",
+      "type": "cluster-os"
+    },
+    {
+      "name": "Cloudflare",
+      "type": "dns/tunnel"
+    },
+    {
+      "name": "UniFi",
+      "type": "network/dns"
+    },
+    {
+      "name": "1Password Connect",
+      "type": "secret-backend"
+    },
+    {
+      "name": "Renovate",
+      "type": "dependency-automation"
+    }
+  ],
+  "externalIntegrations": [
+    {
+      "service": "GitHub",
+      "category": "vcs-ci",
+      "enabled": true
+    },
+    {
+      "service": "Renovate",
+      "category": "dependency-automation",
+      "enabled": true
+    },
+    {
+      "service": "Cloudflare",
+      "category": "dns-tunnel",
+      "enabled": true
+    },
+    {
+      "service": "UniFi",
+      "category": "network",
+      "enabled": true
+    },
+    {
+      "service": "1Password Connect",
+      "category": "secrets",
+      "enabled": true
+    }
+  ],
+  "cicd": {
+    "provider": "GitHub Actions",
+    "configPaths": [
+      ".github/workflows/flux-local.yaml",
+      ".github/workflows/label-sync.yaml",
+      ".github/workflows/labeler.yaml"
+    ],
+    "pipelines": [
+      {
+        "name": "flux-local",
+        "trigger": "pull_request",
+        "stages": [
+          "flux-local test",
+          "flux-local diff"
+        ]
+      }
+    ],
+    "babysitterIntegration": {
+      "enabled": false,
+      "triggerOn": [],
+      "processIds": []
+    }
+  },
+  "painPoints": [
+    {
+      "id": "pp-security-1",
+      "description": "Secret handling spans SOPS, age, 1Password Connect, and External Secrets; unsafe reads/decrypts could leak credentials.",
+      "severity": "high",
+      "category": "security",
+      "discoveredVia": "repo analysis",
+      "suggestedRemediation": "Keep strict confirmation gates and prefer ExternalSecret for new app credentials."
+    },
+    {
+      "id": "pp-validation-1",
+      "description": "Some Kubernetes correctness depends on cluster state even when local rendering passes.",
+      "severity": "medium",
+      "category": "validation",
+      "discoveredVia": "repo analysis",
+      "suggestedRemediation": "Run kustomize/kubeconform/flux-local locally where possible and use live commands only with confirmation."
+    },
+    {
+      "id": "pp-operations-1",
+      "description": "Single-node cluster means storage and workload changes can have outsized operational impact.",
+      "severity": "medium",
+      "category": "operations",
+      "discoveredVia": "README"
+    }
+  ],
+  "bottlenecks": [
+    {
+      "id": "bn-peacesmp-1",
+      "description": "Peacesmp HelmRelease is high-churn and may benefit from careful validation/review.",
+      "impact": "medium",
+      "location": "kubernetes/apps/games/peacesmp/app/helmrelease.yaml",
+      "frequency": "high"
+    },
+    {
+      "id": "bn-secrets-1",
+      "description": "Mixed SOPS and ExternalSecret patterns require careful secret strategy selection.",
+      "impact": "high",
+      "location": "kubernetes/apps/**",
+      "frequency": "recurring"
+    },
+    {
+      "id": "bn-live-infra-1",
+      "description": "Taskfile exposes live and destructive cluster/Talos operations.",
+      "impact": "high",
+      "location": "Taskfile.yaml .taskfiles/**",
+      "frequency": "persistent"
+    }
+  ],
+  "conventions": {
+    "naming": {
+      "apps": "kubernetes/apps/<namespace>/<app>/app plus <app>/ks.yaml",
+      "flux": "metadata.name should match app directory",
+      "secrets": "ExternalSecret preferred for new credentials; *.sops.yaml only when explicitly requested"
+    },
+    "git": {
+      "branchStrategy": "direct-to-main",
+      "reviewProcess": "self-review gate",
+      "releaseCadence": "manual merge/apply",
+      "commitPrefixes": "feat:, fix:, chore: without scope unless asked"
+    },
+    "codeStyle": {
+      "yaml": "preserve document starts, concise, pinned versions",
+      "shell": "strict mode and existing helper patterns",
+      "indentation": "2 spaces generally, shell/Markdown exceptions per .editorconfig"
+    },
+    "importOrder": [
+      "namespace.yaml before child app ks.yaml",
+      "app kustomization resources listed explicitly"
+    ],
+    "errorHandling": "Explain risks and ask before destructive/live/secret operations; keep blockers in-progress rather than pretending success.",
+    "testingConventions": "Prefer safe local validation: kustomize build, kubeconform, flux-local; do not run live cluster commands without confirmation.",
+    "additionalRules": [
+      "Start with git status --short",
+      "Do not overwrite user changes",
+      "Do not decrypt or reveal secrets",
+      "Do not commit raw Kubernetes Secret values",
+      "Pin chart/image/dependency versions",
+      "Review git diff after edits",
+      "Commit/push only when asked"
+    ]
+  },
+  "repositories": [
+    {
+      "name": "home-ops",
+      "path": "/home/kumaraarav/dev/home-ops",
+      "remote": "https://github.com/strxnd/home-ops.git"
+    }
+  ],
+  "claudeMdInstructions": [
+    "Follow AGENTS.md as the source of truth for repository safety and workflow.",
+    "For Kubernetes changes, inspect existing app patterns before editing and prefer ExternalSecret for new credentials.",
+    "Do not run live cluster, Talos, bootstrap, or secret decryption commands without explicit confirmation.",
+    "Use direct, structured, precise summaries and call out risks/placeholders."
+  ],
+  "installedSkills": [
+    "babysit",
+    "plan",
+    "project-install",
+    "doctor",
+    "retrospect",
+    "cleanup"
+  ],
+  "installedAgents": [
+    "general-purpose",
+    "Explore",
+    "Plan",
+    "code-reviewer",
+    "security-engineer"
+  ],
+  "installedProcesses": [
+    "cradle/project-install",
+    "cradle/bugfix",
+    "cradle/feature-implementation-contribute"
+  ],
+  "createdAt": "2026-05-30T01:17:30Z",
+  "updatedAt": "2026-05-30T01:25:07Z",
+  "version": 1
+}

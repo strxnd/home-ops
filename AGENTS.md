@@ -24,6 +24,7 @@ Flux reconciles `kubernetes/` from Git into the cluster. Most changes should be 
 - `.taskfiles/bootstrap/Taskfile.yaml` — cluster and app bootstrap tasks.
 - `.taskfiles/talos/Taskfile.yaml` — Talos generate/apply/upgrade/reset tasks.
 - `.github/` — repo automation; `flux-local.yaml` validates/diffs Kubernetes changes in PRs.
+- `.a5c/` — optional Babysitter project metadata and quality gates; see `.a5c/README.md`. Non-Babysitter users can ignore it.
 
 ## Common Commands
 
@@ -114,6 +115,10 @@ Safe handling expectations:
 - Avoid broad rewrites; make targeted edits.
 - Always pin chart, image, and dependency versions/tags; do not use `latest` because Renovate cannot reliably manage latest tags in this repo.
 - Do not add scope parentheses in commit messages unless asked. Prefer `feat:`, `fix:`, or `chore:`; use `chore:` for routine maintenance.
+
+## Optional Babysitter Support
+
+This repository includes optional Babysitter project metadata under `.a5c/`. Agents and humans not using Babysitter can ignore it. Babysitter-specific processes must not override the repository safety rules in this file.
 
 ## Agent Behavior
 

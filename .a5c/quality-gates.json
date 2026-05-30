@@ -1,0 +1,52 @@
+{
+  "qualityThreshold": 80,
+  "testCoverage": {
+    "minimum": null,
+    "note": "Not applicable: this repository is infrastructure-as-code and does not currently have an application unit-test coverage target."
+  },
+  "linting": [
+    {
+      "name": "kubeconform",
+      "command": "kubeconform -strict -summary /tmp/kustomize-build.yaml",
+      "scope": "Rendered Kubernetes manifests"
+    },
+    {
+      "name": "flux-local",
+      "command": "flux-local test --enable-helm --all-namespaces kubernetes/flux/cluster",
+      "scope": "Flux/Kustomize/Helm validation"
+    },
+    {
+      "name": "shellcheck",
+      "command": "shellcheck scripts/**/*.sh",
+      "scope": "Shell scripts when changed"
+    }
+  ],
+  "formatting": [
+    {
+      "name": "EditorConfig",
+      "scope": "Repository-wide whitespace and newline conventions"
+    },
+    {
+      "name": "yq/jq",
+      "scope": "YAML/JSON inspection and targeted formatting when needed"
+    }
+  ],
+  "commitChecks": [
+    "git status --short before edits",
+    "safe local validation for changed Kubernetes manifests where practical",
+    "git diff review before commit",
+    "no raw Kubernetes Secret values",
+    "no secret decryption/exposure without explicit confirmation",
+    "versions pinned and Renovate-manageable"
+  ],
+  "deployGates": [
+    "explicit user confirmation before commit or push",
+    "explicit user confirmation before Flux reconcile or live cluster commands",
+    "explicit user confirmation before Talos/bootstrap/destructive commands",
+    "call out placeholders, assumed 1Password keys, and operational risks"
+  ],
+  "cicdIntegration": {
+    "enabled": false,
+    "note": "Keep existing GitHub Actions/flux-local validation. Do not add Babysitter CI/CD integration unless explicitly requested."
+  }
+}
