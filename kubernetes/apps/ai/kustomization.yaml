@@ -10,3 +10,4 @@ resources:
   - ./namespace.yaml
   - ./hermes/ks.yaml
   - ./jarvis/ks.yaml
+  - ./open-webui/ks.yaml
