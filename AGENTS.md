@@ -14,7 +14,7 @@ Flux reconciles `kubernetes/` from Git into the cluster. Most changes should be 
 - `Taskfile.yaml` — main Task entrypoint; includes bootstrap and Talos taskfiles.
 - `.mise.toml` — pinned CLI tools and sensitive env var paths (`KUBECONFIG`, `SOPS_AGE_KEY_FILE`, `TALOSCONFIG`).
 - `kubernetes/flux/cluster/ks.yaml` — root Flux `Kustomization` for `./kubernetes/apps`; applies common SOPS and HelmRelease defaults.
-- `kubernetes/apps/` — Flux-managed apps grouped by namespace/category (`ai`, `cert-manager`, `default`, `external-secrets`, `flux-system`, `games`, `kube-system`, `network`, `observability`, `openclaw`, `selfhosted`).
+- `kubernetes/apps/` — Flux-managed apps grouped by namespace/category (`ai`, `cert-manager`, `default`, `external-secrets`, `flux-system`, `games`, `kube-system`, `network`, `observability`, `selfhosted`).
 - `kubernetes/apps/*/kustomization.yaml` — namespace-level Kustomize entries with `namespace.yaml`, optional components, and child app `ks.yaml` files.
 - `kubernetes/components/sops/` — legacy SOPS component and encrypted cluster secret manifests; do not use for new app secrets unless explicitly asked.
 - `kubernetes/apps/external-secrets/` — External Secrets Operator and 1Password Connect integration; preferred secret pattern for new app credentials.
