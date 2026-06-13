@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for pi and other coding agents working in this repository.
+Guidance for Claude Code, Codex, and other coding agents working in this repository.
 
 ## Repository Purpose
 
