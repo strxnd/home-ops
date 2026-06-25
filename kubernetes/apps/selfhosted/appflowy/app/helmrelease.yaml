@@ -184,8 +184,9 @@ spec:
             env:
               PORT: &adminPort 3001
               HOSTNAME: "0.0.0.0"
-              APPFLOWY_GOTRUE_BASE_URL: *gotrueInternalUrl
-              APPFLOWY_BASE_URL: http://127.0.0.1:8000
+              APPFLOWY_GOTRUE_BASE_URL: https://appflowy.${SECRET_DOMAIN}/gotrue
+              APPFLOWY_BASE_URL: *baseUrl
+              APPFLOWY_ALLOWED_ORIGINS: *baseUrl
             probes:
               liveness: &adminProbes
                 enabled: true
