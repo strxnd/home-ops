@@ -10,4 +10,5 @@ resources:
   - ./namespace.yaml
   - ./glance/ks.yaml
   - ./forgejo/ks.yaml
+  - ./appflowy/ks.yaml
   - ./searxng/ks.yaml

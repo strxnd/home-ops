@@ -1,0 +1,598 @@
+---
+# yaml-language-server: $schema=https://k8s-versioned-schemas.pages.dev/flux/2.8.3/helmrelease_v2.json?values=app-template/4.6.2
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app appflowy
+spec:
+  interval: 1h
+  maxHistory: 1
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    timeout: 10m
+    remediation:
+      retries: 1
+  upgrade:
+    timeout: 10m
+    remediation:
+      retries: 1
+  values:
+    controllers:
+      appflowy:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: Recreate
+        pod:
+          securityContext:
+            seccompProfile: { type: RuntimeDefault }
+        containers:
+          nginx:
+            image:
+              repository: docker.io/nginxinc/nginx-unprivileged
+              tag: 1.27.5-alpine
+            probes:
+              liveness: &nginxProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /nginx-health
+                    port: &httpPort 8080
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+              readiness: *nginxProbes
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+
+          web:
+            image:
+              repository: docker.io/appflowyinc/appflowy_web
+              tag: 0.15.5
+            env:
+              APPFLOWY_BASE_URL: &baseUrl https://appflowy.${SECRET_DOMAIN}
+              APPFLOWY_GOTRUE_BASE_URL: https://appflowy.${SECRET_DOMAIN}/gotrue
+              APPFLOWY_WS_BASE_URL: wss://appflowy.${SECRET_DOMAIN}/ws/v2
+            probes:
+              liveness: &webProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 80
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *webProbes
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+
+          cloud:
+            image:
+              repository: docker.io/appflowyinc/appflowy_cloud
+              tag: 0.16.5
+            envFrom: &secretEnvFrom
+              - secretRef:
+                  name: appflowy-secret
+            env:
+              RUST_LOG: info
+              APPFLOWY_ENVIRONMENT: production
+              APPFLOWY_REDIS_URI: &redisUrl redis://127.0.0.1:6379
+              APPFLOWY_GOTRUE_BASE_URL: &gotrueInternalUrl http://127.0.0.1:9999
+              APPFLOWY_S3_CREATE_BUCKET: "true"
+              APPFLOWY_S3_USE_MINIO: &useMinio "true"
+              APPFLOWY_S3_MINIO_URL: &minioInternalUrl http://127.0.0.1:9000
+              APPFLOWY_S3_BUCKET: &s3Bucket appflowy
+              APPFLOWY_S3_REGION: &s3Region us-east-1
+              APPFLOWY_S3_PRESIGNED_URL_ENDPOINT: https://appflowy.${SECRET_DOMAIN}/minio-api
+              APPFLOWY_ACCESS_CONTROL: "true"
+              APPFLOWY_DATABASE_MAX_CONNECTIONS: "40"
+              AI_SERVER_HOST: 127.0.0.1
+              AI_SERVER_PORT: &aiPort 5001
+              AI_OPENAI_API_KEY: ""
+              APPFLOWY_WEB_URL: *baseUrl
+              APPFLOWY_BASE_URL: *baseUrl
+              ASSEMBLYAI_API_KEY: ""
+              ASSEMBLYAI_API_BASE: https://api.assemblyai.com/v2
+              ASSEMBLYAI_STREAMING_API_BASE: https://streaming.assemblyai.com/v3
+              APPFLOWY_SEARCH_SERVICE_URL: http://127.0.0.1:4002
+              APPFLOWY_SEARCH_REQUEST_TIMEOUT_SECS: "10"
+              AI_ENABLED: "false"
+              SIGNUP_WHITELIST_ENABLED: "true"
+              GUEST_INVITES_REQUIRE_ADMIN_APPROVAL: "true"
+            probes:
+              liveness: &cloudProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: 8000
+                  initialDelaySeconds: 60
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *cloudProbes
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+
+          gotrue:
+            image:
+              repository: docker.io/appflowyinc/gotrue
+              tag: 0.16.5
+            envFrom: *secretEnvFrom
+            env:
+              GOTRUE_DISABLE_SIGNUP: "false"
+              GOTRUE_SITE_URL: appflowy-flutter://
+              GOTRUE_URI_ALLOW_LIST: "**"
+              GOTRUE_JWT_EXP: "604800"
+              GOTRUE_JWT_ADMIN_GROUP_NAME: supabase_admin
+              GOTRUE_DB_DRIVER: postgres
+              API_EXTERNAL_URL: https://appflowy.${SECRET_DOMAIN}/gotrue
+              PORT: &gotruePort 9999
+              GOTRUE_MAILER_URLPATHS_CONFIRMATION: /gotrue/verify
+              GOTRUE_MAILER_URLPATHS_INVITE: /gotrue/verify
+              GOTRUE_MAILER_URLPATHS_RECOVERY: /gotrue/verify
+              GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /gotrue/verify
+              GOTRUE_MAILER_AUTOCONFIRM: "true"
+              GOTRUE_RATE_LIMIT_EMAIL_SENT: "100"
+              GOTRUE_EXTERNAL_GOOGLE_ENABLED: "false"
+              GOTRUE_EXTERNAL_GITHUB_ENABLED: "false"
+              GOTRUE_EXTERNAL_DISCORD_ENABLED: "false"
+              GOTRUE_SAML_ENABLED: "false"
+            probes:
+              liveness: &gotrueProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *gotruePort
+                  initialDelaySeconds: 45
+                  periodSeconds: 15
+                  timeoutSeconds: 5
+                  failureThreshold: 8
+              readiness: *gotrueProbes
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+
+          admin:
+            image:
+              repository: docker.io/appflowyinc/admin_frontend
+              tag: 0.16.5
+            env:
+              APPFLOWY_GOTRUE_BASE_URL: *gotrueInternalUrl
+              APPFLOWY_BASE_URL: http://127.0.0.1:8000
+            probes:
+              liveness: &adminProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 3000
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *adminProbes
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+
+          worker:
+            image:
+              repository: docker.io/appflowyinc/appflowy_worker
+              tag: 0.16.5
+            envFrom: *secretEnvFrom
+            env:
+              RUST_LOG: info
+              APPFLOWY_ENVIRONMENT: production
+              APPFLOWY_WORKER_REDIS_URL: *redisUrl
+              APPFLOWY_WORKER_ENVIRONMENT: production
+              APPFLOWY_WORKER_DATABASE_NAME: postgres
+              APPFLOWY_WORKER_IMPORT_TICK_INTERVAL: "30"
+              APPFLOWY_S3_USE_MINIO: *useMinio
+              APPFLOWY_S3_MINIO_URL: *minioInternalUrl
+              APPFLOWY_S3_BUCKET: *s3Bucket
+              APPFLOWY_S3_REGION: *s3Region
+              APPFLOWY_MAILER_SMTP_HOST: ""
+              APPFLOWY_MAILER_SMTP_PORT: ""
+              APPFLOWY_MAILER_SMTP_USERNAME: ""
+              APPFLOWY_MAILER_SMTP_EMAIL: ""
+              APPFLOWY_MAILER_SMTP_PASSWORD: ""
+              APPFLOWY_MAILER_SMTP_TLS_KIND: ""
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+
+          search:
+            image:
+              repository: docker.io/appflowyinc/appflowy_search
+              tag: 0.16.3
+            envFrom: *secretEnvFrom
+            env:
+              RUST_LOG: info
+              APPFLOWY_SEARCH_HOST: "0.0.0.0"
+              APPFLOWY_SEARCH_PORT: &searchPort 4002
+              APPFLOWY_SEARCH_REDIS_URL: *redisUrl
+              AI_OPENAI_API_KEY: ""
+              AZURE_OPENAI_API_KEY: ""
+              AZURE_OPENAI_ENDPOINT: ""
+              AZURE_OPENAI_API_VERSION: ""
+              APPFLOWY_S3_USE_MINIO: *useMinio
+              APPFLOWY_S3_MINIO_URL: *minioInternalUrl
+              APPFLOWY_S3_BUCKET: *s3Bucket
+              APPFLOWY_S3_REGION: *s3Region
+              APPFLOWY_BACKGROUND_INDEXER_ENABLED: "true"
+              APPFLOWY_INDEXER_DATABASE_ENABLED: "false"
+              APPFLOWY_KEYWORD_SEARCH_ENABLED: "true"
+              APPFLOWY_KEYWORD_WORKER_ENABLED: "true"
+              APPFLOWY_KEYWORD_INDEX_MAP_SIZE_BYTES: "2147483648"
+              APPFLOWY_KEYWORD_INDEX_DIR: /var/lib/appflowy/keyword_index
+            probes:
+              liveness: &searchProbes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *searchPort
+                  initialDelaySeconds: 45
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *searchProbes
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+
+          ai:
+            image:
+              repository: docker.io/appflowyinc/appflowy_ai
+              tag: 0.15.18
+            envFrom: *secretEnvFrom
+            env:
+              AI_SERVER_PORT: *aiPort
+              OPENAI_API_KEY: ""
+              DEFAULT_AI_MODEL: gpt-4.1-mini
+              DEFAULT_AI_COMPLETION_MODEL: gpt-4.1-mini
+              AZURE_OPENAI_API_KEY: ""
+              AZURE_OPENAI_ENDPOINT: ""
+              AZURE_OPENAI_API_VERSION: ""
+              APPFLOWY_S3_BUCKET: *s3Bucket
+              APPFLOWY_S3_REGION: *s3Region
+              AI_REDIS_URL: *redisUrl
+              AI_USE_MINIO: *useMinio
+              AI_MINIO_URL: *minioInternalUrl
+              AI_APPFLOWY_HOST: *baseUrl
+            resources:
+              requests:
+                cpu: 25m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+
+          postgres:
+            image:
+              repository: docker.io/pgvector/pgvector
+              tag: 0.8.0-pg16
+            env:
+              POSTGRES_USER: postgres
+              POSTGRES_DB: postgres
+              POSTGRES_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: appflowy-secret
+                    key: POSTGRES_PASSWORD
+              PGPORT: 5432
+            probes:
+              liveness: &postgresProbes
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - pg_isready
+                      - -U
+                      - postgres
+                      - -d
+                      - postgres
+                      - -p
+                      - "5432"
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 12
+              readiness: *postgresProbes
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+
+          redis:
+            image:
+              repository: docker.io/library/redis
+              tag: 7.4.2-alpine
+            probes:
+              liveness: &redisProbes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 6379
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 5
+              readiness: *redisProbes
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+
+          minio:
+            image:
+              repository: quay.io/minio/minio
+              tag: RELEASE.2025-04-22T22-12-26Z
+            args:
+              - server
+              - /data
+              - --console-address
+              - :9001
+            env:
+              MINIO_BROWSER_REDIRECT_URL: https://appflowy.${SECRET_DOMAIN}/minio
+              MINIO_ROOT_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: appflowy-secret
+                    key: APPFLOWY_S3_ACCESS_KEY
+              MINIO_ROOT_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: appflowy-secret
+                    key: APPFLOWY_S3_SECRET_KEY
+            probes:
+              liveness: &minioProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /minio/health/live
+                    port: 9000
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 5
+              readiness: *minioProbes
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+
+    service:
+      main:
+        controller: appflowy
+        ports:
+          http:
+            port: *httpPort
+
+    route:
+      main:
+        hostnames:
+          - appflowy.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: main
+                port: *httpPort
+
+    persistence:
+      nginx-config:
+        type: configMap
+        name: appflowy
+        advancedMounts:
+          appflowy:
+            nginx:
+              - path: /etc/nginx/nginx.conf
+                subPath: nginx.conf
+                readOnly: true
+      postgres-data:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 10Gi
+        storageClass: local-path
+        advancedMounts:
+          appflowy:
+            postgres:
+              - path: /var/lib/postgresql/data
+      minio-data:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 10Gi
+        storageClass: local-path
+        advancedMounts:
+          appflowy:
+            minio:
+              - path: /data
+      keyword-index:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 5Gi
+        storageClass: local-path
+        advancedMounts:
+          appflowy:
+            search:
+              - path: /var/lib/appflowy/keyword_index
+      tmp:
+        type: emptyDir
+        advancedMounts:
+          appflowy:
+            nginx:
+              - path: /tmp
+
+    configMaps:
+      config:
+        data:
+          nginx.conf: |
+            events {
+              worker_connections 1024;
+            }
+
+            http {
+              map $http_upgrade $connection_upgrade {
+                default upgrade;
+                '' close;
+              }
+
+              server {
+                listen 8080;
+                client_max_body_size 10M;
+                underscores_in_headers on;
+
+                location = /nginx-health {
+                  access_log off;
+                  return 200 "ok\n";
+                }
+
+                location /gotrue/ {
+                  proxy_pass http://127.0.0.1:9999;
+                  rewrite ^/gotrue(/.*)$ $1 break;
+                  proxy_set_header Host $http_host;
+                  proxy_pass_request_headers on;
+                }
+
+                location /ws {
+                  proxy_pass http://127.0.0.1:8000;
+                  proxy_http_version 1.1;
+                  proxy_set_header Upgrade $http_upgrade;
+                  proxy_set_header Connection "Upgrade";
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+                  proxy_read_timeout 86400s;
+                }
+
+                location /api {
+                  proxy_pass http://127.0.0.1:8000;
+                  proxy_set_header X-Request-Id $request_id;
+                  proxy_set_header Host $http_host;
+
+                  location ~* ^/api/workspace/([a-zA-Z0-9_-]+)/publish$ {
+                    proxy_pass http://127.0.0.1:8000;
+                    proxy_request_buffering off;
+                    client_max_body_size 256M;
+                  }
+
+                  location /api/chat {
+                    proxy_pass http://127.0.0.1:8000;
+                    proxy_http_version 1.1;
+                    proxy_set_header Connection "";
+                    chunked_transfer_encoding on;
+                    proxy_buffering off;
+                    proxy_cache off;
+                    proxy_read_timeout 600s;
+                    proxy_connect_timeout 600s;
+                    proxy_send_timeout 600s;
+                  }
+
+                  location /api/import {
+                    proxy_pass http://127.0.0.1:8000;
+                    proxy_set_header X-Request-Id $request_id;
+                    proxy_set_header Host $http_host;
+                    proxy_read_timeout 600s;
+                    proxy_connect_timeout 600s;
+                    proxy_send_timeout 600s;
+                    proxy_request_buffering off;
+                    proxy_buffering off;
+                    proxy_cache off;
+                    client_max_body_size 2G;
+                  }
+                }
+
+                location /minio-api/ {
+                  proxy_pass http://127.0.0.1:9000;
+                  proxy_set_header Host 127.0.0.1:9000;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+                  rewrite ^/minio-api/(.*) /$1 break;
+                  proxy_connect_timeout 300s;
+                  proxy_read_timeout 600s;
+                  proxy_send_timeout 600s;
+                  proxy_request_buffering off;
+                  proxy_http_version 1.1;
+                  proxy_set_header Connection "";
+                  chunked_transfer_encoding off;
+                  client_max_body_size 0;
+                }
+
+                location /ai/ {
+                  proxy_pass http://127.0.0.1:8000;
+                  proxy_set_header X-Request-Id $request_id;
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+                }
+
+                location /console {
+                  proxy_pass http://127.0.0.1:3000;
+                  proxy_set_header X-Forwarded-Host $http_host;
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Scheme $scheme;
+                  proxy_http_version 1.1;
+                  proxy_set_header Upgrade $http_upgrade;
+                  proxy_set_header Connection "upgrade";
+                  proxy_cache_bypass $http_upgrade;
+                }
+
+                location / {
+                  proxy_pass http://127.0.0.1:80;
+                  proxy_set_header X-Scheme $scheme;
+                  proxy_set_header Host $host;
+                }
+              }
+            }
