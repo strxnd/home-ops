@@ -183,6 +183,7 @@ spec:
               tag: 0.16.5
             env:
               PORT: &adminPort 3001
+              HOSTNAME: "0.0.0.0"
               APPFLOWY_GOTRUE_BASE_URL: *gotrueInternalUrl
               APPFLOWY_BASE_URL: http://127.0.0.1:8000
             probes:
