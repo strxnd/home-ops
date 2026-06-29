@@ -249,7 +249,7 @@ spec:
               - -ec
             args:
               - |
-                until /bin/any-sync-confapply -c /etc/any-sync-coordinator/config.yml -n /etc/any-sync-coordinator/network.yml -e; do
+                until /bin/any-sync-confapply -c /data/etc/any-sync-coordinator/config.yml -n /data/etc/any-sync-coordinator/network.yml -e; do
                   echo "waiting to apply any-sync coordinator configuration"
                   sleep 5
                 done
@@ -288,7 +288,9 @@ spec:
             args:
               - |
                 until [ -f /runtime/coordinator-bootstrap-ready ]; do sleep 2; done
-                exec /bin/any-sync-coordinator -c /etc/any-sync-coordinator/config.yml
+                rm -rf /config
+                ln -s /data/etc /config
+                exec /bin/any-sync-coordinator -c /data/etc/any-sync-coordinator/config.yml
             probes:
               liveness: &coordinatorProbes
                 enabled: true
@@ -318,7 +320,7 @@ spec:
             args:
               - |
                 until [ -f /runtime/coordinator-bootstrap-ready ]; do sleep 2; done
-                exec /bin/any-sync-node -c /etc/any-sync-node/config.yml
+                exec /bin/any-sync-node -c /data/etc/any-sync-node-1/config.yml
             probes:
               liveness: &node1Probes
                 enabled: true
@@ -343,7 +345,7 @@ spec:
             args:
               - |
                 until [ -f /runtime/coordinator-bootstrap-ready ]; do sleep 2; done
-                exec /bin/any-sync-node -c /etc/any-sync-node/config.yml
+                exec /bin/any-sync-node -c /data/etc/any-sync-node-2/config.yml
             probes:
               liveness: &node2Probes
                 enabled: true
@@ -368,7 +370,7 @@ spec:
             args:
               - |
                 until [ -f /runtime/coordinator-bootstrap-ready ]; do sleep 2; done
-                exec /bin/any-sync-node -c /etc/any-sync-node/config.yml
+                exec /bin/any-sync-node -c /data/etc/any-sync-node-3/config.yml
             probes:
               liveness: &node3Probes
                 enabled: true
@@ -393,7 +395,9 @@ spec:
             args:
               - |
                 while [ ! -f /runtime/coordinator-bootstrap-ready ] || [ ! -f /runtime/minio-bucket-ready ]; do sleep 2; done
-                exec /bin/any-sync-filenode -c /etc/any-sync-filenode/config.yml
+                exec /bin/any-sync-filenode -c /data/etc/any-sync-filenode/config.yml
+            env:
+              AWS_SHARED_CREDENTIALS_FILE: /data/etc/.aws/credentials
             probes:
               liveness: &filenodeProbes
                 enabled: true
@@ -418,7 +422,7 @@ spec:
             args:
               - |
                 until [ -f /runtime/coordinator-bootstrap-ready ]; do sleep 2; done
-                exec /bin/any-sync-consensusnode -c /etc/any-sync-consensusnode/config.yml
+                exec /bin/any-sync-consensusnode -c /data/etc/any-sync-consensusnode/config.yml
             probes:
               liveness: &consensusProbes
                 enabled: true
@@ -448,7 +452,7 @@ spec:
                     continue
                   fi
                   echo "$(date): running any-sync-netcheck"
-                  any-sync-netcheck -c /conf/nodes.yml 2>&1 | tee /tmp/netcheck-last.log
+                  any-sync-netcheck -c /data/storage/docker-generateconfig/nodes.yml 2>&1 | tee /tmp/netcheck-last.log
                   sleep 30
                 done
             probes:
@@ -541,57 +545,18 @@ spec:
               - path: /data
                 subPath: storage/minio
             coordinator-bootstrap:
-              - path: /etc/any-sync-coordinator
-                subPath: etc/any-sync-coordinator
+              - path: /data
             any-sync-coordinator:
-              - path: /etc/any-sync-coordinator
-                subPath: etc/any-sync-coordinator
-              - path: /config
-                subPath: etc
-                readOnly: true
-              - path: /networkStore
-                subPath: storage/networkStore/any-sync-coordinator
+              - path: /data
             any-sync-node-1:
-              - path: /etc/any-sync-node
-                subPath: etc/any-sync-node-1
-              - path: /storage
-                subPath: storage/any-sync-node-1
-              - path: /anyStorage
-                subPath: storage/anyStorage/any-sync-node-1
-              - path: /networkStore
-                subPath: storage/networkStore/any-sync-node-1
+              - path: /data
             any-sync-node-2:
-              - path: /etc/any-sync-node
-                subPath: etc/any-sync-node-2
-              - path: /storage
-                subPath: storage/any-sync-node-2
-              - path: /anyStorage
-                subPath: storage/anyStorage/any-sync-node-2
-              - path: /networkStore
-                subPath: storage/networkStore/any-sync-node-2
+              - path: /data
             any-sync-node-3:
-              - path: /etc/any-sync-node
-                subPath: etc/any-sync-node-3
-              - path: /storage
-                subPath: storage/any-sync-node-3
-              - path: /anyStorage
-                subPath: storage/anyStorage/any-sync-node-3
-              - path: /networkStore
-                subPath: storage/networkStore/any-sync-node-3
+              - path: /data
             any-sync-filenode:
-              - path: /etc/any-sync-filenode
-                subPath: etc/any-sync-filenode
-              - path: /root/.aws
-                subPath: etc/.aws
-                readOnly: true
-              - path: /networkStore
-                subPath: storage/networkStore/any-sync-filenode
+              - path: /data
             any-sync-consensusnode:
-              - path: /etc/any-sync-consensusnode
-                subPath: etc/any-sync-consensusnode
-              - path: /networkStore
-                subPath: storage/networkStore/any-sync-consensusnode
+              - path: /data
             netcheck:
-              - path: /conf
-                subPath: storage/docker-generateconfig
-                readOnly: true
+              - path: /data

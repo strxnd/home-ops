@@ -165,9 +165,10 @@ data:
       defaultLevel: ''
       namedLevels: {}
       production: false
-    networkStorePath: "/networkStore"
 
   node-1.yml: |
+    networkStorePath: "/data/storage/networkStore/any-sync-node-1"
+
     metric:
       addr: %ANY_SYNC_NODE_1_METRIC_ADDR%
 
@@ -195,8 +196,8 @@ data:
       syncPeriod: 600
 
     storage:
-      path: /storage
-      anyStorePath: /anyStorage
+      path: /data/storage/any-sync-node-1
+      anyStorePath: /data/storage/anyStorage/any-sync-node-1
 
     nodeSync:
       periodicSyncHours: 2
@@ -216,6 +217,8 @@ data:
       checkPeriodMinutes: 2
 
   node-2.yml: |
+    networkStorePath: "/data/storage/networkStore/any-sync-node-2"
+
     metric:
       addr: %ANY_SYNC_NODE_2_METRIC_ADDR%
 
@@ -243,8 +246,8 @@ data:
       syncPeriod: 600
 
     storage:
-      path: /storage
-      anyStorePath: /anyStorage
+      path: /data/storage/any-sync-node-2
+      anyStorePath: /data/storage/anyStorage/any-sync-node-2
 
     nodeSync:
       periodicSyncHours: 2
@@ -264,6 +267,8 @@ data:
       checkPeriodMinutes: 2
 
   node-3.yml: |
+    networkStorePath: "/data/storage/networkStore/any-sync-node-3"
+
     metric:
       addr: %ANY_SYNC_NODE_3_METRIC_ADDR%
 
@@ -291,8 +296,8 @@ data:
       syncPeriod: 600
 
     storage:
-      path: /storage
-      anyStorePath: /anyStorage
+      path: /data/storage/any-sync-node-3
+      anyStorePath: /data/storage/anyStorage/any-sync-node-3
 
     nodeSync:
       periodicSyncHours: 2
@@ -312,6 +317,8 @@ data:
       checkPeriodMinutes: 2
 
   coordinator.yml: |
+    networkStorePath: "/data/storage/networkStore/any-sync-coordinator"
+
     metric:
       addr: %ANY_SYNC_COORDINATOR_METRIC_ADDR%
 
@@ -348,6 +355,8 @@ data:
       sharedSpacesLimit: %ANY_SYNC_COORDINATOR_DEFAULT_LIMITS_SHARED_SPACES_LIMIT%
 
   filenode.yml: |
+    networkStorePath: "/data/storage/networkStore/any-sync-filenode"
+
     metric:
       addr: %ANY_SYNC_FILENODE_METRIC_ADDR%
 
@@ -384,6 +393,8 @@ data:
     defaultLimit: %ANY_SYNC_FILENODE_DEFAULT_LIMIT%
 
   consensusnode.yml: |
+    networkStorePath: "/data/storage/networkStore/any-sync-consensusnode"
+
     metric:
       addr: %ANY_SYNC_CONSENSUSNODE_METRIC_ADDR%
 
