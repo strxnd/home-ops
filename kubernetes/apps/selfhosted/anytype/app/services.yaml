@@ -1,0 +1,236 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: anytype-sync
+  annotations:
+    lbipam.cilium.io/ips: "192.168.20.13"
+    external-dns.alpha.kubernetes.io/hostname: "anytype.${SECRET_DOMAIN}"
+    external-dns.alpha.kubernetes.io/target: "${SECRET_PUBLIC_IP}"
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Cluster
+  selector:
+    app.kubernetes.io/instance: anytype
+    app.kubernetes.io/name: anytype
+  ports:
+    - name: node-1-tcp
+      port: 1001
+      targetPort: 1001
+      protocol: TCP
+    - name: node-2-tcp
+      port: 1002
+      targetPort: 1002
+      protocol: TCP
+    - name: node-3-tcp
+      port: 1003
+      targetPort: 1003
+      protocol: TCP
+    - name: coord-tcp
+      port: 1004
+      targetPort: 1004
+      protocol: TCP
+    - name: file-tcp
+      port: 1005
+      targetPort: 1005
+      protocol: TCP
+    - name: consensus-tcp
+      port: 1006
+      targetPort: 1006
+      protocol: TCP
+    - name: node-1-udp
+      port: 1011
+      targetPort: 1011
+      protocol: UDP
+    - name: node-2-udp
+      port: 1012
+      targetPort: 1012
+      protocol: UDP
+    - name: node-3-udp
+      port: 1013
+      targetPort: 1013
+      protocol: UDP
+    - name: coord-udp
+      port: 1014
+      targetPort: 1014
+      protocol: UDP
+    - name: file-udp
+      port: 1015
+      targetPort: 1015
+      protocol: UDP
+    - name: consensus-udp
+      port: 1016
+      targetPort: 1016
+      protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-1
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: anytype
+    app.kubernetes.io/name: anytype
+  ports:
+    - name: mongo
+      port: 27001
+      targetPort: 27001
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: anytype
+    app.kubernetes.io/name: anytype
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: anytype
+    app.kubernetes.io/name: anytype
+  ports:
+    - name: s3
+      port: 9000
+      targetPort: 9000
+      protocol: TCP
+    - name: console
+      port: 9001
+      targetPort: 9001
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: any-sync-node-1
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: anytype
+    app.kubernetes.io/name: anytype
+  ports:
+    - name: yamux
+      port: 1001
+      targetPort: 1001
+      protocol: TCP
+    - name: quic
+      port: 1011
+      targetPort: 1011
+      protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: any-sync-node-2
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: anytype
+    app.kubernetes.io/name: anytype
+  ports:
+    - name: yamux
+      port: 1002
+      targetPort: 1002
+      protocol: TCP
+    - name: quic
+      port: 1012
+      targetPort: 1012
+      protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: any-sync-node-3
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: anytype
+    app.kubernetes.io/name: anytype
+  ports:
+    - name: yamux
+      port: 1003
+      targetPort: 1003
+      protocol: TCP
+    - name: quic
+      port: 1013
+      targetPort: 1013
+      protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: any-sync-coordinator
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: anytype
+    app.kubernetes.io/name: anytype
+  ports:
+    - name: yamux
+      port: 1004
+      targetPort: 1004
+      protocol: TCP
+    - name: quic
+      port: 1014
+      targetPort: 1014
+      protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: any-sync-filenode
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: anytype
+    app.kubernetes.io/name: anytype
+  ports:
+    - name: yamux
+      port: 1005
+      targetPort: 1005
+      protocol: TCP
+    - name: quic
+      port: 1015
+      targetPort: 1015
+      protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: any-sync-consensusnode
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: anytype
+    app.kubernetes.io/name: anytype
+  ports:
+    - name: yamux
+      port: 1006
+      targetPort: 1006
+      protocol: TCP
+    - name: quic
+      port: 1016
+      targetPort: 1016
+      protocol: UDP

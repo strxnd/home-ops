@@ -1,0 +1,597 @@
+---
+# yaml-language-server: $schema=https://k8s-versioned-schemas.pages.dev/flux/2.8.3/helmrelease_v2.json?values=app-template/4.6.2
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app anytype
+spec:
+  interval: 1h
+  maxHistory: 1
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    timeout: 10m
+    remediation:
+      retries: 1
+  upgrade:
+    timeout: 10m
+    remediation:
+      retries: 1
+  values:
+    controllers:
+      anytype:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: Recreate
+        pod:
+          automountServiceAccountToken: false
+          labels:
+            app.kubernetes.io/instance: anytype
+            app.kubernetes.io/name: anytype
+          securityContext:
+            seccompProfile: { type: RuntimeDefault }
+
+        initContainers:
+          copy-yq:
+            image:
+              repository: docker.io/mikefarah/yq
+              tag: 4.53.2
+            command:
+              - /bin/sh
+              - -ec
+            args:
+              - |
+                cp /usr/bin/yq /tools/yq
+                chmod 0755 /tools/yq
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+
+          generate-config:
+            image:
+              repository: ghcr.io/anyproto/any-sync-tools
+              tag: v0.7.0
+            command:
+              - /usr/bin/bash
+              - /bootstrap/generate-config.sh
+            envFrom:
+              - secretRef:
+                  name: anytype-secret
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+
+        containers:
+          mongo:
+            image:
+              repository: docker.io/library/mongo
+              tag: 7.0.28
+            args:
+              - --replSet
+              - rs0
+              - --port
+              - "27001"
+            probes:
+              liveness: &mongoProbes
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -ec
+                      - >-
+                        test "$(mongosh --port 27001 --quiet --eval
+                        'try { rs.initiate({_id:"rs0", members:[{_id:0, host:"mongo-1:27001"}]}).ok } catch(e) { rs.status().ok }')"
+                        -eq 1
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 10
+                  failureThreshold: 12
+              readiness: *mongoProbes
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 1Gi
+
+          redis:
+            image:
+              repository: docker.io/redis/redis-stack-server
+              tag: 7.2.0-v6
+            command:
+              - redis-server
+            args:
+              - --port
+              - "6379"
+              - --dir
+              - /data/
+              - --appendonly
+              - "yes"
+              - --maxmemory
+              - 256mb
+              - --maxmemory-policy
+              - noeviction
+              - --protected-mode
+              - "no"
+              - --loadmodule
+              - /opt/redis-stack/lib/redisbloom.so
+            probes:
+              liveness: &redisProbes
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - redis-cli
+                      - --raw
+                      - -p
+                      - "6379"
+                      - incr
+                      - ping
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *redisProbes
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+
+          minio:
+            image:
+              repository: docker.io/minio/minio
+              tag: RELEASE.2024-07-04T14-25-45Z
+            args:
+              - server
+              - /data
+              - --console-address
+              - :9001
+              - --address
+              - :9000
+            env:
+              MINIO_ROOT_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: anytype-secret
+                    key: AWS_ACCESS_KEY_ID
+              MINIO_ROOT_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: anytype-secret
+                    key: AWS_SECRET_ACCESS_KEY
+            probes:
+              liveness: &minioProbes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 9000
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 5
+              readiness: *minioProbes
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+
+          create-bucket:
+            image:
+              repository: docker.io/minio/mc
+              tag: RELEASE.2024-07-03T20-17-25Z
+            command:
+              - /bin/sh
+              - -ec
+            args:
+              - |
+                until /usr/bin/mc alias set minio http://minio:9000 "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY"; do
+                  echo "waiting for minio"
+                  sleep 2
+                done
+                /usr/bin/mc mb --ignore-existing minio/anytype
+                touch /runtime/minio-bucket-ready
+                while true; do sleep 3600; done
+            env:
+              AWS_ACCESS_KEY_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: anytype-secret
+                    key: AWS_ACCESS_KEY_ID
+              AWS_SECRET_ACCESS_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: anytype-secret
+                    key: AWS_SECRET_ACCESS_KEY
+            probes:
+              liveness:
+                enabled: false
+              readiness: &bucketReadyProbe
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -ec
+                      - test -f /runtime/minio-bucket-ready
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+
+          coordinator-bootstrap:
+            image:
+              repository: ghcr.io/anyproto/any-sync-coordinator
+              tag: v0.9.1
+            command:
+              - /usr/bin/sh
+              - -ec
+            args:
+              - |
+                until /bin/any-sync-confapply -c /etc/any-sync-coordinator/config.yml -n /etc/any-sync-coordinator/network.yml -e; do
+                  echo "waiting to apply any-sync coordinator configuration"
+                  sleep 5
+                done
+                touch /runtime/coordinator-bootstrap-ready
+                while true; do sleep 3600; done
+            probes:
+              liveness:
+                enabled: false
+              readiness: &coordinatorBootstrapReadyProbe
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /usr/bin/sh
+                      - -ec
+                      - test -f /runtime/coordinator-bootstrap-ready
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+
+          any-sync-coordinator:
+            image:
+              repository: ghcr.io/anyproto/any-sync-coordinator
+              tag: v0.9.1
+            command:
+              - /usr/bin/sh
+              - -ec
+            args:
+              - |
+                until [ -f /runtime/coordinator-bootstrap-ready ]; do sleep 2; done
+                exec /bin/any-sync-coordinator -c /etc/any-sync-coordinator/config.yml
+            probes:
+              liveness: &coordinatorProbes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 1004
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *coordinatorProbes
+            resources: &daemonResources
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+
+          any-sync-node-1:
+            image:
+              repository: ghcr.io/anyproto/any-sync-node
+              tag: v0.11.1
+            command:
+              - /usr/bin/sh
+              - -ec
+            args:
+              - |
+                until [ -f /runtime/coordinator-bootstrap-ready ]; do sleep 2; done
+                exec /bin/any-sync-node -c /etc/any-sync-node/config.yml
+            probes:
+              liveness: &node1Probes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 1001
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *node1Probes
+            resources: *daemonResources
+
+          any-sync-node-2:
+            image:
+              repository: ghcr.io/anyproto/any-sync-node
+              tag: v0.11.1
+            command:
+              - /usr/bin/sh
+              - -ec
+            args:
+              - |
+                until [ -f /runtime/coordinator-bootstrap-ready ]; do sleep 2; done
+                exec /bin/any-sync-node -c /etc/any-sync-node/config.yml
+            probes:
+              liveness: &node2Probes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 1002
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *node2Probes
+            resources: *daemonResources
+
+          any-sync-node-3:
+            image:
+              repository: ghcr.io/anyproto/any-sync-node
+              tag: v0.11.1
+            command:
+              - /usr/bin/sh
+              - -ec
+            args:
+              - |
+                until [ -f /runtime/coordinator-bootstrap-ready ]; do sleep 2; done
+                exec /bin/any-sync-node -c /etc/any-sync-node/config.yml
+            probes:
+              liveness: &node3Probes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 1003
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *node3Probes
+            resources: *daemonResources
+
+          any-sync-filenode:
+            image:
+              repository: ghcr.io/anyproto/any-sync-filenode
+              tag: v0.11.1
+            command:
+              - /usr/bin/sh
+              - -ec
+            args:
+              - |
+                while [ ! -f /runtime/coordinator-bootstrap-ready ] || [ ! -f /runtime/minio-bucket-ready ]; do sleep 2; done
+                exec /bin/any-sync-filenode -c /etc/any-sync-filenode/config.yml
+            probes:
+              liveness: &filenodeProbes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 1005
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *filenodeProbes
+            resources: *daemonResources
+
+          any-sync-consensusnode:
+            image:
+              repository: ghcr.io/anyproto/any-sync-consensusnode
+              tag: v0.7.2
+            command:
+              - /usr/bin/sh
+              - -ec
+            args:
+              - |
+                until [ -f /runtime/coordinator-bootstrap-ready ]; do sleep 2; done
+                exec /bin/any-sync-consensusnode -c /etc/any-sync-consensusnode/config.yml
+            probes:
+              liveness: &consensusProbes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 1006
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *consensusProbes
+            resources: *daemonResources
+
+          netcheck:
+            image:
+              repository: ghcr.io/anyproto/any-sync-tools
+              tag: v0.7.0
+            command:
+              - /usr/bin/sh
+              - -ec
+            args:
+              - |
+                while true; do
+                  if [ ! -f /runtime/coordinator-bootstrap-ready ] || [ ! -f /runtime/minio-bucket-ready ]; then
+                    sleep 5
+                    continue
+                  fi
+                  echo "$(date): running any-sync-netcheck"
+                  any-sync-netcheck -c /conf/nodes.yml 2>&1 | tee /tmp/netcheck-last.log
+                  sleep 30
+                done
+            probes:
+              liveness:
+                enabled: false
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /usr/bin/sh
+                      - -ec
+                      - grep -qE 'netcheck\s+success' /tmp/netcheck-last.log
+                  initialDelaySeconds: 15
+                  periodSeconds: 15
+                  timeoutSeconds: 5
+                  failureThreshold: 4
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+
+    persistence:
+      config:
+        type: configMap
+        name: anytype-config
+        advancedMounts:
+          anytype:
+            generate-config:
+              - path: /bootstrap
+                readOnly: true
+      env:
+        type: secret
+        name: anytype-secret
+        advancedMounts:
+          anytype:
+            generate-config:
+              - path: /code/.env
+                subPath: .env
+                readOnly: true
+      tools:
+        type: emptyDir
+        advancedMounts:
+          anytype:
+            copy-yq:
+              - path: /tools
+            generate-config:
+              - path: /tools
+      runtime:
+        type: emptyDir
+        advancedMounts:
+          anytype:
+            create-bucket:
+              - path: /runtime
+            coordinator-bootstrap:
+              - path: /runtime
+            any-sync-coordinator:
+              - path: /runtime
+            any-sync-node-1:
+              - path: /runtime
+            any-sync-node-2:
+              - path: /runtime
+            any-sync-node-3:
+              - path: /runtime
+            any-sync-filenode:
+              - path: /runtime
+            any-sync-consensusnode:
+              - path: /runtime
+            netcheck:
+              - path: /runtime
+      data:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 50Gi
+        storageClass: local-path
+        advancedMounts:
+          anytype:
+            generate-config:
+              - path: /data
+            mongo:
+              - path: /data/db
+                subPath: storage/mongo-1
+            redis:
+              - path: /data
+                subPath: storage/redis
+            minio:
+              - path: /data
+                subPath: storage/minio
+            coordinator-bootstrap:
+              - path: /etc/any-sync-coordinator
+                subPath: etc/any-sync-coordinator
+            any-sync-coordinator:
+              - path: /etc/any-sync-coordinator
+                subPath: etc/any-sync-coordinator
+              - path: /config
+                subPath: etc
+                readOnly: true
+              - path: /networkStore
+                subPath: storage/networkStore/any-sync-coordinator
+            any-sync-node-1:
+              - path: /etc/any-sync-node
+                subPath: etc/any-sync-node-1
+              - path: /storage
+                subPath: storage/any-sync-node-1
+              - path: /anyStorage
+                subPath: storage/anyStorage/any-sync-node-1
+              - path: /networkStore
+                subPath: storage/networkStore/any-sync-node-1
+            any-sync-node-2:
+              - path: /etc/any-sync-node
+                subPath: etc/any-sync-node-2
+              - path: /storage
+                subPath: storage/any-sync-node-2
+              - path: /anyStorage
+                subPath: storage/anyStorage/any-sync-node-2
+              - path: /networkStore
+                subPath: storage/networkStore/any-sync-node-2
+            any-sync-node-3:
+              - path: /etc/any-sync-node
+                subPath: etc/any-sync-node-3
+              - path: /storage
+                subPath: storage/any-sync-node-3
+              - path: /anyStorage
+                subPath: storage/anyStorage/any-sync-node-3
+              - path: /networkStore
+                subPath: storage/networkStore/any-sync-node-3
+            any-sync-filenode:
+              - path: /etc/any-sync-filenode
+                subPath: etc/any-sync-filenode
+              - path: /root/.aws
+                subPath: etc/.aws
+                readOnly: true
+              - path: /networkStore
+                subPath: storage/networkStore/any-sync-filenode
+            any-sync-consensusnode:
+              - path: /etc/any-sync-consensusnode
+                subPath: etc/any-sync-consensusnode
+              - path: /networkStore
+                subPath: storage/networkStore/any-sync-consensusnode
+            netcheck:
+              - path: /conf
+                subPath: storage/docker-generateconfig
+                readOnly: true

@@ -1,0 +1,415 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: anytype-config
+data:
+  generate-config.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    export PATH="/tools:$PATH"
+
+    if ! command -v yq >/dev/null 2>&1; then
+      echo "ERROR: yq was not copied into /tools" >&2
+      exit 1
+    fi
+
+    set -a
+    source /code/.env
+    set +a
+
+    DEST_PATH=/data/etc
+    STORAGE_PATH=/data/storage
+    GEN_PATH=$STORAGE_PATH/docker-generateconfig
+    NETWORK_FILE=$GEN_PATH/network.yml
+
+    mkdir -p "$GEN_PATH"
+    mkdir -p "$DEST_PATH/.aws"
+    for NODE_TYPE in node-1 node-2 node-3 filenode coordinator consensusnode; do
+      mkdir -p "$DEST_PATH/any-sync-$NODE_TYPE"
+    done
+    mkdir -p \
+      "$STORAGE_PATH/mongo-1" \
+      "$STORAGE_PATH/redis" \
+      "$STORAGE_PATH/minio" \
+      "$STORAGE_PATH/any-sync-node-1" \
+      "$STORAGE_PATH/any-sync-node-2" \
+      "$STORAGE_PATH/any-sync-node-3" \
+      "$STORAGE_PATH/anyStorage/any-sync-node-1" \
+      "$STORAGE_PATH/anyStorage/any-sync-node-2" \
+      "$STORAGE_PATH/anyStorage/any-sync-node-3" \
+      "$STORAGE_PATH/networkStore/any-sync-node-1" \
+      "$STORAGE_PATH/networkStore/any-sync-node-2" \
+      "$STORAGE_PATH/networkStore/any-sync-node-3" \
+      "$STORAGE_PATH/networkStore/any-sync-coordinator" \
+      "$STORAGE_PATH/networkStore/any-sync-filenode" \
+      "$STORAGE_PATH/networkStore/any-sync-consensusnode"
+
+    cd "$GEN_PATH"
+
+    if [[ -s .networkId && -s .networkSigningKey ]]; then
+      echo "INFO: saved network identity found, skipping network creation"
+    else
+      echo "INFO: creating any-sync network identity"
+      anyconf create-network
+      grep '^networkId:' nodes.yml | awk '{print $2}' > .networkId
+      yq -r '.account.signingKey' account.yml > .networkSigningKey
+    fi
+
+    NETWORK_ID=$(cat .networkId)
+    NETWORK_SIGNING_KEY=$(cat .networkSigningKey)
+    export NETWORK_ID NETWORK_SIGNING_KEY
+
+    if [[ -s account0.yml ]]; then
+      echo "INFO: saved node account configuration found, skipping node generation"
+    else
+      echo "INFO: generating node account configuration"
+      anyconf generate-nodes \
+        --t tree \
+        --t tree \
+        --t tree \
+        --t coordinator \
+        --t file \
+        --t consensus \
+        --addresses "$ANY_SYNC_NODE_1_ADDRESSES" \
+        --addresses "$ANY_SYNC_NODE_2_ADDRESSES" \
+        --addresses "$ANY_SYNC_NODE_3_ADDRESSES" \
+        --addresses "$ANY_SYNC_COORDINATOR_ADDRESSES" \
+        --addresses "$ANY_SYNC_FILENODE_ADDRESSES" \
+        --addresses "$ANY_SYNC_CONSENSUSNODE_ADDRESSES"
+    fi
+
+    echo "INFO: normalizing network configuration"
+    yq --indent 2 --inplace 'del(.creationTime)' nodes.yml
+    yq --indent 2 --inplace '.networkId = strenv(NETWORK_ID)' nodes.yml
+    yq --indent 2 --inplace '.account.signingKey = strenv(NETWORK_SIGNING_KEY)' account3.yml
+    yq --indent 2 --inplace '.account.signingKey = strenv(NETWORK_SIGNING_KEY)' account5.yml
+
+    cp nodes.yml nodesProcessed.yml
+    yq --indent 2 --inplace '
+      .nodes[0].addresses += ["quic://" + strenv(ANY_SYNC_NODE_1_HOST) + ":" + strenv(ANY_SYNC_NODE_1_QUIC_PORT)] |
+      .nodes[1].addresses += ["quic://" + strenv(ANY_SYNC_NODE_2_HOST) + ":" + strenv(ANY_SYNC_NODE_2_QUIC_PORT)] |
+      .nodes[2].addresses += ["quic://" + strenv(ANY_SYNC_NODE_3_HOST) + ":" + strenv(ANY_SYNC_NODE_3_QUIC_PORT)] |
+      .nodes[3].addresses += ["quic://" + strenv(ANY_SYNC_COORDINATOR_HOST) + ":" + strenv(ANY_SYNC_COORDINATOR_QUIC_PORT)] |
+      .nodes[4].addresses += ["quic://" + strenv(ANY_SYNC_FILENODE_HOST) + ":" + strenv(ANY_SYNC_FILENODE_QUIC_PORT)] |
+      .nodes[5].addresses += ["quic://" + strenv(ANY_SYNC_CONSENSUSNODE_HOST) + ":" + strenv(ANY_SYNC_CONSENSUSNODE_QUIC_PORT)] |
+      .nodes[].addresses |= unique
+    ' nodesProcessed.yml
+
+    append_external_host() {
+      export EXT_HOST="$1"
+      yq --indent 2 --inplace '
+        .nodes[0].addresses += [strenv(EXT_HOST) + ":" + strenv(ANY_SYNC_NODE_1_PORT), "quic://" + strenv(EXT_HOST) + ":" + strenv(ANY_SYNC_NODE_1_QUIC_PORT)] |
+        .nodes[1].addresses += [strenv(EXT_HOST) + ":" + strenv(ANY_SYNC_NODE_2_PORT), "quic://" + strenv(EXT_HOST) + ":" + strenv(ANY_SYNC_NODE_2_QUIC_PORT)] |
+        .nodes[2].addresses += [strenv(EXT_HOST) + ":" + strenv(ANY_SYNC_NODE_3_PORT), "quic://" + strenv(EXT_HOST) + ":" + strenv(ANY_SYNC_NODE_3_QUIC_PORT)] |
+        .nodes[3].addresses += [strenv(EXT_HOST) + ":" + strenv(ANY_SYNC_COORDINATOR_PORT), "quic://" + strenv(EXT_HOST) + ":" + strenv(ANY_SYNC_COORDINATOR_QUIC_PORT)] |
+        .nodes[4].addresses += [strenv(EXT_HOST) + ":" + strenv(ANY_SYNC_FILENODE_PORT), "quic://" + strenv(EXT_HOST) + ":" + strenv(ANY_SYNC_FILENODE_QUIC_PORT)] |
+        .nodes[5].addresses += [strenv(EXT_HOST) + ":" + strenv(ANY_SYNC_CONSENSUSNODE_PORT), "quic://" + strenv(EXT_HOST) + ":" + strenv(ANY_SYNC_CONSENSUSNODE_QUIC_PORT)] |
+        .nodes[].addresses |= unique
+      ' nodesProcessed.yml
+    }
+
+    for EXT_HOST in $EXTERNAL_LISTEN_HOSTS; do
+      append_external_host "$EXT_HOST"
+    done
+
+    cp nodesProcessed.yml "$DEST_PATH/client.yml"
+    yq eval '. as $item | {"network": $item}' --indent 2 nodesProcessed.yml > "$NETWORK_FILE"
+
+    echo "INFO: rendering daemon configuration"
+    for NODE_INDEX in 1 2 3; do
+      ACCOUNT_INDEX=$((NODE_INDEX - 1))
+      cat \
+        "$NETWORK_FILE" \
+        /bootstrap/common.yml \
+        "account$ACCOUNT_INDEX.yml" \
+        "/bootstrap/node-$NODE_INDEX.yml" \
+        > "$DEST_PATH/any-sync-node-$NODE_INDEX/config.yml"
+    done
+
+    cat "$NETWORK_FILE" /bootstrap/common.yml account3.yml /bootstrap/coordinator.yml > "$DEST_PATH/any-sync-coordinator/config.yml"
+    cat "$NETWORK_FILE" /bootstrap/common.yml account4.yml /bootstrap/filenode.yml > "$DEST_PATH/any-sync-filenode/config.yml"
+    cat "$NETWORK_FILE" /bootstrap/common.yml account5.yml /bootstrap/consensusnode.yml > "$DEST_PATH/any-sync-consensusnode/config.yml"
+    cp nodesProcessed.yml "$DEST_PATH/any-sync-coordinator/network.yml"
+    cp /bootstrap/aws-credentials "$DEST_PATH/.aws/credentials"
+
+    replace_placeholders() {
+      FILE="$1"
+      for PLACEHOLDER in $(grep -hoE '%[A-Z0-9_]+%' "$FILE" | tr -d '%' | sort -u); do
+        VALUE=$(printenv "$PLACEHOLDER" || true)
+        if [[ -z "$VALUE" ]]; then
+          echo "ERROR: missing value for placeholder $PLACEHOLDER in $FILE" >&2
+          exit 1
+        fi
+        ESCAPED_VALUE=$(printf '%s' "$VALUE" | perl -pe 's/([\\&|])/\\$1/g')
+        perl -i -pe "s|%$PLACEHOLDER%|$ESCAPED_VALUE|g" "$FILE"
+      done
+    }
+
+    replace_placeholders "$DEST_PATH/.aws/credentials"
+    replace_placeholders "$NETWORK_FILE"
+    for FILE in "$DEST_PATH"/any-sync-*/*.yml; do
+      replace_placeholders "$FILE"
+    done
+
+    find "$DEST_PATH" -name "*.yml" -print0 | while IFS= read -r -d '' FILE; do
+      yq --indent 2 --inplace "$FILE"
+    done
+    chmod 0600 "$DEST_PATH/.aws/credentials"
+
+    echo "INFO: any-sync config generation complete"
+
+  common.yml: |
+    log:
+      defaultLevel: ''
+      namedLevels: {}
+      production: false
+    networkStorePath: "/networkStore"
+
+  node-1.yml: |
+    metric:
+      addr: %ANY_SYNC_NODE_1_METRIC_ADDR%
+
+    apiServer:
+      listenAddr: %ANY_SYNC_NODE_1_API_SERVER_ADDR%
+
+    drpc:
+      stream:
+        timeoutMilliseconds: 1000
+        maxMsgSizeMb: 256
+
+    yamux:
+      listenAddrs:
+        - %ANY_SYNC_NODE_1_ADDRESSES%
+      writeTimeoutSec: 10
+      dialTimeoutSec: 10
+    quic:
+      listenAddrs:
+        - %ANY_SYNC_NODE_1_QUIC_ADDRESSES%
+      writeTimeoutSec: 10
+      dialTimeoutSec: 10
+
+    space:
+      gcTTL: 60
+      syncPeriod: 600
+
+    storage:
+      path: /storage
+      anyStorePath: /anyStorage
+
+    nodeSync:
+      periodicSyncHours: 2
+      syncOnStart: true
+
+    s3Store:
+      enabled: false
+      region: us-east-1
+      endpoint: http://minio:%MINIO_PORT%
+      bucket: %MINIO_BUCKET%
+      keyPrefix: "node_storage/node-1"
+      forcePathStyle: true
+
+    archive:
+      enabled: false
+      archiveAfterDays: 1
+      checkPeriodMinutes: 2
+
+  node-2.yml: |
+    metric:
+      addr: %ANY_SYNC_NODE_2_METRIC_ADDR%
+
+    apiServer:
+      listenAddr: %ANY_SYNC_NODE_2_API_SERVER_ADDR%
+
+    drpc:
+      stream:
+        timeoutMilliseconds: 1000
+        maxMsgSizeMb: 256
+
+    yamux:
+      listenAddrs:
+        - %ANY_SYNC_NODE_2_ADDRESSES%
+      writeTimeoutSec: 10
+      dialTimeoutSec: 10
+    quic:
+      listenAddrs:
+        - %ANY_SYNC_NODE_2_QUIC_ADDRESSES%
+      writeTimeoutSec: 10
+      dialTimeoutSec: 10
+
+    space:
+      gcTTL: 60
+      syncPeriod: 600
+
+    storage:
+      path: /storage
+      anyStorePath: /anyStorage
+
+    nodeSync:
+      periodicSyncHours: 2
+      syncOnStart: true
+
+    s3Store:
+      enabled: false
+      region: us-east-1
+      endpoint: http://minio:%MINIO_PORT%
+      bucket: %MINIO_BUCKET%
+      keyPrefix: "node_storage/node-2"
+      forcePathStyle: true
+
+    archive:
+      enabled: false
+      archiveAfterDays: 1
+      checkPeriodMinutes: 2
+
+  node-3.yml: |
+    metric:
+      addr: %ANY_SYNC_NODE_3_METRIC_ADDR%
+
+    apiServer:
+      listenAddr: %ANY_SYNC_NODE_3_API_SERVER_ADDR%
+
+    drpc:
+      stream:
+        timeoutMilliseconds: 1000
+        maxMsgSizeMb: 256
+
+    yamux:
+      listenAddrs:
+        - %ANY_SYNC_NODE_3_ADDRESSES%
+      writeTimeoutSec: 10
+      dialTimeoutSec: 10
+    quic:
+      listenAddrs:
+        - %ANY_SYNC_NODE_3_QUIC_ADDRESSES%
+      writeTimeoutSec: 10
+      dialTimeoutSec: 10
+
+    space:
+      gcTTL: 60
+      syncPeriod: 600
+
+    storage:
+      path: /storage
+      anyStorePath: /anyStorage
+
+    nodeSync:
+      periodicSyncHours: 2
+      syncOnStart: true
+
+    s3Store:
+      enabled: false
+      region: us-east-1
+      endpoint: http://minio:%MINIO_PORT%
+      bucket: %MINIO_BUCKET%
+      keyPrefix: "node_storage/node-3"
+      forcePathStyle: true
+
+    archive:
+      enabled: false
+      archiveAfterDays: 1
+      checkPeriodMinutes: 2
+
+  coordinator.yml: |
+    metric:
+      addr: %ANY_SYNC_COORDINATOR_METRIC_ADDR%
+
+    mongo:
+      connect: %MONGO_CONNECT%
+      database: coordinator
+      log: log
+      spaces: spaces
+
+    spaceStatus:
+      runSeconds: 5
+      deletionPeriodDays: 0
+
+    drpc:
+      stream:
+        timeoutMilliseconds: 1000
+        maxMsgSizeMb: 256
+
+    yamux:
+      listenAddrs:
+        - %ANY_SYNC_COORDINATOR_ADDRESSES%
+      writeTimeoutSec: 10
+      dialTimeoutSec: 10
+
+    quic:
+      listenAddrs:
+        - %ANY_SYNC_COORDINATOR_QUIC_ADDRESSES%
+      writeTimeoutSec: 10
+      dialTimeoutSec: 10
+
+    defaultLimits:
+      spaceMembersRead: %ANY_SYNC_COORDINATOR_DEFAULT_LIMITS_SPACE_MEMBERS_READ%
+      spaceMembersWrite: %ANY_SYNC_COORDINATOR_DEFAULT_LIMITS_SPACE_MEMBERS_WRITE%
+      sharedSpacesLimit: %ANY_SYNC_COORDINATOR_DEFAULT_LIMITS_SHARED_SPACES_LIMIT%
+
+  filenode.yml: |
+    metric:
+      addr: %ANY_SYNC_FILENODE_METRIC_ADDR%
+
+    s3Store:
+      bucket: %MINIO_BUCKET%
+      indexBucket: %MINIO_BUCKET%
+      maxThreads: 16
+      profile: default
+      region: us-east-1
+      endpoint: http://minio:%MINIO_PORT%
+      forcePathStyle: true
+
+    redis:
+      isCluster: false
+      url: %REDIS_URL%
+
+    drpc:
+      stream:
+        timeoutMilliseconds: 1000
+        maxMsgSizeMb: 256
+
+    yamux:
+      listenAddrs:
+        - %ANY_SYNC_FILENODE_ADDRESSES%
+      writeTimeoutSec: 10
+      dialTimeoutSec: 10
+
+    quic:
+      listenAddrs:
+        - %ANY_SYNC_FILENODE_QUIC_ADDRESSES%
+      writeTimeoutSec: 10
+      dialTimeoutSec: 10
+
+    defaultLimit: %ANY_SYNC_FILENODE_DEFAULT_LIMIT%
+
+  consensusnode.yml: |
+    metric:
+      addr: %ANY_SYNC_CONSENSUSNODE_METRIC_ADDR%
+
+    mongo:
+      connect: %MONGO_CONNECT%/?w=majority
+      database: consensus
+      logCollection: log
+
+    drpc:
+      stream:
+        timeoutMilliseconds: 1000
+        maxMsgSizeMb: 256
+
+    yamux:
+      listenAddrs:
+        - %ANY_SYNC_CONSENSUSNODE_ADDRESSES%
+      writeTimeoutSec: 10
+      dialTimeoutSec: 10
+
+    quic:
+      listenAddrs:
+        - %ANY_SYNC_CONSENSUSNODE_QUIC_ADDRESSES%
+      writeTimeoutSec: 10
+      dialTimeoutSec: 10
+
+  aws-credentials: |
+    [default]
+    aws_access_key_id=%AWS_ACCESS_KEY_ID%
+    aws_secret_access_key=%AWS_SECRET_ACCESS_KEY%
