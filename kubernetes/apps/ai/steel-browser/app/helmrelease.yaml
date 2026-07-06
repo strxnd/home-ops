@@ -47,6 +47,7 @@ spec:
               LOG_STORAGE_ENABLED: "true"
               LOG_STORAGE_PATH: /data/logs/browser-logs.duckdb
               DEBUG: "true"
+              DBUS_SESSION_BUS_ADDRESS: unix:path=/run/dbus/system_bus_socket
               TZ: Asia/Singapore
               DEFAULT_TIMEZONE: Asia/Singapore
             probes:
