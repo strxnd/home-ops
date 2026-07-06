@@ -46,6 +46,7 @@ spec:
               DISABLE_CHROME_SANDBOX: "true"
               LOG_STORAGE_ENABLED: "true"
               LOG_STORAGE_PATH: /data/logs/browser-logs.duckdb
+              DEBUG: "true"
               TZ: Asia/Singapore
               DEFAULT_TIMEZONE: Asia/Singapore
             probes:
