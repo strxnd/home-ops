@@ -49,6 +49,7 @@ spec:
               CDP_DOMAIN: steel-cdp.${SECRET_DOMAIN}
               USE_SSL: "true"
               CHROME_HEADLESS: "true"
+              CHROME_ARGS: --dbus-stub
               FILTER_CHROME_ARGS: --no-first-run
               DISABLE_CHROME_SANDBOX: "true"
               LOG_STORAGE_ENABLED: "true"
