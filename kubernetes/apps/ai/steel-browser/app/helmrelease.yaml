@@ -39,6 +39,19 @@ spec:
               - -ec
             args:
               - |
+                cat >/tmp/steel-chromium <<'EOF'
+                #!/bin/bash
+                args=()
+                for arg in "$@"; do
+                  if [[ "$arg" == "--no-first-run" ]]; then
+                    continue
+                  fi
+                  args+=("$arg")
+                done
+                exec /usr/bin/chromium "$${args[@]}"
+                EOF
+                chmod +x /tmp/steel-chromium
+
                 rm -rf /tmp/steel-dbus
                 mkdir -p /tmp/steel-dbus /run/dbus
                 rm -f /run/dbus/pid /run/dbus/system_bus_socket
@@ -55,6 +68,7 @@ spec:
               DOMAIN: steel.${SECRET_DOMAIN}
               CDP_DOMAIN: steel.${SECRET_DOMAIN}
               USE_SSL: "true"
+              CHROME_EXECUTABLE_PATH: /tmp/steel-chromium
               CHROME_HEADLESS: "false"
               DISPLAY: :99
               FILTER_CHROME_ARGS: --no-first-run
