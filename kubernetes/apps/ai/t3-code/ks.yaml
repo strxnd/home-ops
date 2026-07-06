@@ -12,7 +12,7 @@ spec:
     - name: local-path-provisioner
       namespace: kube-system
   interval: 1h
-  path: ./kubernetes/apps/selfhosted/t3-code/app
+  path: ./kubernetes/apps/ai/t3-code/app
   postBuild:
     substituteFrom:
       - name: cluster-secrets
@@ -23,6 +23,6 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: selfhosted
+  targetNamespace: ai
   timeout: 5m
   wait: false
