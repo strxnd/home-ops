@@ -42,6 +42,7 @@ spec:
               CDP_DOMAIN: steel.${SECRET_DOMAIN}
               USE_SSL: "true"
               CHROME_HEADLESS: "true"
+              CHROME_ARGS: "--ozone-platform=headless --use-gl=swiftshader --in-process-gpu"
               DISABLE_CHROME_SANDBOX: "true"
               LOG_STORAGE_ENABLED: "true"
               LOG_STORAGE_PATH: /data/logs/browser-logs.duckdb
@@ -89,6 +90,7 @@ spec:
                   - SETGID
                   - SETUID
                   - SYS_PTRACE
+                  - SYS_RESOURCE
     service:
       main:
         controller: *app
