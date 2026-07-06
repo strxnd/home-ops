@@ -71,6 +71,8 @@ spec:
               T3CODE_PORT: "3773"
               T3CODE_NO_BROWSER: "true"
               CODEX_HOME: /home/t3/.codex
+              STEEL_BROWSER_API_URL: https://steel.${SECRET_DOMAIN}/v1
+              STEEL_API_KEY: self-hosted
             probes:
               liveness: &probes
                 enabled: true

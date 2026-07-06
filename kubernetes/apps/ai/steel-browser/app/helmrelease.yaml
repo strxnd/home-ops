@@ -34,43 +34,14 @@ spec:
             image:
               repository: ghcr.io/steel-dev/steel-browser
               tag: latest@sha256:1c988dc8a8eda687648d1c94e10e8b8627343977119f09aa34a6adf345ba104d
-            command:
-              - /bin/sh
-              - -ec
-            args:
-              - |
-                cat >/tmp/steel-chromium <<'EOF'
-                #!/bin/bash
-                args=()
-                for arg in "$@"; do
-                  if [[ "$arg" == "--no-first-run" ]]; then
-                    continue
-                  fi
-                  args+=("$arg")
-                done
-                exec /usr/bin/chromium "$${args[@]}"
-                EOF
-                chmod +x /tmp/steel-chromium
-
-                rm -rf /tmp/steel-dbus
-                mkdir -p /tmp/steel-dbus /run/dbus
-                rm -f /run/dbus/pid /run/dbus/system_bus_socket
-
-                dbus-daemon --system --fork --print-pid=1 >/tmp/steel-dbus/system.pid
-                Xvfb :99 -screen 0 1920x1080x24 -nolisten tcp >/tmp/xvfb.log 2>&1 &
-                sleep 2
-
-                exec node ./api/build/index.js
             env:
               NODE_ENV: production
               HOST: 0.0.0.0
               PORT: "3000"
               DOMAIN: steel.${SECRET_DOMAIN}
-              CDP_DOMAIN: steel.${SECRET_DOMAIN}
+              CDP_DOMAIN: steel-cdp.${SECRET_DOMAIN}
               USE_SSL: "true"
-              CHROME_EXECUTABLE_PATH: /tmp/steel-chromium
-              CHROME_HEADLESS: "false"
-              DISPLAY: :99
+              CHROME_HEADLESS: "true"
               FILTER_CHROME_ARGS: --no-first-run
               DISABLE_CHROME_SANDBOX: "true"
               LOG_STORAGE_ENABLED: "true"
@@ -140,24 +111,25 @@ spec:
           - matches:
               - path:
                   type: PathPrefix
-                  value: /devtools
+                  value: /
             backendRefs:
               - identifier: main
-                port: *cdpPort
-          - matches:
-              - path:
-                  type: PathPrefix
-                  value: /json
-            backendRefs:
-              - identifier: main
-                port: *cdpPort
+                port: 3000
+      cdp:
+        hostnames:
+          - steel-cdp.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
           - matches:
               - path:
                   type: PathPrefix
                   value: /
             backendRefs:
               - identifier: main
-                port: 3000
+                port: *cdpPort
     persistence:
       logs:
         type: persistentVolumeClaim
