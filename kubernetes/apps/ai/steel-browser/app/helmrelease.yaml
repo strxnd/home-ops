@@ -34,6 +34,22 @@ spec:
             image:
               repository: ghcr.io/steel-dev/steel-browser
               tag: latest@sha256:1c988dc8a8eda687648d1c94e10e8b8627343977119f09aa34a6adf345ba104d
+            command:
+              - /bin/sh
+              - -ec
+            args:
+              - |
+                rm -rf /tmp/steel-dbus
+                mkdir -p /tmp/steel-dbus /run/dbus
+                rm -f /run/dbus/pid /run/dbus/system_bus_socket
+
+                dbus-daemon --system --fork --print-pid=1 >/tmp/steel-dbus/system.pid
+                dbus-daemon --session --fork \
+                  --address=unix:path=/tmp/steel-dbus/session-bus \
+                  --print-pid=1 >/tmp/steel-dbus/session.pid
+                Xvfb "${DISPLAY}" -screen 0 1920x1080x24 -nolisten tcp >/tmp/xvfb.log 2>&1 &
+
+                exec node ./api/build/index.js
             env:
               NODE_ENV: production
               HOST: 0.0.0.0
@@ -41,8 +57,9 @@ spec:
               DOMAIN: steel.${SECRET_DOMAIN}
               CDP_DOMAIN: steel.${SECRET_DOMAIN}
               USE_SSL: "true"
-              CHROME_HEADLESS: "true"
-              CHROME_ARGS: "--ozone-platform=headless --use-gl=swiftshader --in-process-gpu"
+              CHROME_HEADLESS: "false"
+              DISPLAY: :99
+              DBUS_SESSION_BUS_ADDRESS: unix:path=/tmp/steel-dbus/session-bus
               DISABLE_CHROME_SANDBOX: "true"
               LOG_STORAGE_ENABLED: "true"
               LOG_STORAGE_PATH: /data/logs/browser-logs.duckdb
@@ -152,3 +169,7 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /var/log/nginx
+      dbus-run:
+        type: emptyDir
+        globalMounts:
+          - path: /run/dbus
