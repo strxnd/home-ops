@@ -57,6 +57,7 @@ spec:
               USE_SSL: "true"
               CHROME_HEADLESS: "false"
               DISPLAY: :99
+              FILTER_CHROME_ARGS: --no-first-run
               DISABLE_CHROME_SANDBOX: "true"
               LOG_STORAGE_ENABLED: "true"
               LOG_STORAGE_PATH: /data/logs/browser-logs.duckdb
