@@ -44,10 +44,8 @@ spec:
                 rm -f /run/dbus/pid /run/dbus/system_bus_socket
 
                 dbus-daemon --system --fork --print-pid=1 >/tmp/steel-dbus/system.pid
-                dbus-daemon --session --fork \
-                  --address=unix:path=/tmp/steel-dbus/session-bus \
-                  --print-pid=1 >/tmp/steel-dbus/session.pid
-                Xvfb "${DISPLAY}" -screen 0 1920x1080x24 -nolisten tcp >/tmp/xvfb.log 2>&1 &
+                Xvfb :99 -screen 0 1920x1080x24 -nolisten tcp >/tmp/xvfb.log 2>&1 &
+                sleep 2
 
                 exec node ./api/build/index.js
             env:
@@ -59,7 +57,6 @@ spec:
               USE_SSL: "true"
               CHROME_HEADLESS: "false"
               DISPLAY: :99
-              DBUS_SESSION_BUS_ADDRESS: unix:path=/tmp/steel-dbus/session-bus
               DISABLE_CHROME_SANDBOX: "true"
               LOG_STORAGE_ENABLED: "true"
               LOG_STORAGE_PATH: /data/logs/browser-logs.duckdb
