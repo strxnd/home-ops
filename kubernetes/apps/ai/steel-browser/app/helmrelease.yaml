@@ -34,6 +34,13 @@ spec:
             image:
               repository: ghcr.io/steel-dev/steel-browser
               tag: latest@sha256:1c988dc8a8eda687648d1c94e10e8b8627343977119f09aa34a6adf345ba104d
+            command:
+              - /bin/sh
+              - -ec
+            args:
+              - |
+                unset DBUS_SESSION_BUS_ADDRESS
+                exec /app/api/entrypoint.sh
             env:
               NODE_ENV: production
               HOST: 0.0.0.0
@@ -47,7 +54,6 @@ spec:
               LOG_STORAGE_ENABLED: "true"
               LOG_STORAGE_PATH: /data/logs/browser-logs.duckdb
               DEBUG: "true"
-              DBUS_SESSION_BUS_ADDRESS: unix:path=/run/dbus/system_bus_socket
               TZ: Asia/Singapore
               DEFAULT_TIMEZONE: Asia/Singapore
             probes:
