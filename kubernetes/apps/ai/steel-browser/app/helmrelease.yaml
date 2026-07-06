@@ -39,6 +39,13 @@ spec:
               - -ec
             args:
               - |
+                cat >/tmp/steel-chromium <<'EOF'
+                #!/bin/sh
+                export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket
+                exec /usr/bin/chromium "$@"
+                EOF
+                chmod +x /tmp/steel-chromium
+
                 rm -f /tmp/.X10-lock /tmp/.X11-unix/X10
                 mkdir -p /tmp/.X11-unix
                 Xvfb :10 -screen 0 1920x1080x24 -nolisten tcp >/tmp/xvfb.log 2>&1 &
@@ -51,8 +58,8 @@ spec:
               DOMAIN: steel.${SECRET_DOMAIN}
               CDP_DOMAIN: steel-cdp.${SECRET_DOMAIN}
               USE_SSL: "true"
+              CHROME_EXECUTABLE_PATH: /tmp/steel-chromium
               CHROME_HEADLESS: "false"
-              CHROME_ARGS: --dbus-stub
               FILTER_CHROME_ARGS: --no-first-run
               DISABLE_CHROME_SANDBOX: "true"
               LOG_STORAGE_ENABLED: "true"
