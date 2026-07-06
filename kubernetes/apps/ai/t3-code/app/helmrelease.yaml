@@ -31,6 +31,33 @@ spec:
             fsGroupChangePolicy: OnRootMismatch
             seccompProfile: { type: RuntimeDefault }
         strategy: Recreate
+        initContainers:
+          prepare-home:
+            image:
+              repository: ghcr.io/strxnd/t3-code-server
+              tag: t3-0.0.28-node-24.18.0@sha256:412203b08c7ff75df320f53f3da7097a1512a40b4e538668fe6dc07efa485944
+            command:
+              - /bin/bash
+              - -ec
+            args:
+              - |
+                mkdir -p \
+                  /data/t3 \
+                  /home/t3/.cache \
+                  /home/t3/.claude \
+                  /home/t3/.codex \
+                  /home/t3/.config \
+                  /home/t3/.local/bin \
+                  /home/t3/.local/share \
+                  /home/t3/.ssh \
+                  /workspace
+                chmod 700 /home/t3/.ssh
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
         containers:
           main:
             image:
