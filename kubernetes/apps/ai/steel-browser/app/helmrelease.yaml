@@ -60,6 +60,7 @@ spec:
               USE_SSL: "true"
               CHROME_EXECUTABLE_PATH: /tmp/steel-chromium
               CHROME_HEADLESS: "true"
+              CHROME_ARGS: --disable-dev-shm-usage
               FILTER_CHROME_ARGS: --no-first-run
               DISABLE_CHROME_SANDBOX: "true"
               LOG_STORAGE_ENABLED: "true"
