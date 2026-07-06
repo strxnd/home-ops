@@ -102,8 +102,6 @@ Safe handling expectations:
 - For new app credentials, prefer `ExternalSecret` backed by the `onepassword-connect` `ClusterSecretStore`.
 - Some older manifests still use SOPS, but do not create new `*.sops.yaml` app secrets unless the user explicitly asks.
 - ExternalSecret item/key placeholders such as `REPLACE_WITH_...`, missing 1Password item names, or assumed property names must be called out before commit.
-- Be careful with `task bootstrap:*`, `task talos:*`, `kubectl`, `flux`, `helm`, `helmfile`, and `talosctl`; these can affect live infrastructure or external services.
-
 ## Editing Conventions
 
 - Preserve YAML document starts (`---`) where present.

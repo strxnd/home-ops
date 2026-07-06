@@ -13,3 +13,4 @@ resources:
   - ./appflowy/ks.yaml
   - ./anytype/ks.yaml
   - ./searxng/ks.yaml
+  - ./t3-code/ks.yaml
