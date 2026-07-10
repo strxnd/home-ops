@@ -35,7 +35,7 @@ spec:
           prepare-home:
             image:
               repository: ghcr.io/strxnd/t3-code-server
-              tag: t3-0.0.28-node-24.18.0@sha256:da015d308022da29f050b83ae30013c4950702304907bd60627ee407a93c661a
+              tag: t3-0.0.28-node-24.18.0-sshd@sha256:c3e79a42b726957aa8ecabeef7dd5c67db040af48716bda51934320ae1e86a53
             command:
               - /bin/bash
               - -ec
@@ -62,7 +62,7 @@ spec:
           main:
             image:
               repository: ghcr.io/strxnd/t3-code-server
-              tag: t3-0.0.28-node-24.18.0@sha256:da015d308022da29f050b83ae30013c4950702304907bd60627ee407a93c661a
+              tag: t3-0.0.28-node-24.18.0-sshd@sha256:c3e79a42b726957aa8ecabeef7dd5c67db040af48716bda51934320ae1e86a53
             env:
               TZ: Asia/Kolkata
               HOME: /home/t3
