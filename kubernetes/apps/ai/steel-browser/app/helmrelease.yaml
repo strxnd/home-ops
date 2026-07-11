@@ -33,7 +33,7 @@ spec:
           main:
             image:
               repository: ghcr.io/steel-dev/steel-browser
-              tag: latest@sha256:1c988dc8a8eda687648d1c94e10e8b8627343977119f09aa34a6adf345ba104d
+              tag: latest@sha256:cbf4a44d575c0ae83d00d4ba6bb455d24980de0ced2b06fe8b890e835c923bd1
             command:
               - /bin/sh
               - -ec
