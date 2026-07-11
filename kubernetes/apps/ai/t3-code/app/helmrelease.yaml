@@ -32,7 +32,7 @@ spec:
             seccompProfile: { type: RuntimeDefault }
         strategy: Recreate
         initContainers:
-          prepare-home:
+          01-prepare-home:
             image:
               repository: ghcr.io/strxnd/t3-code-server
               tag: t3-0.0.29-nightly.20260709.769-node-24.18.0-codex-0.144.1-claude-2.1.206-opencode-1.17.18-gh-2.96.0-sshd@sha256:7c2717566e235281583d8e73ed63b7e085f5b4ef4ccdfb959cf9efd4c2b3bbee
@@ -58,6 +58,37 @@ spec:
                 memory: 32Mi
               limits:
                 memory: 128Mi
+          02-install-nix:
+            image:
+              repository: ghcr.io/strxnd/t3-code-server
+              tag: t3-0.0.29-nightly.20260709.769-node-24.18.0-codex-0.144.1-claude-2.1.206-opencode-1.17.18-gh-2.96.0-sshd@sha256:7c2717566e235281583d8e73ed63b7e085f5b4ef4ccdfb959cf9efd4c2b3bbee
+            command:
+              - /bin/bash
+              - -ec
+            args:
+              - |
+                if [[ ! -x /home/t3/.nix-profile/bin/nix ]]; then
+                  curl \
+                    --proto '=https' \
+                    --tlsv1.2 \
+                    --fail \
+                    --location \
+                    --output /tmp/install-nix \
+                    https://releases.nixos.org/nix/nix-2.34.7/install
+                  sh /tmp/install-nix \
+                    --no-daemon \
+                    --yes \
+                    --no-channel-add \
+                    --no-modify-profile
+                fi
+            env:
+              USER: t3
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
         containers:
           main:
             image:
@@ -66,6 +97,9 @@ spec:
             env:
               TZ: Asia/Kolkata
               HOME: /home/t3
+              USER: t3
+              PATH: /home/t3/.nix-profile/bin:/home/t3/.local/bin:/usr/local/bin:/usr/bin:/bin
+              NIX_CONFIG: experimental-features = nix-command flakes
               T3CODE_HOME: /data/t3
               T3CODE_HOST: 0.0.0.0
               T3CODE_PORT: "3773"
@@ -143,6 +177,13 @@ spec:
         storageClass: local-path
         globalMounts:
           - path: /home/t3
+      nix:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 20Gi
+        storageClass: local-path
+        globalMounts:
+          - path: /nix
       workspace:
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
