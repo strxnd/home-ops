@@ -68,6 +68,9 @@ spec:
             args:
               - |
                 if [[ ! -x /home/t3/.nix-profile/bin/nix ]]; then
+                  apt-get update
+                  apt-get install --yes --no-install-recommends xz-utils
+                  rm -rf /var/lib/apt/lists/*
                   curl \
                     --proto '=https' \
                     --tlsv1.2 \
@@ -75,14 +78,18 @@ spec:
                     --location \
                     --output /tmp/install-nix \
                     https://releases.nixos.org/nix/nix-2.34.7/install
-                  sh /tmp/install-nix \
-                    --no-daemon \
-                    --yes \
-                    --no-channel-add \
-                    --no-modify-profile
+                  chown 1000:1000 /nix
+                  su --shell /bin/sh t3 --command \
+                    'sh /tmp/install-nix --no-daemon --yes --no-channel-add --no-modify-profile'
                 fi
             env:
+              HOME: /home/t3
               USER: t3
+            securityContext:
+              allowPrivilegeEscalation: false
+              runAsNonRoot: false
+              runAsUser: 0
+              runAsGroup: 0
             resources:
               requests:
                 cpu: 50m
