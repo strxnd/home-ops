@@ -63,6 +63,7 @@ spec:
               CHROME_ARGS: --disable-dev-shm-usage
               FILTER_CHROME_ARGS: --no-first-run
               DISABLE_CHROME_SANDBOX: "true"
+              SKIP_FINGERPRINT_INJECTION: "true"
               LOG_STORAGE_ENABLED: "true"
               LOG_STORAGE_PATH: /data/logs/browser-logs.duckdb
               DEBUG: "true"
