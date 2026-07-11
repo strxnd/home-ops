@@ -151,12 +151,74 @@ spec:
               capabilities:
                 drop:
                   - ALL
+          sshd:
+            image:
+              repository: ghcr.io/strxnd/t3-code-server
+              tag: t3-0.0.29-nightly.20260709.769-node-24.18.0-codex-0.144.1-claude-2.1.206-opencode-1.17.18-gh-2.96.0-sshd@sha256:7c2717566e235281583d8e73ed63b7e085f5b4ef4ccdfb959cf9efd4c2b3bbee
+            command:
+              - /usr/local/bin/t3-sshd
+            env:
+              T3CODE_SSH_PORT: &sshPort "2222"
+            probes:
+              liveness: &sshProbes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *sshPort
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *sshProbes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *sshPort
+                  periodSeconds: 5
+                  timeoutSeconds: 5
+                  failureThreshold: 12
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              runAsNonRoot: false
+              runAsUser: 0
+              runAsGroup: 0
+              capabilities:
+                drop:
+                  - ALL
+                add:
+                  - CHOWN
+                  - DAC_OVERRIDE
+                  - FOWNER
+                  - SETGID
+                  - SETUID
+                  - SYS_CHROOT
     service:
       main:
         controller: *app
         ports:
           http:
             port: *port
+      ssh:
+        controller: *app
+        type: LoadBalancer
+        annotations:
+          external-dns.alpha.kubernetes.io/hostname: t3-code-ssh.${SECRET_DOMAIN}
+          lbipam.cilium.io/ips: "192.168.20.14"
+        externalTrafficPolicy: Cluster
+        ports:
+          ssh:
+            port: 22
+            targetPort: *sshPort
+            protocol: TCP
     route:
       main:
         hostnames:
