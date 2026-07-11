@@ -158,14 +158,14 @@ spec:
             command:
               - /usr/local/bin/t3-sshd
             env:
-              T3CODE_SSH_PORT: &sshPort "2222"
+              T3CODE_SSH_PORT: "2222"
             probes:
               liveness: &sshProbes
                 enabled: true
                 custom: true
                 spec:
                   tcpSocket:
-                    port: *sshPort
+                    port: &sshPort 2222
                   periodSeconds: 30
                   timeoutSeconds: 5
                   failureThreshold: 3
