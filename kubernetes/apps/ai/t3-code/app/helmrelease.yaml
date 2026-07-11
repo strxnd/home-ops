@@ -51,7 +51,14 @@ spec:
                   /home/t3/.local/share \
                   /home/t3/.ssh \
                   /workspace
+                chown 1000:1000 /home/t3
+                chmod 755 /home/t3
                 chmod 700 /home/t3/.ssh
+            securityContext:
+              allowPrivilegeEscalation: false
+              runAsNonRoot: false
+              runAsUser: 0
+              runAsGroup: 0
             resources:
               requests:
                 cpu: 10m
