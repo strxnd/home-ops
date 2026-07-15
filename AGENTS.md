@@ -57,8 +57,6 @@ task talos:upgrade-k8s
 task talos:reset            # Destructive
 ```
 
-Before suggesting or running any cluster-affecting command, explain what it does and ask for explicit confirmation.
-
 ## GitOps / Infrastructure Workflow
 
 1. Start with `git status --short` and avoid overwriting user changes.
