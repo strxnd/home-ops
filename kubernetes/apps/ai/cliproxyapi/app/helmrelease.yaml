@@ -1,0 +1,163 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app cli-proxy-api
+spec:
+  interval: 1h
+  maxHistory: 1
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    timeout: 5m
+    remediation:
+      retries: 1
+  upgrade:
+    timeout: 5m
+    remediation:
+      retries: 1
+  values:
+    controllers:
+      cli-proxy-api:
+        replicas: 1
+        strategy: Recreate
+        pod:
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
+            seccompProfile: { type: RuntimeDefault }
+        initContainers:
+          seed-config:
+            image:
+              repository: docker.io/eceasy/cli-proxy-api
+              tag: v7.2.80@sha256:6f5bcee0c3b8d0536f4a3f0f5cb9fd0b7d2e17196dd40d30f11aec9cc2f5f161
+            command:
+              - /bin/sh
+              - -ec
+            args:
+              - |
+                umask 077
+                mkdir -p /data/auth
+                chmod 0700 /data/auth
+                if [ ! -s /data/config.yaml ]; then
+                  cp /config-seed/config.yaml /data/config.yaml
+                  chmod 0600 /data/config.yaml
+                  echo "Seeded initial CLIProxyAPI configuration"
+                else
+                  echo "Preserving existing CLIProxyAPI configuration"
+                fi
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsNonRoot: false
+              runAsUser: 0
+              runAsGroup: 0
+              capabilities:
+                drop:
+                  - ALL
+        containers:
+          app:
+            image:
+              repository: docker.io/eceasy/cli-proxy-api
+              tag: v7.2.80@sha256:6f5bcee0c3b8d0536f4a3f0f5cb9fd0b7d2e17196dd40d30f11aec9cc2f5f161
+            command:
+              - /CLIProxyAPI/CLIProxyAPI
+            args:
+              - -config
+              - /data/config.yaml
+            env:
+              TZ: Asia/Singapore
+              WRITABLE_PATH: /data
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: &port 8317
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  periodSeconds: 5
+                  timeoutSeconds: 5
+                  failureThreshold: 30
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 1Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - cliproxy.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+    persistence:
+      config-seed:
+        type: secret
+        name: cli-proxy-api-secret
+        advancedMounts:
+          cli-proxy-api:
+            seed-config:
+              - path: /config-seed/config.yaml
+                subPath: config.yaml
+                readOnly: true
+      data:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 5Gi
+        storageClass: local-path
+        retain: true
+        advancedMounts:
+          cli-proxy-api:
+            seed-config:
+              - path: /data
+            app:
+              - path: /data
