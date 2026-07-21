@@ -114,6 +114,5 @@ Safe handling expectations:
 ## Agent Behavior
 
 - Read relevant files before editing and summarize changed paths afterward.
-- Ask before destructive operations, live-cluster access, secret decryption, or restructuring.
 - Explain infrastructure risk and validation steps for cluster/Talos changes.
-- After edits, suggest safe next commands rather than running cluster-affecting commands automatically.
+- Always push straight to main, never created branches/PRs.
