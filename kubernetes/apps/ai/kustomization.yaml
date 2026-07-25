@@ -15,4 +15,3 @@ resources:
   - ./hermes/ks.yaml
   - ./open-webui/ks.yaml
   - ./steel-browser/ks.yaml
-  - ./t3-code/ks.yaml
