@@ -23,7 +23,7 @@ mace:
   stuns-shield: false
 
 pearls:
-  ban: false
+  ban: true
 
 crystal-pvp:
   ban: false
