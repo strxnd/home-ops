@@ -20,8 +20,7 @@ items produced by the running plugins:
 - Select the crafted Dragon Egg chestplate itself as an exact custom item,
   identified by the PDC marker `smp:dragon_egg_chestplate=true`. If the
   chestplate is produced by consuming the world's single Dragon Egg, do not
-  add a redundant ItemControl count. If the Scavenger Hunt awards it
-  independently, enforce the one-time award in the event/reward logic.
+  add a redundant ItemControl count; the recipe itself guarantees uniqueness.
 - Configure the exact chestplate to ignore the general Netherite chestplate
   restriction. Set the normal Netherite armor and weapon materials to zero
   allowed items.
@@ -29,10 +28,9 @@ items produced by the running plugins:
   Thorns to a maximum of zero.
 
 Every storage type above is a production gate. Verify both insert and extract
-paths, including hoppers and portable containers. The single-Dragon-Egg
-recipe and the one-time Scavenger Hunt reward are separate acquisition rules;
-do not rely on an additional ItemControl count when either rule already
-guarantees uniqueness.
+paths, including hoppers and portable containers. Verify that the
+single-Dragon-Egg recipe consumes the only Dragon Egg and produces the one
+unbreakable tagged chestplate.
 
 ## Recipe implementation
 
