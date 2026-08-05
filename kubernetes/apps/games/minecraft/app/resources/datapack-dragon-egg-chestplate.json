@@ -16,7 +16,8 @@
     "components": {
       "minecraft:custom_data": {
         "smp:dragon_egg_chestplate": true
-      }
+      },
+      "minecraft:unbreakable": {}
     }
   }
 }
