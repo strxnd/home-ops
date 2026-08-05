@@ -45,6 +45,16 @@ D D D
 
 with diamonds for `D` and a Dragon Egg for `E`.
 
+## Heart recipe
+
+The LifeStealZ heart recipe is:
+
+```text
+Trial Key   Ghast Tear   Trial Key
+Ghast Tear  Eye of Ender Ghast Tear
+Trial Key   Ghast Tear   Trial Key
+```
+
 ## Launch and event commands
 
 The container startup RCON commands set the world border to 4000 blocks in all

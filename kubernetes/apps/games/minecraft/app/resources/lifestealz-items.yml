@@ -14,17 +14,17 @@ defaultheart:
   recipes:
     1:
       rowOne:
-        - GOLD_BLOCK
-        - GOLD_BLOCK
-        - GOLD_BLOCK
+        - TRIAL_KEY
+        - GHAST_TEAR
+        - TRIAL_KEY
       rowTwo:
-        - OBSIDIAN
-        - NETHER_STAR
-        - OBSIDIAN
+        - GHAST_TEAR
+        - ENDER_EYE
+        - GHAST_TEAR
       rowThree:
-        - DIAMOND_BLOCK
-        - DIAMOND_BLOCK
-        - DIAMOND_BLOCK
+        - TRIAL_KEY
+        - GHAST_TEAR
+        - TRIAL_KEY
   invulnerable: false
   despawnable: true
   whitelistedWorlds: []
