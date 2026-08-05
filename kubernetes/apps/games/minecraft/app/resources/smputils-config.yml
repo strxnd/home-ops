@@ -1,0 +1,17 @@
+itemExplosions: false
+itemLimits: {}
+itemLimiterEnabled: false
+itemLimitMethod: onMove
+enchantLimits: {}
+enchantLimiterEnabled: false
+invisibleKills: false
+instantRestock: false
+maceDamageCap: true
+maceDamageCapNumber: 16
+explosionDamageCap: false
+explosionDamageCaps:
+  all: 0
+  tnt: 0
+  carts: 0
+  crystals: 0
+nameTagFix: false

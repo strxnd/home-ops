@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ./externalsecret.yaml
+  - ./ocirepository.yaml
+  - ./helmrelease.yaml
+  - ./services.yaml
+
+configMapGenerator:
+  - name: minecraft-plugin-config
+    files:
+      - lifestealz-config.yml=./resources/lifestealz-config.yml
+      - lifestealz-items.yml=./resources/lifestealz-items.yml
+      - itemcontrol-config.yml=./resources/itemcontrol-config.yml
+      - item-limiter-config.yml=./resources/item-limiter-config.yml
+      - mace-config.yml=./resources/mace-config.yml
+      - smputils-config.yml=./resources/smputils-config.yml
+      - cartlimiter-config.yml=./resources/cartlimiter-config.yml
+      - combatlog-config.yml=./resources/combatlog-config.yml
+      - no-flight-in-pvp-config.yml=./resources/no-flight-in-pvp-config.yml
+      - customrecipes-config.yml=./resources/customrecipes-config.yml
+      - kaicore-config.yml=./resources/kaicore-config.yml
+      - datapack-pack.mcmeta=./resources/datapack-pack.mcmeta
+      - datapack-dragon-egg-chestplate.json=./resources/datapack-dragon-egg-chestplate.json
+
+generatorOptions:
+  disableNameSuffixHash: true

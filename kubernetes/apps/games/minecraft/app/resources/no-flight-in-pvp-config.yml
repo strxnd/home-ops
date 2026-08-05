@@ -1,0 +1,4 @@
+hit_timer: 30
+combat_log_timer: 30
+allow_elytra_flight: false
+allow_trident_riptide: false

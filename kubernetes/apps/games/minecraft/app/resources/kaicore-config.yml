@@ -1,0 +1,111 @@
+easy-recipes:
+  webs:
+    enabled: false
+    shape:
+      - S0S
+      - 0S0
+      - S0S
+    ingredient: STRING
+  gaps:
+    enabled: false
+    shape:
+      - 0G0
+      - GAG
+      - 0G0
+    gold-ingredient: GOLD_INGOT
+    apple-ingredient: APPLE
+
+mace:
+  one-time-craft:
+    enabled: false
+    consumed: false
+  ban: false
+  stuns-shield: false
+
+pearls:
+  ban: false
+
+crystal-pvp:
+  ban: false
+
+potion-ban: {}
+
+minimap:
+  ban-xaeros: false
+  fair-mode: false
+  debug: false
+
+dimensions:
+  allow-nether: true
+  allow-end: false
+
+infinite-restock:
+  enabled: false
+
+invisibility-qol:
+  hide-name-when-killing: false
+  hide-name-when-dying: false
+
+combat:
+  enabled: false
+  tag-time-seconds: 30
+  ban-restock-while-in-combat: false
+  combat-log-punishment: KILL
+  timer-display: ACTIONBAR
+  ban-riptide-while-in-combat: false
+  minimum-damage-to-tag: 1.0
+  ban-elytra-while-in-combat: false
+
+enchant-limit:
+  blocked-enchantments: {}
+
+sleep:
+  one-player-sleep: false
+
+tnt-minecarts:
+  ban: false
+
+string-dupers:
+  revive-enabled: false
+  min-string-drop: 1
+  max-string-drop: 3
+
+villager-killing:
+  ban-killing-villagers: false
+  type: ALL
+
+netherite-ban:
+  enabled: false
+  banned-items:
+    - NETHERITE_SWORD
+    - NETHERITE_LEGGINGS
+    - NETHERITE_AXE
+    - NETHERITE_BOOTS
+    - NETHERITE_CHESTPLATE
+    - NETHERITE_HELMET
+    - NETHERITE_SHOVEL
+    - NETHERITE_HOE
+    - NETHERITE_PICKAXE
+
+locator-bar:
+  enabled: false
+
+pvp:
+  enabled: false
+
+weapon-cooldowns:
+  spear: 0
+  spear-blocks:
+    melee: true
+  lunge: 0
+  mace: 0
+  shield: 0
+  ender-pearl: 0
+  wind-charge: 0
+  riptide: 0
+  enchanted-apple: 0
+
+item-limiter:
+  enabled: false
+  limit-reached-message: "&c&l! &eYou've hit the limit for this item. &7Excess dropped at your feet."
+  item-limits: {}

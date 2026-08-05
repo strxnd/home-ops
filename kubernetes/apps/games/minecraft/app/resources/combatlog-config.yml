@@ -1,0 +1,46 @@
+config-version: 3
+
+combat-log:
+  timer:
+    duration-seconds: 30
+    display: actionbar
+  restrictions:
+    elytra:
+      disabled-in-combat: true
+    teleporting:
+      disabled-in-combat: false
+    mending:
+      disabled-in-combat: true
+    riptide:
+      stop: false
+      cooldown: 10000
+  punishment:
+    damage: 5.0
+    kill-on-logout: true
+  triggers:
+    enderpearl:
+      set-combat-on-land: true
+      only-if-already-in-combat: false
+    untag-on-kill: true
+    explosions:
+      set-combat-on-explosion: true
+  ignored-worlds: []
+  blocked-commands: []
+  combat-zone:
+    enabled: false
+    radius: 10
+  tag-effects: []
+  worldguard:
+    safe-zone-barrier:
+      enabled: false
+      material: RED_STAINED_GLASS
+      radius: 1
+      view-distance: 8
+      height: 3
+
+anti-kill-abuse:
+  enabled: false
+  limits:
+    max-kills: 5
+    remove-kill-after-seconds: 60
+  punish-commands: []

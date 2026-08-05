@@ -7,3 +7,4 @@ components:
   - ../../components/sops
 resources:
   - ./namespace.yaml
+  - ./minecraft/ks.yaml
