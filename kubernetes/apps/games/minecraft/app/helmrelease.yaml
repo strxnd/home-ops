@@ -88,6 +88,7 @@ spec:
       mode: survival
       pvp: true
       version: "26.2"
+      levelSeed: "3000549620035638349"
       worldSaveName: world
       motd: "LifeSteal SMP"
       memory: 6G
