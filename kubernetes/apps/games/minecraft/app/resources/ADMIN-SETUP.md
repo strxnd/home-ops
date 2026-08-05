@@ -2,8 +2,8 @@
 
 The Kubernetes workload installs the pinned Paper image, plugin jars, static
 plugin configuration, and the recipe datapack. The following state is
-intentionally completed in-game so ItemControl's tracked global counters are
-not reset by a declarative bootstrap.
+intentionally completed in-game because ItemControl's custom-item identity and
+storage restrictions are persisted on the server volume.
 
 ## One-time ItemControl setup
 
@@ -11,12 +11,17 @@ Using an operator account, open `/itemcontrol menu` and configure the actual
 items produced by the running plugins:
 
 - Mark the LifeStealZ heart item, mace, and the Dragon Egg chestplate as global
-  items with legendary storage restrictions.
+  items with legendary storage restrictions. These global entries provide
+  identity and storage control; they are not the source of the mace count.
+- Keep the mace count exclusively in MaceConfig (`max-count: 1`). Do not add a
+  redundant ItemControl global count for the mace.
 - For each of those items, block storage in chests, ender chests, chest boats,
   barrels, bundles, item frames, furnaces, shelves, and hoppers.
 - Select the crafted Dragon Egg chestplate itself as an exact custom item,
-  identified by the PDC marker `smp:dragon_egg_chestplate=true`, and set its
-  global active-item limit to one.
+  identified by the PDC marker `smp:dragon_egg_chestplate=true`. If the
+  chestplate is produced by consuming the world's single Dragon Egg, do not
+  add a redundant ItemControl count. If the Scavenger Hunt awards it
+  independently, enforce the one-time award in the event/reward logic.
 - Configure the exact chestplate to ignore the general Netherite chestplate
   restriction. Set the normal Netherite armor and weapon materials to zero
   allowed items.
@@ -24,8 +29,10 @@ items produced by the running plugins:
   Thorns to a maximum of zero.
 
 Every storage type above is a production gate. Verify both insert and extract
-paths, including hoppers and portable containers, and verify that a destroyed
-reward chestplate frees the one-item global count.
+paths, including hoppers and portable containers. The single-Dragon-Egg
+recipe and the one-time Scavenger Hunt reward are separate acquisition rules;
+do not rely on an additional ItemControl count when either rule already
+guarantees uniqueness.
 
 ## Recipe implementation
 
