@@ -28,7 +28,10 @@ pearls:
 crystal-pvp:
   ban: false
 
-potion-ban: {}
+potion-ban:
+  minecraft:speed:
+    level1: false
+    level2: true
 
 minimap:
   ban-xaeros: false
