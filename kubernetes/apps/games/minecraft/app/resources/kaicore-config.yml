@@ -86,7 +86,7 @@ villager-killing:
   type: ALL
 
 netherite-ban:
-  enabled: false
+  enabled: true
   banned-items:
     - NETHERITE_SWORD
     - NETHERITE_LEGGINGS
@@ -94,9 +94,6 @@ netherite-ban:
     - NETHERITE_BOOTS
     - NETHERITE_CHESTPLATE
     - NETHERITE_HELMET
-    - NETHERITE_SHOVEL
-    - NETHERITE_HOE
-    - NETHERITE_PICKAXE
 
 locator-bar:
   enabled: false
