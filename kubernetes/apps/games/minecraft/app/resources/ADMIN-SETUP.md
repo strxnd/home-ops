@@ -24,8 +24,9 @@ items produced by the running plugins:
 - Configure the exact chestplate to ignore the general Netherite chestplate
   restriction. Set the normal Netherite armor and weapon materials to zero
   allowed items.
-- Set Power to a maximum of IV and set Punch, Lunge, Fire Aspect, Flame, and
-  Thorns to a maximum of zero.
+- KaiCore owns the global enchantment caps: Power IV, Protection III, and
+  Sharpness III maximums, with Punch, Lunge, Fire Aspect, Flame, and Thorns
+  blocked. ItemControl should not be used for those global level caps.
 
 Every storage type above is a production gate. Verify both insert and extract
 paths, including hoppers and portable containers. Verify that the
@@ -63,8 +64,9 @@ Trial Key   Ghast Tear   Trial Key
 ## Launch and event commands
 
 The container startup RCON commands set the world border to 4000 blocks in all
-three dimensions, disable the locator bar, and set the SMPUtils+ mace cap to
-16 health points. The RCON service remains ClusterIP-only.
+three dimensions and disable the locator bar. SMPUtils+ enables its 16-health
+point mace cap from its persistent configuration; the startup command is not
+needed. The RCON service remains ClusterIP-only.
 
 Run these from the server console at the events:
 
@@ -89,10 +91,9 @@ rules-defined only.
   planned `MaceCap` fallback before production.
 - CoreProtect 24.0 is pinned, but its listing currently stops at 26.1.2.
   Confirm startup and investigation/rollback behavior on Paper 26.2.
-- Item Limiter's `POTION_<EFFECT>` syntax applies to every strength/variant of
-  an effect. The current `POTION_SPEED: 0` setting therefore bans Speed I as
-  well as Speed II; decide whether that broader rule is acceptable during the
-  potion test.
+- Speed I remains allowed through Item Limiter. KaiCore blocks Speed II, and
+  ItemControl blocks the drinkable Strong Swiftness potion; verify splash and
+  lingering variants during the potion test.
 - The ExternalSecret expects a 1Password item named `minecraft` with an
   `RCON_PASSWORD` field. Verify that item and field before reconciliation.
 

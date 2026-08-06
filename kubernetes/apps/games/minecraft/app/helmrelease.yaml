@@ -79,7 +79,6 @@ spec:
         execute in minecraft:the_end run worldborder center 0 0
         execute in minecraft:the_end run worldborder set 4000
         gamerule minecraft:locator_bar false
-        smpUtils maceDamageCap set 16
 
     minecraftServer:
       eula: true

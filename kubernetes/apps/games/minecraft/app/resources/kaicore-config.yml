@@ -60,7 +60,15 @@ combat:
   ban-elytra-while-in-combat: true
 
 enchant-limit:
-  blocked-enchantments: {}
+  blocked-enchantments:
+    "minecraft:fire_aspect": 0
+    "minecraft:flame": 0
+    "minecraft:lunge": 0
+    "minecraft:punch": 0
+    "minecraft:thorns": 0
+    "minecraft:power": 4
+    "minecraft:protection": 3
+    "minecraft:sharpness": 3
 
 sleep:
   one-player-sleep: false
