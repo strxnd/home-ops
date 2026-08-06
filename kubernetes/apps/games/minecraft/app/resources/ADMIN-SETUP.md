@@ -1,9 +1,10 @@
 # LifeSteal SMP staging and administration
 
 The Kubernetes workload installs the pinned Paper image, plugin jars, static
-plugin configuration, and the recipe datapack. The following state is
-intentionally completed in-game because ItemControl's custom-item identity and
-storage restrictions are persisted on the server volume.
+plugin configuration, the last verified ItemControl limits snapshot, and the
+recipe/loot datapack. ItemControl GUI changes still live on the server volume;
+the snapshot seeds a fresh PVC but is not updated automatically after later
+GUI changes.
 
 ## One-time ItemControl setup
 
@@ -28,6 +29,11 @@ items produced by the running plugins:
   Sharpness III maximums, with Punch, Lunge, Fire Aspect, Flame, and Thorns
   blocked. ItemControl should not be used for those global level caps.
 
+The repository seeds the current verified state from
+`resources/itemcontrol-limits.yml`. If the GUI state changes, export the live
+`plugins/ItemControl/limits.yml` and commit the reviewed replacement before a
+PVC rebuild.
+
 Every storage type above is a production gate. Verify both insert and extract
 paths, including hoppers and portable containers. Verify that the
 single-Dragon-Egg recipe consumes the only Dragon Egg and produces the one
@@ -50,6 +56,13 @@ D D D
 ```
 
 with diamonds for `D` and a Dragon Egg for `E`.
+
+The same datapack doubles Breeze Rod drops from player-killed Breezes: the base
+drop becomes 2-4, with the Looting increment doubled as well.
+
+It also makes newly crafted maces resistant to fire, explosion, and
+out-of-world damage sources. Existing maces are not rewritten; test a newly
+crafted mace before relying on this protection.
 
 ## Heart recipe
 
@@ -91,6 +104,13 @@ rules-defined only.
   planned `MaceCap` fallback before production.
 - CoreProtect 24.0 is pinned, but its listing currently stops at 26.1.2.
   Confirm startup and investigation/rollback behavior on Paper 26.2.
+- Post-death invulnerability/armor removal, automatic eight-minute Strength II,
+  mace explosion/void protection, and one-week invisible-name expiry are not
+  provided by the installed plugins. They require a tested custom implementation
+  or a staff procedure before production.
+- Beds are currently disabled globally and all tipped arrows are banned. If the
+  final policy is bed-bombing-only or Harming I arrows allowed, change and test
+  those decisions before launch.
 - Speed I remains allowed through Item Limiter. KaiCore blocks Speed II, and
   ItemControl blocks the drinkable Strong Swiftness potion; verify splash and
   lingering variants during the potion test.

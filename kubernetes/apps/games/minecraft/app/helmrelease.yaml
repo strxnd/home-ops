@@ -145,7 +145,10 @@ spec:
               /data/plugins/CombatLog \
               /data/plugins/No-Flight-In-PVP \
               /data/plugins/CustomRecipes \
-              /data/plugins/KaiCore
+              /data/plugins/KaiCore \
+              /data/world/datapacks/lifesteal-smp/data/minecraft/loot_table/entities \
+              /data/world/datapacks/lifesteal-smp/data/minecraft/recipe \
+              /data/world/datapacks/lifesteal-smp/data/lifesteal/tags/damage_type
 
             # Keep disabled jars on the PVC for a reversible rollback, but do
             # not leave them with a .jar suffix for Paper to load.
@@ -158,6 +161,7 @@ spec:
             copy_if_missing /config/lifestealz-config.yml /data/plugins/LifeStealZ/config.yml
             copy_if_missing /config/lifestealz-items.yml /data/plugins/LifeStealZ/items.yml
             copy_if_missing /config/itemcontrol-config.yml /data/plugins/ItemControl/config.yml
+            copy_if_missing /config/itemcontrol-limits.yml /data/plugins/ItemControl/limits.yml
             copy_if_missing /config/item-limiter-config.yml /data/plugins/notdqshers-item-limiter/config.yml
             copy_if_missing /config/mace-config.yml /data/plugins/MaceConfig/config.yml
             copy_if_missing /config/smputils-config.yml /data/plugins/SMPUtils/config.yml
@@ -170,6 +174,9 @@ spec:
             mkdir -p /data/world/datapacks/lifesteal-smp/data/lifesteal/recipe
             copy_if_missing /config/datapack-pack.mcmeta /data/world/datapacks/lifesteal-smp/pack.mcmeta
             copy_if_missing /config/datapack-dragon-egg-chestplate.json /data/world/datapacks/lifesteal-smp/data/lifesteal/recipe/dragon_egg_chestplate.json
+            copy_if_missing /config/datapack-breeze-loot.json /data/world/datapacks/lifesteal-smp/data/minecraft/loot_table/entities/breeze.json
+            copy_if_missing /config/datapack-mace-recipe.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/mace.json
+            copy_if_missing /config/datapack-mace-damage-tag.json /data/world/datapacks/lifesteal-smp/data/lifesteal/tags/damage_type/mace_immune.json
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true

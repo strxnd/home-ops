@@ -15,6 +15,7 @@ configMapGenerator:
       - lifestealz-config.yml=./resources/lifestealz-config.yml
       - lifestealz-items.yml=./resources/lifestealz-items.yml
       - itemcontrol-config.yml=./resources/itemcontrol-config.yml
+      - itemcontrol-limits.yml=./resources/itemcontrol-limits.yml
       - item-limiter-config.yml=./resources/item-limiter-config.yml
       - mace-config.yml=./resources/mace-config.yml
       - smputils-config.yml=./resources/smputils-config.yml
@@ -25,6 +26,9 @@ configMapGenerator:
       - kaicore-config.yml=./resources/kaicore-config.yml
       - datapack-pack.mcmeta=./resources/datapack-pack.mcmeta
       - datapack-dragon-egg-chestplate.json=./resources/datapack-dragon-egg-chestplate.json
+      - datapack-breeze-loot.json=./resources/datapack-breeze-loot.json
+      - datapack-mace-recipe.json=./resources/datapack-mace-recipe.json
+      - datapack-mace-damage-tag.json=./resources/datapack-mace-damage-tag.json
 
 generatorOptions:
   disableNameSuffixHash: true

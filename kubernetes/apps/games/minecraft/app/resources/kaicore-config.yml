@@ -99,7 +99,7 @@ locator-bar:
   enabled: false
 
 pvp:
-  enabled: false
+  enabled: true
 
 weapon-cooldowns:
   spear: 0

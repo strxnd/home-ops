@@ -1,0 +1,65 @@
+settings:
+  broadcast: true
+  bypass-enabled: false
+  console-log: true
+  inventory-check: true
+
+player-item-entries: []
+
+global-item-entries:
+  - POTION|BASE=STRONG_SWIFTNESS
+  - NETHER_STAR|META=53AFAF7DF3E48E3A
+  - NETHERITE_CHESTPLATE
+  - MACE
+
+global-item-display:
+  POTION|BASE=STRONG_SWIFTNESS:
+    ==: org.bukkit.inventory.ItemStack
+    DataVersion: 4903
+    id: minecraft:potion
+    count: 1
+    components:
+      minecraft:potion_contents: '{potion:"minecraft:strong_swiftness"}'
+    schema_version: 1
+  NETHER_STAR|META=53AFAF7DF3E48E3A:
+    ==: org.bukkit.inventory.ItemStack
+    DataVersion: 4903
+    id: minecraft:nether_star
+    count: 1
+    components:
+      minecraft:lore: '[{color:"gray",italic:0b,text:"Rightclick to use"}]'
+      minecraft:tooltip_display: '{hidden_components:["minecraft:attribute_modifiers"]}'
+      minecraft:custom_name: '{color:"red",italic:0b,text:"Heart"}'
+      minecraft:custom_model_data: '{strings:["lifestealz_defaultheart"]}'
+      minecraft:custom_data: '{PublicBukkitValues:{"lifestealz:customheartvalue":1,"lifestealz:customitemid":"defaultheart","lifestealz:customitemtype":"heart","lifestealz:despawnable":1b,"lifestealz:invulnerable":0b}}'
+    schema_version: 1
+  NETHERITE_CHESTPLATE:
+    ==: org.bukkit.inventory.ItemStack
+    DataVersion: 4903
+    id: minecraft:netherite_chestplate
+    count: 1
+    components:
+      minecraft:unbreakable: '{}'
+      minecraft:custom_data: '{"smp:dragon_egg_chestplate":1b}'
+    schema_version: 1
+  MACE:
+    ==: org.bukkit.inventory.ItemStack
+    DataVersion: 4903
+    id: minecraft:mace
+    count: 1
+    schema_version: 1
+
+global-item-max:
+  POTION|BASE=STRONG_SWIFTNESS: 0
+
+global-item-storage:
+  POTION|BASE=STRONG_SWIFTNESS: false
+  MACE: false
+  NETHER_STAR|META=53AFAF7DF3E48E3A: false
+  NETHERITE_CHESTPLATE: false
+
+global-item-usable:
+  POTION|BASE=STRONG_SWIFTNESS: false
+
+global-item-material-limit-exempt:
+  NETHER_STAR|META=53AFAF7DF3E48E3A: false
