@@ -177,12 +177,14 @@ spec:
             copy_if_missing /config/datapack-breeze-loot.json /data/world/datapacks/lifesteal-smp/data/minecraft/loot_table/entities/breeze.json
             copy_if_missing /config/datapack-mace-recipe.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/mace.json
             copy_if_missing /config/datapack-mace-damage-tag.json /data/world/datapacks/lifesteal-smp/data/lifesteal/tags/damage_type/mace_immune.json
-            copy_if_missing /config/datapack-netherite-sword.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_sword.json
-            copy_if_missing /config/datapack-netherite-axe.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_axe.json
-            copy_if_missing /config/datapack-netherite-helmet.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_helmet.json
-            copy_if_missing /config/datapack-netherite-chestplate.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_chestplate.json
-            copy_if_missing /config/datapack-netherite-leggings.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_leggings.json
-            copy_if_missing /config/datapack-netherite-boots.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_boots.json
+            # These recipe overrides are declarative and must replace any
+            # stale copy on the PVC when their schema changes.
+            cp /config/datapack-netherite-sword.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_sword.json
+            cp /config/datapack-netherite-axe.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_axe.json
+            cp /config/datapack-netherite-helmet.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_helmet.json
+            cp /config/datapack-netherite-chestplate.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_chestplate.json
+            cp /config/datapack-netherite-leggings.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_leggings.json
+            cp /config/datapack-netherite-boots.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_boots.json
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
