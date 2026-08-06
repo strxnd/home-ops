@@ -60,6 +60,11 @@ with diamonds for `D` and a Dragon Egg for `E`.
 The same datapack doubles Breeze Rod drops from player-killed Breezes: the base
 drop becomes 2-4, with the Looting increment doubled as well.
 
+It also overrides the six forbidden Netherite smithing recipes (sword, axe,
+helmet, chestplate, leggings, and boots) with an unreachable template.
+Netherite pickaxes, shovels, and hoes remain craftable. The override does not
+affect the separate Dragon Egg chestplate recipe.
+
 It also makes newly crafted maces resistant to fire, explosion, and
 out-of-world damage sources. Existing maces are not rewritten; test a newly
 crafted mace before relying on this protection.
