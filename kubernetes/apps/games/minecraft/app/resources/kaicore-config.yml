@@ -40,11 +40,11 @@ dimensions:
   allow-end: false
 
 infinite-restock:
-  enabled: false
+  enabled: true
 
 invisibility-qol:
-  hide-name-when-killing: false
-  hide-name-when-dying: false
+  hide-name-when-killing: true
+  hide-name-when-dying: true
 
 combat:
   enabled: false

@@ -12,7 +12,7 @@ combat-log:
     mending:
       disabled-in-combat: true
     riptide:
-      stop: false
+      stop: true
       cooldown: 10000
   punishment:
     damage: 5.0

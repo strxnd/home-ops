@@ -113,11 +113,11 @@ spec:
           - "GggKSyTG:9VsFtEzu" # Mace Config 0.2.2
           - "Mb7K785l:qwyXkD8V" # SMPUtils+ 1.5; 1.21.x listing, staging gate
           - "j2g3fqUV:t8bMoUaC" # CartLimiter 1.7
-          - "LI8sodAD:xrvVOux2" # Simple Combat Log 1.19
-          - "GJZRngyV:2zviFooQ" # No Flight In PVP v5.0
+          - "LI8sodAD:xrvVOux2" # Simple Combat Log 1.19; keeps projectile/explosion combat tagging
+          # - "GJZRngyV:2zviFooQ" # DISABLED: KaiCore/CombatLog cover its flight restrictions
           - "Lu3KuzdV:Kma0kBsY" # CoreProtect 24.0; 26.2 staging gate
           - "LJNGWSvH:fbt7nJt5" # Grim 2.3.74-2614909
-          - "YD56Nhy5:ikKvjBcF" # Custom Recipes 1.0
+          # - "YD56Nhy5:ikKvjBcF" # DISABLED: no active recipes; the chestplate uses the datapack
           - "kV8iMq85:yCPbvC8z" # KaiCore 1.5
         downloadDependencies: none
         allowedVersionType: release
@@ -147,6 +147,14 @@ spec:
               /data/plugins/No-Flight-In-PVP \
               /data/plugins/CustomRecipes \
               /data/plugins/KaiCore
+
+            # Keep disabled jars on the PVC for a reversible rollback, but do
+            # not leave them with a .jar suffix for Paper to load.
+            for jar in /data/plugins/No\ Flight\ In\ PVP-*.jar /data/plugins/customRecipes.jar; do
+              if [ -f "$jar" ]; then
+                mv "$jar" "$jar.disabled"
+              fi
+            done
 
             copy_if_missing /config/lifestealz-config.yml /data/plugins/LifeStealZ/config.yml
             copy_if_missing /config/lifestealz-items.yml /data/plugins/LifeStealZ/items.yml
