@@ -179,12 +179,19 @@ spec:
             copy_if_missing /config/datapack-mace-damage-tag.json /data/world/datapacks/lifesteal-smp/data/lifesteal/tags/damage_type/mace_immune.json
             # These recipe overrides are declarative and must replace any
             # stale copy on the PVC when their schema changes.
-            cp /config/datapack-netherite-sword.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_sword.json
-            cp /config/datapack-netherite-axe.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_axe.json
-            cp /config/datapack-netherite-helmet.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_helmet.json
-            cp /config/datapack-netherite-chestplate.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_chestplate.json
-            cp /config/datapack-netherite-leggings.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_leggings.json
-            cp /config/datapack-netherite-boots.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_boots.json
+            rm -f \
+              /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_sword.json \
+              /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_axe.json \
+              /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_helmet.json \
+              /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_chestplate.json \
+              /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_leggings.json \
+              /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_boots.json
+            cp /config/datapack-netherite-sword-smithing.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_sword_smithing.json
+            cp /config/datapack-netherite-axe-smithing.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_axe_smithing.json
+            cp /config/datapack-netherite-helmet-smithing.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_helmet_smithing.json
+            cp /config/datapack-netherite-chestplate-smithing.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_chestplate_smithing.json
+            cp /config/datapack-netherite-leggings-smithing.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_leggings_smithing.json
+            cp /config/datapack-netherite-boots-smithing.json /data/world/datapacks/lifesteal-smp/data/minecraft/recipe/netherite_boots_smithing.json
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true

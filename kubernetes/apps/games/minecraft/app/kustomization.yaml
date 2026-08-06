@@ -29,12 +29,12 @@ configMapGenerator:
       - datapack-breeze-loot.json=./resources/datapack-breeze-loot.json
       - datapack-mace-recipe.json=./resources/datapack-mace-recipe.json
       - datapack-mace-damage-tag.json=./resources/datapack-mace-damage-tag.json
-      - datapack-netherite-sword.json=./resources/datapack-netherite-sword.json
-      - datapack-netherite-axe.json=./resources/datapack-netherite-axe.json
-      - datapack-netherite-helmet.json=./resources/datapack-netherite-helmet.json
-      - datapack-netherite-chestplate.json=./resources/datapack-netherite-chestplate.json
-      - datapack-netherite-leggings.json=./resources/datapack-netherite-leggings.json
-      - datapack-netherite-boots.json=./resources/datapack-netherite-boots.json
+      - datapack-netherite-sword-smithing.json=./resources/datapack-netherite-sword-smithing.json
+      - datapack-netherite-axe-smithing.json=./resources/datapack-netherite-axe-smithing.json
+      - datapack-netherite-helmet-smithing.json=./resources/datapack-netherite-helmet-smithing.json
+      - datapack-netherite-chestplate-smithing.json=./resources/datapack-netherite-chestplate-smithing.json
+      - datapack-netherite-leggings-smithing.json=./resources/datapack-netherite-leggings-smithing.json
+      - datapack-netherite-boots-smithing.json=./resources/datapack-netherite-boots-smithing.json
 
 generatorOptions:
   disableNameSuffixHash: true
