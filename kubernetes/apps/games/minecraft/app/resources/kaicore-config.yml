@@ -47,14 +47,14 @@ invisibility-qol:
   hide-name-when-dying: true
 
 combat:
-  enabled: false
+  enabled: true
   tag-time-seconds: 30
   ban-restock-while-in-combat: false
   combat-log-punishment: KILL
   timer-display: ACTIONBAR
-  ban-riptide-while-in-combat: false
-  minimum-damage-to-tag: 1.0
-  ban-elytra-while-in-combat: false
+  ban-riptide-while-in-combat: true
+  minimum-damage-to-tag: 0
+  ban-elytra-while-in-combat: true
 
 enchant-limit:
   blocked-enchantments: {}

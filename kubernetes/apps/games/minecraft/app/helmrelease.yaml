@@ -113,7 +113,7 @@ spec:
           - "GggKSyTG:9VsFtEzu" # Mace Config 0.2.2
           - "Mb7K785l:qwyXkD8V" # SMPUtils+ 1.5; 1.21.x listing, staging gate
           - "j2g3fqUV:t8bMoUaC" # CartLimiter 1.7
-          - "LI8sodAD:xrvVOux2" # Simple Combat Log 1.19; keeps projectile/explosion combat tagging
+          # - "LI8sodAD:xrvVOux2" # DISABLED: KaiCore is the sole combat tag/log owner
           # - "GJZRngyV:2zviFooQ" # DISABLED: KaiCore/CombatLog cover its flight restrictions
           - "Lu3KuzdV:Kma0kBsY" # CoreProtect 24.0; 26.2 staging gate
           - "LJNGWSvH:fbt7nJt5" # Grim 2.3.74-2614909
@@ -150,7 +150,7 @@ spec:
 
             # Keep disabled jars on the PVC for a reversible rollback, but do
             # not leave them with a .jar suffix for Paper to load.
-            for jar in /data/plugins/No\ Flight\ In\ PVP-*.jar /data/plugins/customRecipes.jar; do
+            for jar in /data/plugins/CombatLog.jar /data/plugins/No\ Flight\ In\ PVP-*.jar /data/plugins/customRecipes.jar; do
               if [ -f "$jar" ]; then
                 mv "$jar" "$jar.disabled"
               fi
