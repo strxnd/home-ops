@@ -36,12 +36,13 @@ spec:
           app:
             image:
               repository: docker.io/itzg/minecraft-server
-              tag: 2026.8.0-java25@sha256:e3335993929a1565f73c30b2041bcbc1473fc9c406fdd5a0d0ea24c08ef73320
+              tag: 2026.8.0-java21@sha256:b76b9298a2a60d5cf9d223e009cd0b8ad620c2080abd83f9a1fa5084fa87f9ab
             env:
               TZ: Asia/Singapore
               EULA: "TRUE"
               TYPE: VANILLA
-              VERSION: "26.2"
+              VERSION: "1.21.11"
+              LEVEL: world-1.21.11
               MODE: survival
               DIFFICULTY: hard
               MAX_PLAYERS: "10"
