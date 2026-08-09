@@ -46,6 +46,8 @@ spec:
               MODE: survival
               DIFFICULTY: hard
               MAX_PLAYERS: "10"
+              OPS: Strxnd
+              EXISTING_OPS_FILE: MERGE
               MEMORY: 6G
               VIEW_DISTANCE: "10"
               SIMULATION_DISTANCE: "8"
