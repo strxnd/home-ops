@@ -45,6 +45,7 @@ spec:
               LEVEL: world-1.21.11
               MODE: survival
               DIFFICULTY: hard
+              HARDCORE: "true"
               MAX_PLAYERS: "10"
               OPS: Strxnd
               EXISTING_OPS_FILE: MERGE
@@ -83,6 +84,57 @@ spec:
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+        initContainers:
+          enable-hardcore:
+            image:
+              repository: docker.io/library/python
+              tag: 3.13.13-alpine3.23@sha256:420cd0bf0f3998275875e02ecd5808168cf0843cbb4d3c536432f729247b2acc
+            command:
+              - python
+              - -c
+            args:
+              - |
+                import gzip
+                import os
+                import shutil
+                from pathlib import Path
+
+                world = Path("/data/world-1.21.11")
+                marker = b"\x01\x00\x08hardcore"
+
+                for filename in ("level.dat", "level.dat_old"):
+                    path = world / filename
+                    if not path.exists():
+                        if filename == "level.dat":
+                            raise FileNotFoundError(path)
+                        continue
+
+                    data = bytearray(gzip.decompress(path.read_bytes()))
+                    position = data.find(marker)
+                    if position == -1 or data.find(marker, position + 1) != -1:
+                        raise RuntimeError(f"Expected one hardcore tag in {path}")
+
+                    value = position + len(marker)
+                    if data[value] == 1:
+                        print(f"Hardcore already enabled in {path}")
+                        continue
+                    if data[value] != 0:
+                        raise RuntimeError(f"Unexpected hardcore value in {path}")
+
+                    backup = path.with_name(f"{filename}.pre-hardcore")
+                    if not backup.exists():
+                        shutil.copy2(path, backup)
+
+                    temporary = path.with_name(f".{filename}.hardcore.tmp")
+                    data[value] = 1
+                    temporary.write_bytes(gzip.compress(bytes(data), mtime=0))
+                    shutil.copystat(path, temporary)
+                    os.replace(temporary, path)
+                    print(f"Enabled hardcore in {path}")
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
     service:
       app:
