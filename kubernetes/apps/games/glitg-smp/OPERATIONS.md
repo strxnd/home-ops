@@ -16,6 +16,7 @@ own `glitg-smp-data` PVC. The original GLITG server-list icon and MOTD
 | CustomRecipes | 1.0 | Loads on 26.2 |
 | CoreProtect CE | 24.0 | Declares Paper 26.1.2 |
 | GrimAC | 2.3.74-2614909 | Loads on Paper 26.1.2 |
+| ViaVersion | 5.11.0 | Client protocol compatibility |
 | SMPRules | 2.0.0 | Built locally against Paper 26.1.2 API and LifeStealZ 2.21.1 |
 
 Plugin downloads are pinned in `config/plugins.txt`. The LifeStealZ build is
@@ -36,6 +37,7 @@ of a staged CoreProtect compatibility test.
 | SMPRules | Week floors, global grace, respawn protection/armour cancellation, Strength II normalization, hard damage caps, pearl veto, legendary storage/chestplate fallback, locator controls |
 | SMPChanges | Breeze Rod loot table replacement |
 | GrimAC | Conservative anti-cheat defaults |
+| ViaVersion | Java client protocol translation |
 
 ## Admin Commands
 

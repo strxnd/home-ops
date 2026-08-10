@@ -11,3 +11,6 @@ RUN mkdir -p libs \
 FROM docker.io/itzg/minecraft-server:2026.8.0-java25@sha256:9246d987f7d0f26ab1359868404f65df59fecf5a6597628231d23f909ee806bc
 COPY --from=smprules-build --chown=1000:1000 /src/build/libs/SMPRules-2.0.0.jar /plugins/SMPRules-2.0.0.jar
 COPY --chown=1000:1000 kubernetes/apps/games/glitg-smp/config/ /config/
+COPY kubernetes/apps/games/glitg-smp/image/start.sh /image/scripts/glitg-start
+RUN chmod 0755 /image/scripts/glitg-start
+ENTRYPOINT ["/image/scripts/glitg-start"]

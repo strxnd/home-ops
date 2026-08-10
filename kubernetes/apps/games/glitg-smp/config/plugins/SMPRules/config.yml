@@ -1,0 +1,16 @@
+hearts:
+  week1-minimum: 3
+  week2-minimum: 1
+  crafted-use-threshold: 10
+season:
+  grace-period-minutes: 60
+  post-death-protection-minutes: 30
+  end-open-delay-days: 7
+  locator-event-duration-hours: 24
+world:
+  border-size: 4000
+damage-caps:
+  mace: 16.0
+  tnt-minecart: 20.0
+potions:
+  strength-ii-duration-seconds: 480

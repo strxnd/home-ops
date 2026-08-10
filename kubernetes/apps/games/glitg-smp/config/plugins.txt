@@ -5,3 +5,4 @@ https://hangarcdn.papermc.io/plugins/kuqk/ItemBlocker/versions/1.1.3/PAPER/ItemB
 https://cdn.modrinth.com/data/YD56Nhy5/versions/ikKvjBcF/customRecipes.jar
 https://cdn.modrinth.com/data/Lu3KuzdV/versions/Kma0kBsY/CoreProtect-CE-24.0.jar
 https://cdn.modrinth.com/data/LJNGWSvH/versions/fbt7nJt5/grimac-bukkit-2.3.74-2614909.jar
+https://cdn.modrinth.com/data/P1OZGk5p/versions/ZH8459B6/ViaVersion-5.11.0.jar
