@@ -1,0 +1,113 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app glitg-smp
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    timeout: 15m
+    remediation:
+      retries: 1
+  interval: 1h
+  maxHistory: 1
+  upgrade:
+    timeout: 15m
+    remediation:
+      retries: 1
+  values:
+    controllers:
+      glitg-smp:
+        strategy: Recreate
+        pod:
+          automountServiceAccountToken: false
+          terminationGracePeriodSeconds: 120
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+        containers:
+          app:
+            image:
+              # Built from image/Dockerfile; digest is the verified Java 25 base image.
+              repository: ghcr.io/strxnd/glitg-smp
+              tag: 1.0.0
+            env:
+              TZ: Asia/Singapore
+              EULA: "TRUE"
+              TYPE: PAPER
+              VERSION: "26.1.2"
+              # Paper 26.1.2 build 61 stable; update only after a verified staged test.
+              PAPER_BUILD: "61"
+              LEVEL: glitg-smp
+              MODE: survival
+              DIFFICULTY: hard
+              HARDCORE: "false"
+              MAX_PLAYERS: "10"
+              OPS: Strxnd
+              EXISTING_OPS_FILE: MERGE
+              MEMORY: 6G
+              VIEW_DISTANCE: "10"
+              SIMULATION_DISTANCE: "8"
+              ENABLE_RCON: "false"
+              MOTD: "GLITG SMP — Lifesteal Season One"
+              COPY_CONFIG_DEST: /data
+              SYNC_SKIP_NEWER_IN_DESTINATION: "false"
+              PLUGINS_FILE: /config/plugins.txt
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: &port 25565
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *probe
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 90
+            resources:
+              requests:
+                cpu: 2000m
+                memory: 7Gi
+              limits:
+                cpu: 4000m
+                memory: 8Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+    service:
+      app:
+        controller: *app
+        type: LoadBalancer
+        annotations:
+          external-dns.alpha.kubernetes.io/hostname: "glitg.${SECRET_DOMAIN}"
+          lbipam.cilium.io/ips: "192.168.20.12"
+        externalTrafficPolicy: Cluster
+        ports:
+          minecraft:
+            port: *port
+            protocol: TCP
+    persistence:
+      data:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 20Gi
+        storageClass: local-path
+        globalMounts:
+          - path: /data

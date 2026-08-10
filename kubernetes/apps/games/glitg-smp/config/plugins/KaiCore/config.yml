@@ -1,0 +1,54 @@
+# KaiCore is deliberately limited to mechanics it owns without overlap.
+items: {}
+easy-recipes:
+  webs: { enabled: false }
+  gaps: { enabled: false }
+mace:
+  one-time-craft: { enabled: false, consumed: false }
+  ban: false
+  stuns-shield: false
+pearls: { ban: false }
+crystal-pvp: { ban: false }
+potion-ban: {}
+minimap:
+  ban-xaeros: true
+  fair-mode: true
+  debug: false
+dimensions:
+  allow-nether: true
+  # SMPRules owns the season-dependent End gate.
+  allow-end: true
+infinite-restock: { enabled: true }
+invisibility-qol:
+  # SMPRules owns the Week 1-only death-message rule.
+  hide-name-when-killing: false
+  hide-name-when-dying: false
+combat:
+  # Exactly one combat tag source: SMPRules.
+  enabled: false
+  tag-time-seconds: 30
+  ban-restock-while-in-combat: false
+  combat-log-punishment: KILL
+  timer-display: ACTIONBAR
+  ban-riptide-while-in-combat: false
+  minimum-damage-to-tag: 1.0
+  ban-elytra-while-in-combat: false
+enchant-limit: { blocked-enchantments: {} }
+sleep: { one-player-sleep: false }
+tnt-minecarts: { ban: false }
+string-dupers: { revive-enabled: false, min-string-drop: 1, max-string-drop: 3 }
+villager-killing: { ban-killing-villagers: false, type: ALL }
+netherite-ban: { enabled: false, banned-items: [] }
+locator-bar: { enabled: false }
+pvp: { enabled: true }
+weapon-cooldowns:
+  spear: 0
+  spear-blocks: { melee: true }
+  lunge: 0
+  mace: 0
+  shield: 0
+  ender-pearl: 0
+  wind-charge: 0
+  riptide: 0
+  enchanted-apple: 0
+item-limiter: { enabled: false, item-limits: {} }

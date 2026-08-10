@@ -1,0 +1,9 @@
+language: "en"
+messages:
+  cooldown-ms: 1200
+bypass:
+  enabled: true
+  default-permission: "itemblocker.bypass"
+  per-action:
+    enabled: true
+    prefix: "itemblocker.bypass."

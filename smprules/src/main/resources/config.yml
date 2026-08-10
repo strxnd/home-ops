@@ -1,0 +1,33 @@
+brand: "GLITG SMP"
+hearts:
+  week1-minimum: 3
+  week2-minimum: 1
+  maximum: 20
+  crafted-use-threshold: 10
+season:
+  grace-period-minutes: 60
+  post-death-protection-minutes: 30
+  end-open-delay-days: 7
+  locator-event-duration-hours: 24
+combat:
+  tag-duration-seconds: 30
+  logoff-action: KILL
+damage-caps:
+  mace: 16.0
+  tnt-minecart: 20.0
+legendary:
+  recovery-delay-seconds: 60
+world:
+  border-size: 4000
+potions:
+  strength-ii-duration-seconds: 480
+breeze-rods:
+  multiplier: 2
+kit-limits:
+  healing-potions: 6
+  xp-bottle-stacks: 3
+  cobweb-stacks: 2
+  golden-apple-stacks: 2
+  breeze-rod-stacks: 1
+messages:
+  prefix: "<gold><bold>GLITG SMP</bold></gold> <gray>»</gray> "
