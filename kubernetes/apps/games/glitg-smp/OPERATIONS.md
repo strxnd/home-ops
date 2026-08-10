@@ -3,6 +3,9 @@
 This is a new, independent Paper deployment. It does not mount, modify, or
 migrate the existing `minecraft` PVC.
 
+`config/server-icon.png` is the centred 64×64 GLITG SMP icon used by the
+Minecraft server list.
+
 ## Runtime and sources
 
 | Component | Exact version | Official source |
