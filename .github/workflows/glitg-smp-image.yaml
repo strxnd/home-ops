@@ -27,5 +27,5 @@ jobs:
 
       - name: Build and publish
         run: |
-          docker build -f kubernetes/apps/games/glitg-smp/image/Dockerfile -t ghcr.io/${{ github.repository_owner }}/glitg-smp:1.0.3 .
-          docker push ghcr.io/${{ github.repository_owner }}/glitg-smp:1.0.3
+          docker build -f kubernetes/apps/games/glitg-smp/image/Dockerfile -t ghcr.io/${{ github.repository_owner }}/glitg-smp:1.0.4 .
+          docker push ghcr.io/${{ github.repository_owner }}/glitg-smp:1.0.4
