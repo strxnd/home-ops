@@ -1,29 +1,17 @@
 name: SMPRules
-version: 1.0.0
+version: 2.0.0
 main: dev.glitg.smp.SMPRules
 api-version: '26.1'
-description: GLITG SMP season, legendary-item, combat, and rules engine.
-website: https://github.com/kumaraarav/home-ops
+description: Small compatibility rules for GLITG SMP.
 authors: [GLITG]
 depend: [LifeStealZ]
-softdepend: [CoreProtect, GrimAC, ItemBlocker, KaiCore, CustomRecipes]
+softdepend: [ItemBlocker, KaiCore]
 commands:
   smprules:
-    description: GLITG SMP administration and season controls
-    usage: /smprules <status|reload|season|finalday|grace|end|locator|protection>
+    description: GLITG SMP administration
+    usage: /smprules <status|season|grace|end|locator>
 permissions:
   smprules.admin:
-    default: op
-    children:
-      smprules.status: true
-      smprules.reload: true
-      smprules.season: true
-      smprules.bypass: true
-  smprules.status:
-    default: true
-  smprules.reload:
-    default: op
-  smprules.season:
     default: op
   smprules.bypass:
     default: false

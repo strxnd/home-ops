@@ -4,10 +4,7 @@ kind: OCIRepository
 metadata:
   name: glitg-smp
 spec:
-  interval: 15m
-  layerSelector:
-    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
-    operation: copy
+  interval: 5m
+  url: oci://ghcr.io/bjw-s-labs/helm/app-template
   ref:
     tag: 4.6.2
-  url: oci://ghcr.io/bjw-s-labs/helm/app-template

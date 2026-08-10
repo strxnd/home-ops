@@ -35,17 +35,17 @@ spec:
         containers:
           app:
             image:
-              # Built from image/Dockerfile; digest is the verified Java 25 base image.
               repository: ghcr.io/strxnd/glitg-smp
-              tag: 1.0.6
+              tag: 2.0.0
             env:
               TZ: Asia/Singapore
               EULA: "TRUE"
               TYPE: PAPER
+              # Paper 26.1.2 is the newest release supported by CoreProtect CE 24.0.
               VERSION: "26.1.2"
-              # Paper 26.1.2 build 61 stable; update only after a verified staged test.
               PAPER_BUILD: "61"
               LEVEL: glitg-smp
+              SEED: "-3085124641489919468"
               MODE: survival
               DIFFICULTY: hard
               HARDCORE: "false"
@@ -58,6 +58,7 @@ spec:
               ENABLE_RCON: "false"
               MOTD: "GLITG S1 - LifeSteal"
               COPY_CONFIG_DEST: /data
+              # This is a replacement deployment; image-managed rule config must override the old release.
               SYNC_SKIP_NEWER_IN_DESTINATION: "false"
               PLUGINS_FILE: /config/plugins.txt
             probes:

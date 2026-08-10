@@ -1,5 +1,5 @@
 .git
 .tools
-smprules/.tools
+smprules/.gradle
 smprules/build
 smprules/libs

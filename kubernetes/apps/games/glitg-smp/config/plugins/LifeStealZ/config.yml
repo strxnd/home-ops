@@ -1,37 +1,13 @@
-# Managed baseline for GLITG SMP. LifeStealZ owns heart data and item mechanics;
-# SMPRules changes its public death-event values for the weekly floors.
-checkForUpdates: false
-lang: "en-US"
-startHearts: 10
+---
+# LifeStealZ owns persistent hearts, withdrawals, crafted hearts and final-day bans.
+# SMPRules changes only its public PvP death event at the configured weekly floor.
 maxHearts: 20
-reviveHearts: 1
-heartsPerKill: 1
-heartsPerNaturalDeath: 0
 minHearts: 0
-enforceMaxHeartsOnAdminCommands: true
-dropHeartsPlayer: false
-dropHeartsNatural: false
-dropHeartsIfMax: false
-looseHeartsToNature: false
-looseHeartsToPlayer: true
-announceElimination: true
-allowDyingFromWithdraw: false
-minWithdrawHearts: 1
-healOnHeartUse: false
+disablePlayerBanOnElimination: false
+heartRewardOnElimination: false
 preventTotems: true
 preventCrystalPVP: true
 preventRespawnAnchors: true
 preventBeds: true
-preventCustomItemsInItemFrames: true
-disablePlayerBanOnElimination: false
-heartRewardOnElimination: true
-maxRevives: 0
 gracePeriod:
   enabled: false
-heartGainCooldown:
-  enabled: false
-antiAlt:
-  enabled: true
-  logAttempt: true
-  preventKill: true
-  sendMessage: true

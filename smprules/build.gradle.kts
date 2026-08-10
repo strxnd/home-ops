@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "dev.glitg"
-version = "1.0.0"
+version = "2.0.0"
 
 repositories {
     mavenCentral()
@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+    // Paper 26.2 has no published Maven API coordinate. The 26.1.2 API is binary-compatible for these events.
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.61-stable")
     compileOnly(files("libs/lifestealz-2.21.1.jar"))
 }
@@ -20,10 +21,5 @@ tasks {
         options.release.set(25)
         options.encoding = "UTF-8"
     }
-    processResources {
-        filteringCharset = "UTF-8"
-    }
-    jar {
-        archiveFileName.set("SMPRules-${project.version}.jar")
-    }
+    jar { archiveFileName.set("SMPRules-${project.version}.jar") }
 }

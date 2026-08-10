@@ -1,90 +1,59 @@
-# GLITG SMP operations
+# GLITG SMP Operations
 
-This is a new, independent Paper deployment. It does not mount, modify, or
-migrate the existing `minecraft` PVC.
+This is independent from the `minecraft` vanilla hardcore server and uses its
+own `glitg-smp-data` PVC. The original GLITG server-list icon and MOTD
+`GLITG S1 - LifeSteal` are retained.
 
-`config/server-icon.png` is the centred 64×64 GLITG SMP icon used by the
-Minecraft server list.
+## Runtime
 
-## Runtime and sources
+| Component | Version | Status |
+| --- | --- | --- |
+| Paper | 26.1.2 build 61 | Smoke-tested on Java 25 |
+| Java | Temurin 25 | Smoke-tested |
+| LifeStealZ | 2.21.1 | Declares Paper 26.1.2 |
+| KaiCore | 1.5 | Loads on Paper 26.1.2 |
+| ItemBlocker | 1.1.3 | Loads on Paper 26.1.2 |
+| CustomRecipes | 1.0 | Loads on 26.2 |
+| CoreProtect CE | 24.0 | Declares Paper 26.1.2 |
+| GrimAC | 2.3.74-2614909 | Loads on Paper 26.1.2 |
+| SMPRules | 2.0.0 | Built locally against Paper 26.1.2 API and LifeStealZ 2.21.1 |
 
-| Component | Exact version | Official source |
-|---|---:|---|
-| Minecraft / Paper | 26.1.2 / `26.1.2-61-main` | [Paper downloads](https://papermc.io/downloads/paper) |
-| Java | Temurin 25.0.3+9 LTS | [Paper Java requirements](https://docs.papermc.io/paper/getting-started/) |
-| KaiCore | 1.5 | [Modrinth](https://cdn.modrinth.com/data/kV8iMq85/versions/yCPbvC8z/kaicore-1.5.jar) |
-| LifeStealZ | 2.21.1 | [GitHub release](https://github.com/ZetaPlugins/LifeStealZ/releases/download/2.21.1/lifestealz-2.21.1.jar) |
-| ItemBlocker | 1.1.3 | [Modrinth](https://cdn.modrinth.com/data/klHgtaeR/versions/1fW12xlf/ItemBlocker-1.1.3.jar) |
-| CustomRecipes | 1.0 | [Modrinth](https://cdn.modrinth.com/data/YD56Nhy5/versions/ikKvjBcF/customRecipes.jar) |
-| CoreProtect CE | 24.0 | [Modrinth](https://cdn.modrinth.com/data/Lu3KuzdV/versions/Kma0kBsY/CoreProtect-CE-24.0.jar) |
-| GrimAC | 2.3.74-2614909 | [Modrinth](https://cdn.modrinth.com/data/LJNGWSvH/versions/fbt7nJt5/grimac-bukkit-2.3.74-2614909.jar) |
-| ViaVersion | 5.11.0 | [Modrinth](https://cdn.modrinth.com/data/P1OZGk5p/versions/ZH8459B6/ViaVersion-5.11.0.jar) |
-| ViaBackwards | 5.11.0 | [Modrinth](https://cdn.modrinth.com/data/NpvuJQoq/versions/hYhg2QBT/ViaBackwards-5.11.0.jar) |
-| SMPRules | 1.0.0 | `smprules/` in this repository |
+Plugin downloads are pinned in `config/plugins.txt`. The LifeStealZ build is
+verified in the image build against SHA-256
+`c4d466f579ec91ef3dd51c01fbdcab3aa8cf98009489c229abe4c823a4dbaea1`.
 
-Paper's current 26.1.2 build is intentionally pinned. The Paper API used to
-compile SMPRules is `26.1.2.build.61-stable`.
+Paper 26.1.2 is intentionally pinned because it is the newest Paper release
+supported by CoreProtect CE 24.0. Do not change the Paper version independently
+of a staged CoreProtect compatibility test.
 
 ## Ownership
 
-| Owner | Mechanics |
-|---|---|
-| LifeStealZ | Heart persistence, transfer, withdrawal, max health and Final Day elimination. SMPRules adjusts its documented public death events for weekly floors. |
-| SMPRules | Season state, global grace, post-death protection, the only combat tags/logoff penalty, End gate, locator event, legendary identities/recovery, chestplate/mace uniqueness, damage caps, dragon scoreboard/egg, pearl teleport veto, kit limits, Breeze drops, contextual restrictions. |
-| ItemBlocker | Unconditional prohibited materials, potion types and enchantment limits. |
-| KaiCore | Xaero minimap blocker and infinite villager restock only. Its combat, locator, dimension, netherite, mace, recipe, TNT-cart and enchant systems are explicitly disabled. |
-| CoreProtect | SQLite investigation log: block changes, containers/hoppers, interactions, inventory changes, sessions and commands. Retain data by reviewing disk usage monthly and running a tested `/co purge t:180d` only after a backup. |
-| Grim | Conservative default predictive movement/combat/impossible-interaction checks. |
-| ViaVersion / ViaBackwards | Protocol translation for compatible newer and older Java clients; their matching default configuration is used. |
-| CustomRecipes | Available only for future ordinary recipes. SMPRules owns the special PDC chestplate recipe. |
+| Owner | Rules |
+| --- | --- |
+| LifeStealZ | Heart persistence, transfers, withdrawals, crafted hearts, final-day bans |
+| KaiCore | One Mace, global kit limits, End gate, villager restock, invisible death chat, combat tag/logging, combat Elytra/Riptide/restock restrictions |
+| ItemBlocker | Global banned items, enchant ceilings/bans, potion bans |
+| SMPRules | Week floors, global grace, respawn protection/armour cancellation, Strength II normalization, hard damage caps, pearl veto, legendary storage/chestplate fallback, locator controls |
+| SMPChanges | Breeze Rod loot table replacement |
+| GrimAC | Conservative anti-cheat defaults |
 
-## Launch and backup
+## Admin Commands
 
-Build the immutable server image from the repository root:
+Only operators receive `smprules.admin`, `smprules.bypass`, and plugin bypass
+permissions. Do not grant these to normal players.
+
+| Action | Command |
+| --- | --- |
+| Start SMP / Week 1 / global grace | `/smprules season start` |
+| Change to Week 2 | `/smprules season week2` |
+| Allow final-day LifeStealZ elimination | `/smprules season final_day` |
+| Manually toggle global grace | `/smprules grace on` or `/smprules grace off` |
+| Open/close End | `/smprules end open` or `/smprules end close` |
+| Locator event (24h) | `/smprules locator on` or `/smprules locator off` |
+
+Build and publish the image before Flux can deploy this release:
 
 ```sh
-docker build -f kubernetes/apps/games/glitg-smp/image/Dockerfile -t ghcr.io/strxnd/glitg-smp:1.0.0 .
+docker build -f kubernetes/apps/games/glitg-smp/image/Dockerfile -t ghcr.io/strxnd/glitg-smp:2.0.0 .
+docker push ghcr.io/strxnd/glitg-smp:2.0.0
 ```
-
-The HelmRelease starts it with the equivalent runtime command:
-
-```sh
-java -Xms6G -Xmx6G -jar paper-26.1.2-61.jar --nogui
-```
-
-Before the first Flux reconciliation, publish the image above to the configured
-GHCR repository and confirm that `192.168.20.12` is unused. The new PVC is
-`glitg-smp-data`; back it up while the pod is stopped with a filesystem-level
-archive or a storage snapshot. Restore by scaling the release down, replacing
-only that PVC's data from the verified archive/snapshot, then scaling up.
-
-For updates: take and verify a fresh backup, update one pinned component at a
-time, build a new tagged image, smoke-test it against a copied data directory,
-change the Helm image tag, inspect Flux's diff, then reconcile only after an
-explicit operator approval. Never downgrade a world after Paper has opened it.
-
-## Test checklist
-
-The following must be exercised with two real test accounts before the public
-season. The local smoke test proves startup, plugin compatibility and restart
-persistence only; it cannot simulate client combat or a real dragon fight.
-
-- [ ] Lifesteal: normal transfer; Week 1/Week 2 floors; Final Day elimination;
-  20-heart cap; heart use at 9 and 10 hearts.
-- [ ] Protection: death timer, both PvP directions, armour removal, expiry and reconnect.
-- [ ] Legendary: one Mace, damage cap, all listed loss modes/recovery/restart;
-  chestplate recipe/PDC/unbreakable status; every forbidden storage type.
-- [ ] Dragon: two players, disconnect/tie, leaderboard winner, no duplicate egg.
-- [ ] Combat: tag, normal/network logout, immediate reconnect, teleport/restart,
-  Elytra, Riptide versus ordinary trident, lava/ice/bucket/sponge/armour limits.
-- [ ] Damage/potions/kit/pearls/Breeze: every case in the supplied SMP checklist.
-- [x] Clean first boot: all seven plugins load on Paper 26.1.2 build 61 / Java 25.
-- [x] Clean restart: same persisted local world starts with the same plugin set.
-
-## Human-enforced rules
-
-Staff must judge public/visible bases and ownership signs, offline raiding,
-unjustified destruction, naked-player kills, team high-tier classification,
-reasonable farms/redstone, modified-client intent, replay-mod intent, lag
-machines, and novel dupes/exploits. CoreProtect and Grim provide evidence; they
-cannot perfectly determine those subjective or client-side behaviours.
