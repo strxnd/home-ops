@@ -15,6 +15,7 @@ migrate the existing `minecraft` PVC.
 | CustomRecipes | 1.0 | [Modrinth](https://cdn.modrinth.com/data/YD56Nhy5/versions/ikKvjBcF/customRecipes.jar) |
 | CoreProtect CE | 24.0 | [Modrinth](https://cdn.modrinth.com/data/Lu3KuzdV/versions/Kma0kBsY/CoreProtect-CE-24.0.jar) |
 | GrimAC | 2.3.74-2614909 | [Modrinth](https://cdn.modrinth.com/data/LJNGWSvH/versions/fbt7nJt5/grimac-bukkit-2.3.74-2614909.jar) |
+| ViaVersion | 5.9.0 | [Modrinth](https://cdn.modrinth.com/data/P1OZGk5p/versions/I0mCQX6z/ViaVersion-5.9.0.jar) |
 | SMPRules | 1.0.0 | `smprules/` in this repository |
 
 Paper's current 26.1.2 build is intentionally pinned. The Paper API used to
@@ -30,6 +31,7 @@ compile SMPRules is `26.1.2.build.61-stable`.
 | KaiCore | Xaero minimap blocker and infinite villager restock only. Its combat, locator, dimension, netherite, mace, recipe, TNT-cart and enchant systems are explicitly disabled. |
 | CoreProtect | SQLite investigation log: block changes, containers/hoppers, interactions, inventory changes, sessions and commands. Retain data by reviewing disk usage monthly and running a tested `/co purge t:180d` only after a backup. |
 | Grim | Conservative default predictive movement/combat/impossible-interaction checks. |
+| ViaVersion | Protocol translation for compatible newer Java clients; its default configuration is used. |
 | CustomRecipes | Available only for future ordinary recipes. SMPRules owns the special PDC chestplate recipe. |
 
 ## Launch and backup
