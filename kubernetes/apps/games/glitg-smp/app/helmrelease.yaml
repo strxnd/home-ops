@@ -178,9 +178,3 @@ spec:
         type: configMap
         name: glitg-smp-life-steal-z
         globalMounts: [{path: /config/plugins/LifeStealZ}]
-      icon:
-        type: configMap
-        name: glitg-smp-icon
-        globalMounts:
-          - path: /config/server-icon.png
-            subPath: server-icon.png

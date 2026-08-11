@@ -43,6 +43,3 @@ configMapGenerator:
     files:
       - config/plugins/LifeStealZ/config.yml
       - config/plugins/LifeStealZ/items.yml
-  - name: glitg-smp-icon
-    files:
-      - server-icon.png=config/server-icon.png
