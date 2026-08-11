@@ -1,13 +1,30 @@
 ---
 # LifeStealZ owns persistent hearts, withdrawals, crafted hearts and final-day bans.
-# SMPRules changes only its public PvP death event at the configured weekly floor.
+startHearts: 10
 maxHearts: 20
+heartsPerKill: 1
+heartsPerNaturalDeath: 1
 minHearts: 0
+dropHeartsPlayer: false
+dropHeartsNatural: false
+dropHeartsIfMax: false
+looseHeartsToNature: true
+looseHeartsToPlayer: true
+allowDyingFromWithdraw: false
+minWithdrawHearts: 1
 disablePlayerBanOnElimination: false
 heartRewardOnElimination: false
 preventTotems: true
 preventCrystalPVP: true
 preventRespawnAnchors: true
 preventBeds: true
+preventCustomItemsInItemFrames: true
 gracePeriod:
   enabled: false
+bypassPermission:
+  enabled: false
+antiAlt:
+  enabled: true
+  logAttempt: true
+  preventKill: true
+  sendMessage: true

@@ -36,7 +36,7 @@ spec:
           app:
             image:
               repository: ghcr.io/strxnd/glitg-smp
-              tag: 2.0.2
+              tag: 3.0.0
             env:
               TZ: Asia/Singapore
               EULA: "TRUE"
@@ -58,9 +58,8 @@ spec:
               ENABLE_RCON: "false"
               MOTD: "GLITG S1 - LifeSteal"
               COPY_CONFIG_DEST: /data
-              # This is a replacement deployment; image-managed rule config must override the old release.
+              # Image-managed rule config is authoritative for this fresh season.
               SYNC_SKIP_NEWER_IN_DESTINATION: "false"
-              PLUGINS_FILE: /config/plugins.txt
             probes:
               liveness: &probe
                 enabled: true

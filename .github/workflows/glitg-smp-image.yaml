@@ -6,9 +6,9 @@ on:
     branches: [main]
     paths:
       - .github/workflows/glitg-smp-image.yaml
-      - smprules/**
       - kubernetes/apps/games/glitg-smp/config/**
       - kubernetes/apps/games/glitg-smp/image/**
+      - kubernetes/apps/games/glitg-smp/plugins.lock
   workflow_dispatch:
 
 permissions:
@@ -30,4 +30,4 @@ jobs:
           context: .
           file: kubernetes/apps/games/glitg-smp/image/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/glitg-smp:2.0.2
+          tags: ghcr.io/${{ github.repository_owner }}/glitg-smp:3.0.0

@@ -1,0 +1,28 @@
+---
+defaultheart:
+  name: "&cHeart"
+  lore:
+    - "&7Right-click to gain one heart"
+    - "&7Usable at 10 hearts or fewer"
+  material: NETHER_STAR
+  enchanted: false
+  customModelId: 0
+  customItemType: heart
+  customHeartValue: 1
+  minHearts: 0
+  maxHearts: 10
+  requirePermission: false
+  craftable: true
+  recipes:
+    1:
+      rowOne: [GOLD_BLOCK, GOLD_BLOCK, GOLD_BLOCK]
+      rowTwo: [OBSIDIAN, NETHER_STAR, OBSIDIAN]
+      rowThree: [DIAMOND_BLOCK, DIAMOND_BLOCK, DIAMOND_BLOCK]
+  invulnerable: true
+  despawnable: false
+  whitelistedWorlds: []
+  sound:
+    enabled: true
+    sound: ENTITY_PLAYER_LEVELUP
+    volume: 1.0
+    pitch: 1.0
