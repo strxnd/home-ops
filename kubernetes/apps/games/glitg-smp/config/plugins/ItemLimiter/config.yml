@@ -1,0 +1,27 @@
+---
+database:
+  type: sqlite
+  sqlite:
+    file: database.db
+placeholders:
+  unknown_player: Someone
+notification:
+  sources:
+    "10": "<yellow>%left_sources% acquisitions left for %item%."
+    "5": "<yellow>%left_sources% acquisitions left for %item%."
+    "1": "<yellow>%left_sources% acquisition left for %item%."
+    always: ""
+sources:
+  crafting: Crafting
+  furnace: Furnace
+  enchanting: Enchanting
+  smithing: Smithing
+  block_drops: Block drops
+  mob_drops: Mob drops
+  treasure: Treasure
+  bartering: Bartering
+  trading: Trading
+  brewing: Brewing
+  anvil: Anvil
+  fishing: Fishing
+  shearing: Shearing

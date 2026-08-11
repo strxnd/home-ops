@@ -1,0 +1,100 @@
+---
+config-version: 391
+language: en
+prefix: "&8[&cGLITG&8] &7"
+settings:
+  debug: false
+  validate-config-on-start: true
+  auto-update-configs: true
+display:
+  update-interval-ticks: 10
+  placeholderapi: true
+  actionbar:
+    enabled: true
+    message-key: display.actionbar
+    symbol: "|"
+    total-bars: 20
+  bossbar:
+    enabled: false
+pvp-toggle:
+  enabled: false
+  default-enabled: true
+  deny-toggle-in-combat: true
+hooks:
+  enabled: false
+combat:
+  enabled: true
+  tag-seconds: 30
+  ignore-creative: true
+  ignore-spectator: true
+  tag-attacker: true
+  tag-victim: true
+  untag-on-death: true
+  commands:
+    enabled: true
+    mode: BLACKLIST
+    check-subcommands: true
+    check-contains: true
+    blacklist: [back, spawn, home, warp, tpa, tpahere, tpaccept, tp, teleport, rtp, wild, fly, gamemode, gm, vanish, pv, backpack, ec, echest, enderchest, chest, shop, market, ah, auction, kit, trade, duel]
+    contains-blacklist: [back, home, spawn, warp, tpa, teleport, fly, pv, vault, backpack, enderchest, echest, shop, market, auction]
+    whitelist: [msg, tell, w, whisper, r, reply, help]
+  block-ender-pearl: true
+  block-chorus-fruit: false
+  block-item-drop: false
+  block-totem-use: true
+  consume-blocked-totem: false
+  teleport:
+    block-event-teleports: false
+    blocked-causes: [COMMAND]
+    allowed-causes: [PLUGIN, UNKNOWN]
+  elytra:
+    block-boost: true
+    block-equip: true
+    block-inventory-equip: true
+    disable-glide: true
+  flight:
+    disable-on-tag: true
+    restore-after-combat: true
+    block-toggle: true
+    enforce-while-tagged: true
+    close-inventory-on-tag: true
+  block-gamemode-change: true
+  remove-invisibility-on-tag: false
+  block-invisibility-during-combat: false
+  golden-apple-cooldown:
+    enabled: false
+  shield:
+    block-use: false
+    cooldown-seconds: 0
+  damage-compat:
+    enabled: true
+    force-allow-weapons: [MACE]
+border-hopping:
+  enabled: false
+combat-log:
+  enabled: true
+  mode: KILL
+  broadcast: true
+  drop-inventory: true
+  drop-armor: true
+  drop-offhand: true
+protection:
+  prevent-protected-player-damage: true
+  newbie:
+    enabled: false
+  respawn:
+    enabled: false
+    seconds: 0
+    remove-on-attack: true
+    notify: true
+    clear-on-quit: false
+kill-loot:
+  enabled: false
+anti-farm:
+  enabled: false
+performance:
+  cleanup-interval-ticks: 200
+  pickup-message-cooldown-ticks: 20
+  max-protected-items: 600
+  hook-cache-ticks: 20
+  max-hook-cache-size: 3000

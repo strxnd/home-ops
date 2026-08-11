@@ -1,0 +1,12 @@
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: glitg-smp
+spec:
+  endpoints:
+    - dnsName: "glitg.${SECRET_DOMAIN}"
+      recordTTL: 300
+      recordType: A
+      targets:
+        - "${SECRET_PUBLIC_IP}"

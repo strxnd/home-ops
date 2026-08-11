@@ -1,0 +1,46 @@
+---
+default:
+  reason: "&cThis item or mechanic is banned on GLITG SMP."
+  enchantments:
+    thorns: 1
+    fire_aspect: 1
+    punch: 1
+    lunge: 1
+    protection: 4
+    sharpness: 4
+    power: 5
+  potions:
+    poison: 1
+    turtle_master: 1
+    slow_falling: 1
+    weakness: 1
+    swiftness: 2
+    slowness: 1
+  items:
+    END_CRYSTAL:
+      actions: all
+      worlds: all
+    ENCHANTED_GOLDEN_APPLE:
+      actions: all
+      worlds: all
+    TOTEM_OF_UNDYING:
+      actions: all
+      worlds: all
+    TIPPED_ARROW:
+      actions: all
+      worlds: all
+    NETHERITE_SWORD:
+      actions: all
+      worlds: all
+    NETHERITE_AXE:
+      actions: all
+      worlds: all
+    NETHERITE_HELMET:
+      actions: all
+      worlds: all
+    NETHERITE_LEGGINGS:
+      actions: all
+      worlds: all
+    NETHERITE_BOOTS:
+      actions: all
+      worlds: all
