@@ -12,7 +12,7 @@ spec:
     - name: local-path-provisioner
       namespace: kube-system
   interval: 1h
-  path: ./kubernetes/apps/games/glitg-smp/app
+  path: ./kubernetes/apps/games/glitg-smp
   postBuild:
     substituteFrom:
       - name: cluster-secrets
