@@ -71,7 +71,6 @@ spec:
                 https://cdn.modrinth.com/data/Lu3KuzdV/versions/Kma0kBsY/CoreProtect-CE-24.0.jar
                 https://cdn.modrinth.com/data/LJNGWSvH/versions/fbt7nJt5/grimac-bukkit-2.3.74-2614909.jar
                 https://cdn.modrinth.com/data/P1OZGk5p/versions/WfL987R7/ViaVersion-5.11.0.jar
-                https://cdn.modrinth.com/data/fALzjamp/versions/t8bMoUaC/Chunky-Bukkit-1.5.3.jar
               COPY_CONFIG_DEST: /data
               # Image-managed rule config is authoritative for this fresh season.
               SYNC_SKIP_NEWER_IN_DESTINATION: "false"
