@@ -19,10 +19,9 @@ even if the exact method is not explicitly listed.
 
 ## Legendary Items
 
-- Hearts, the Mace, and the unique Netherite Chestplate are legendary items.
+- Hearts and both Maces are legendary items.
 - Legendary items cannot be stored in chests, Ender chests, chest boats, barrels, bundles, item frames, furnaces, shelves, or hoppers.
 - If a legendary item disappears or is accidentally destroyed, admins may recreate it.
-- The Netherite Chestplate is unbreakable.
 
 ## Server Start And World
 
@@ -61,7 +60,6 @@ even if the exact method is not explicitly listed.
 - Armour and weapons are limited to Diamond.
 - Netherite may only be applied to pickaxes, shovels, and hoes.
 - Netherite combat weapons and normal Netherite armour are banned.
-- The server's unique Netherite Chestplate is the only exception to the Netherite armour ban.
 - Protection is limited to Protection III.
 - Sharpness is limited to Sharpness III.
 - Bows are limited to Power IV.
@@ -77,12 +75,6 @@ even if the exact method is not explicitly listed.
 - Mace #2 is awarded manually to the legitimate Dragon Egg holder.
 - There are no additional Mace-specific enchantment restrictions beyond the server's normal enchantment rules.
 - The Mace can deal a maximum of 8 hearts of damage in a single hit.
-
-## Dragon Egg And Netherite Chestplate
-
-- The Dragon Egg behaves normally and is obtained through normal gameplay.
-- The server's only Netherite Chestplate is crafted from 1 Dragon Egg and 8 Diamonds.
-- The Netherite Chestplate is unbreakable and is a legendary item.
 
 ## Potions, Totems, And Pearls
 
@@ -119,8 +111,7 @@ The following are banned during combat:
 
 End Crystals, bed bombing, Respawn Anchor bombing, Enchanted Golden Apples,
 Totems of Undying, tipped arrows, Thorns, Fire Aspect, Lunge, Punch, and
-Netherite combat equipment are banned. The unique Netherite Chestplate is the
-only Netherite armour exception.
+Netherite combat equipment are banned.
 
 ## Cheats, Exploits, And Unfair Advantages
 

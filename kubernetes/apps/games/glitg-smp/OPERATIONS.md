@@ -26,7 +26,6 @@ LoadBalancer service has IP `192.168.20.12`.
 | PvPManager 4.0.9 | 30-second combat tags, combat-log punishment, combat Elytra restriction, and 30-minute PvP-only respawn protection |
 | LongerPotionLevels 1.0.1 | Strength II brewed drinkable and splash potions last eight minutes; Speed II remains banned by The Limiters |
 | MaceDamageCap 1.0.2 | Mace damage capped at 16 points, or eight hearts |
-| BuffedItems 1.9.0 | Dragon-egg legendary Netherite chestplate recipe and unbreakable property |
 | CartLimiter | TNT minecart damage cap |
 | CoreProtect CE | Audit logs and rollback |
 | GrimAC | Anti-cheat detection |
@@ -48,7 +47,6 @@ must use `/itemcontrol menu` to create and verify these rules:
 | --- | --- |
 | Mace global limit | `2`; block storage in chests, Ender chests, chest boats, barrels, bundles, item frames, furnaces, shelves, and hoppers |
 | LifeStealZ Heart custom-item rule | Block the same storage destinations without blocking normal use below 10 hearts; if ItemControl requires a restrictive count to apply storage rules, retain the gameplay rule as staff-enforced rather than imposing an unintended heart cap |
-| GLITG Legendary Netherite Chestplate global/custom-item rule | `1`; block the same storage destinations without blocking its recipe or use |
 | End Crystal, Enchanted Golden Apple, Totem of Undying, Ender Pearl, and Tipped Arrow | Block obtain/carry/use as supported by ItemControl; verify each action with a non-operator |
 | Kit quantities | 6 healing potions combined where the UI supports it; 192 XP bottles; 128 cobwebs; 128 Golden Apples; 64 Breeze Rods; do not create any armour limit |
 
@@ -85,33 +83,30 @@ smoke-test each phase change before announcing it.
 | Open KaiCore UI | `/kaicore gui` or `/kc gui` |
 | Open/close the End immediately | `/end open` or `/end close` |
 | Check/change Mace cap | `/macecap` |
-| Give the legendary chestplate | `/bi give <player> legendary_netherite_chestplate 1` |
 | Open ItemControl's operator UI | `/itemcontrol menu` or `/ic menu` |
 | Open The Limiters operator UI | `/tl gui` |
-| List BuffedItems | `/bi list` |
 | Pre-generate a world | `/chunky world <world>`; `/chunky radius <blocks>`; `/chunky start` |
 | Monitor/pause Chunky | `/chunky progress`; `/chunky pause`; `/chunky continue` |
 | Inspect blocks/containers | `/co i` |
 | Roll back verified activity | `/co rollback` |
 
 `kaicore.use`, `antiend.use`, `kaicore.bypass`, `itemcontrol.bypass.*`,
-`thelimiters.bypass`, `macedamagecap.admin`, and `buffeditems.admin` are
-operator-only. Never grant bypass permissions to players.
+`thelimiters.bypass` and `macedamagecap.admin` are operator-only. Never grant
+bypass permissions to players.
 
 ## Smoke Test
 
 1. Confirm TCP accepts connections on `192.168.20.12:25565`.
-2. Confirm logs enable KaiCore, ItemControl, The Limiters, PvPManager, LongerPotionLevels, MaceDamageCap, and BuffedItems without errors.
+2. Confirm logs enable KaiCore, ItemControl, The Limiters, PvPManager, LongerPotionLevels, and MaceDamageCap without errors.
 3. Confirm an Ender Pearl cannot be used or teleport a non-operator.
 4. Confirm a respawned player cannot deal or receive PvP damage for 30 minutes. The required attack-cancellation behavior is not implemented by the pinned PvPManager release and remains staff-enforced.
 5. Confirm brewed Strength II is eight minutes for both drinkable and splash potion variants.
 6. Confirm a Mace hit never exceeds eight hearts of final damage.
 7. Confirm the ItemControl limits and all listed legendary storage destinations with non-operator test accounts.
-8. Confirm the dragon-egg recipe creates the named chestplate and verify it is unbreakable.
-9. Confirm `/end close` blocks access and `/end open` permits it.
-10. Confirm CoreProtect records a block change and container transaction.
-11. Confirm both the 4-ingot Golden Apple recipe and the absence of the normal 8-ingot alternative.
-12. Confirm Paper Anti-Xray has no bypass permission granted to normal players.
+8. Confirm `/end close` blocks access and `/end open` permits it.
+9. Confirm CoreProtect records a block change and container transaction.
+10. Confirm both the 4-ingot Golden Apple recipe and the absence of the normal 8-ingot alternative.
+11. Confirm Paper Anti-Xray has no bypass permission granted to normal players.
 
 ## Complete Test Matrix
 
@@ -125,9 +120,9 @@ server revision and date after testing.
 | Health | Pod | Run `kubectl -n games get pods` | One GLITG pod is `1/1 Running` with no restarts | Verified at `291e6b1` |
 | Health | LAN connection | Join `192.168.20.12:25565` | Vanilla client reaches the server and can join | TCP verified; join not verified |
 | Health | External connection | Join `glitg.kumaraarav.dev:25565` from outside the LAN | Server is reachable after WAN port forwarding | Not verified |
-| Health | Plugin load | Inspect startup logs | No load/enable errors for LifeStealZ, KaiCore, ItemControl, The Limiters, PvPManager, LongerPotionLevels, MaceDamageCap, BuffedItems, CartLimiter, CoreProtect, GrimAC, ViaVersion, or Chunky | Not verified after this revision |
-| Access | Operator access | As `Strxnd`, run `/kc gui`, `/end close`, `/macecap`, and `/bi list` | Commands work for the operator | Not verified |
-| Access | Player permissions | As a non-operator, run `/kc gui`, `/end open`, `/macecap`, and `/bi give` | Commands are denied | Not verified |
+| Health | Plugin load | Inspect startup logs | No load/enable errors for LifeStealZ, KaiCore, ItemControl, The Limiters, PvPManager, LongerPotionLevels, MaceDamageCap, CartLimiter, CoreProtect, GrimAC, ViaVersion, or Chunky | Not verified after this revision |
+| Access | Operator access | As `Strxnd`, run `/kc gui`, `/end close`, and `/macecap` | Commands work for the operator | Not verified |
+| Access | Player permissions | As a non-operator, run `/kc gui`, `/end open`, and `/macecap` | Commands are denied | Not verified |
 | LifeSteal | Starting health | Join with a new test player | Player starts with 10 hearts | Not verified |
 | LifeSteal | PvP heart transfer | Kill a player above the configured floor | Victim loses one heart and killer gains one heart | Not verified |
 | LifeSteal | Natural death loss | Die to a non-player cause | Player loses one heart according to LifeStealZ settings | Not verified |
@@ -164,10 +159,6 @@ server revision and date after testing.
 | Limits | Other kit limits | Exceed XP bottles, cobwebs, golden apples, and Breeze Rod limits | ItemControl limits are 192, 128, 128, and 64 | Pending ItemControl initialization |
 | Items | Banned items | Obtain End Crystals, Enchanted Golden Apples, Totems, Tipped Arrows, and Ender Pearls | ItemControl blocks all configured actions after initialization | Pending ItemControl initialization |
 | Items | Netherite restriction | Craft, smith, pick up, equip, and store banned Netherite sword, axe, helmet, leggings, and boots | KaiCore prevents the configured combat equipment | Not verified |
-| Chestplate | Recipe | Craft eight Diamonds around one Dragon Egg | Produces one named legendary Netherite chestplate | Load verified; crafting not verified |
-| Chestplate | Unbreakable | Use the chestplate until it would take durability | Durability does not decrease | Not verified |
-| Chestplate | Legendary storage protection | Store the chestplate in each prohibited storage type | ItemControl denies storage after its required initialization | Pending ItemControl initialization |
-| Chestplate | Duplication paths | Try shift-crafting and automated crafting paths | Recipe produces exactly one chestplate without duplication | Not verified |
 | End | Closed End | As a non-operator, enter an End portal while `/end close` is active | Travel is denied | Not verified |
 | End | Open End | Run `/end open`, then enter an End portal | Travel succeeds | Not verified |
 | End | State persistence | Restart after changing End state through `/end` | This is **not Git-authoritative** unless `KaiCore/config.yml` is updated too | Manual-operation risk |

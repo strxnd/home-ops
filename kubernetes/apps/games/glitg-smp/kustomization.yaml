@@ -36,13 +36,6 @@ configMapGenerator:
     files: [config/plugins/MaceDamageCap/config.yml]
   - name: glitg-smp-longer-potion-levels
     files: [config/plugins/LongerPotionLevels/config.yml]
-  - name: glitg-smp-buffed-items
-    files:
-      - config/plugins/BuffedItems/config.yml
-      - config/plugins/BuffedItems/items.yml
-      - config/plugins/BuffedItems/recipes.yml
-      - config/plugins/BuffedItems/sets.yml
-      - config/plugins/BuffedItems/upgrades.yml
   - name: glitg-smp-item-control
     files: [config/plugins/ItemControl/config.yml]
   - name: glitg-smp-the-limiters

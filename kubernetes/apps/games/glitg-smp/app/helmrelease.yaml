@@ -64,7 +64,6 @@ spec:
                 https://cdn.modrinth.com/data/1Ffl2uIq/versions/OhJOp27l/PvPManager.jar
                 https://cdn.modrinth.com/data/oU6KywXa/versions/I1Q42DEU/LongerPotionsLevels1.0.1.jar
                 https://cdn.modrinth.com/data/x882y0hP/versions/tnIRjZj2/MaceDamageCap-1.0.2.jar
-                https://hangarcdn.papermc.io/plugins/AltKat/BuffedItems/versions/1.9.0/PAPER/BuffedItems-1.9.0.jar
                 https://cdn.modrinth.com/data/NiJ6gIEq/versions/lO8gD88d/ItemControl-1.2.0.jar
                 https://cdn.modrinth.com/data/4oi6UbJ7/versions/q0badV96/the-limiters-1.0.0.jar
                 https://cdn.modrinth.com/data/j2g3fqUV/versions/t8bMoUaC/cartlimiter-1.7.jar
@@ -173,10 +172,6 @@ spec:
         type: configMap
         name: glitg-smp-longer-potion-levels
         globalMounts: [{path: /config/plugins/LongerPotionLevels}]
-      buffed-items:
-        type: configMap
-        name: glitg-smp-buffed-items
-        globalMounts: [{path: /config/plugins/BuffedItems}]
       item-control:
         type: configMap
         name: glitg-smp-item-control

@@ -10,7 +10,7 @@ implementation and verification only; it never changes the public rules.
 | Final day | No floor; elimination bans enabled | Pending manual transition | Admin runbook changes the phase |
 | Start grace | One global hour of PvP grace | Configured, operational action pending | Global PvP is disabled for launch; admins change `PVP` to `true` exactly one hour later |
 | Post-death attack cancellation | Attacking a player ends 30-minute protection | Missing | PvPManager Lite has a duration-only respawn protection setting; staff must remove protection-abuse privileges until a compatible implementation is verified |
-| Legendary storage | Hearts, both Maces, and chestplate cannot enter listed storage | Pending ItemControl initialization | The persistent ItemControl rules must be created by an operator before launch; test its custom-heart support without imposing a heart cap, otherwise retain that part as staff-enforced |
+| Legendary storage | Hearts and both Maces cannot enter listed storage | Pending ItemControl initialization | The persistent ItemControl rules must be created by an operator before launch; test its custom-heart support without imposing a heart cap, otherwise retain that part as staff-enforced |
 | Mace protection | Protect from accidental destruction where possible | Missing | Admin recovery procedure only |
 | World border | 4,000 x 4,000 blocks | Configured, unverified | A load datapack applies the border in the Overworld, Nether, and End |
 | Combat lava/ice/draining | Banned during combat | Manual enforcement required | PvPManager enforces combat Elytra and logging; the other restrictions need staff enforcement |
