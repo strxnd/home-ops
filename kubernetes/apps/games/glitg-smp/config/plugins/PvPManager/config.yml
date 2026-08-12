@@ -7,6 +7,13 @@ General Settings:
   World Exclusions: []
 Combat Tag:
   Enabled: false
+  Display:
+    Nametags:
+      Enabled: false
+    Action Bar:
+      Enabled: false
+    Boss Bar:
+      Enabled: false
 PvP Toggle:
   Default PvP: true
   Cooldown: 0

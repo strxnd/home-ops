@@ -32,6 +32,8 @@ configMapGenerator:
       - config/plugins/BuffedItems/config.yml
       - config/plugins/BuffedItems/items.yml
       - config/plugins/BuffedItems/recipes.yml
+      - config/plugins/BuffedItems/sets.yml
+      - config/plugins/BuffedItems/upgrades.yml
   - name: glitg-smp-item-blocker
     files:
       - config/plugins/ItemBlocker/config.yml
