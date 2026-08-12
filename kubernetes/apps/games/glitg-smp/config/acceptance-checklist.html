@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GLITG SMP — Networking &amp; World Acceptance</title>
+  <title>GLITG SMP — Server Test Checklist</title>
   <style>
     :root { --page:#000; --paper:#171715; --ink:#f4f4ef; --muted:#a8a8a0; --line:#34342f; --wash:#20201d; --strong:#e8e8df; }
     * { box-sizing:border-box; }
@@ -33,8 +33,8 @@
   <header>
     <div>
       <div class="eyebrow">GLITG SMP / acceptance checklist</div>
-      <h1>Networking &amp; World</h1>
-      <p class="muted">Mark only tests actually observed. Status and notes persist in this browser’s local storage; they are not shared with the server or other browsers.</p>
+      <h1>Server Test Checklist</h1>
+      <p class="muted">Record real in-server tests after the GitOps rollout. Do not mark a rule passed from configuration alone; status and notes persist only in this browser.</p>
     </div>
     <div class="facts" aria-label="Required configuration">
       <div class="fact"><span>LAN server</span><code>192.168.20.12:25565</code></div>
@@ -47,13 +47,69 @@
     <div><button id="copy">Copy summary</button> <button id="export">Download JSON</button></div>
     <div><button id="reset">Reset local status</button></div>
   </div>
-  <div class="notice"><strong>External verification is required.</strong> A LAN connection to the public hostname can fail when hairpin NAT is unavailable. Do not mark networking complete until a real external Minecraft client joins, or record <em>Manual verification required</em> if an external test cannot be made.</div>
+  <div class="notice"><strong>Test with a non-operator account.</strong> This is a player-facing acceptance checklist, not a configuration inventory. Verify grace, plugins, item limits, and gameplay behaviour in a real Minecraft client before marking them passed.</div>
   <main id="checklist"></main>
   <footer>Configuration evidence: Paper listens on <code>25565</code> with an empty <code>server-ip</code>; the router forward remains WAN TCP <code>25565 → 192.168.20.12:25565</code>; the DNS A record is DNS-only; the datapack centres a <code>4000 × 4000</code> border at <code>0, 0</code>.</footer>
   <dialog id="message"><p id="messageText"></p><button id="close">Close</button></dialog>
   <script>
-    const storageKey = "glitg-smp-networking-world-v1";
+    const storageKey = "glitg-smp-server-acceptance-v1";
     const sections = [
+      ["Preflight & Access", [
+        "Flux Kustomization and HelmRelease report Ready at the expected Git revision",
+        "Minecraft and checklist workloads are Running and Ready with no CrashLoopBackOff events",
+        "All required plugins enable cleanly: KaiCore, LifeStealZ, PvPManager, ItemControl, TheLimiters, MaceDamageCap, CartLimiter, GrimAC, CoreProtect, Chunky, and ViaVersion",
+        "A non-operator account can see GLITG SMP in the LAN list and join using 192.168.20.12:25565",
+        "A non-operator account can join using the public hostname after DNS and router forwarding are complete",
+        "Operator commands work for staff while a normal player cannot use admin commands or bypass restrictions"
+      ]],
+      ["Launch Grace & Season Rules", [
+        "The intended one-hour global launch grace is actually enforced for every player, including new joins",
+        "During grace, PvP damage and prohibited launch actions are blocked; after expiry, restrictions lift exactly as announced",
+        "LifeSteal week 1 permits deaths down to the three-heart floor without bans",
+        "LifeSteal week 2 permits deaths down to the two-heart floor without bans",
+        "The final-phase elimination rule behaves as intended and staff restoration follows the documented procedure"
+      ]],
+      ["LifeSteal & Hearts", [
+        "A fresh player starts with the intended health value and cannot exceed the configured heart cap",
+        "A PvP kill transfers exactly one heart from the victim to the killer and leaves an auditable result",
+        "A natural death deducts a heart but does not transfer it to another player",
+        "Heart withdrawal creates the expected item only when the player remains at or above the configured threshold",
+        "Below-threshold withdrawal is denied; the intended heart recipe and consumption result both work",
+        "Alt/IP anti-abuse, End-crystal, bed, and respawn-anchor kills follow the intended LifeSteal policy"
+      ]],
+      ["Respawn Protection & Combat", [
+        "Newly respawned players receive 30 minutes of protection from damage and cannot damage other players while protected",
+        "Attacking while protected cancels protection and applies the intended message/cooldown behaviour",
+        "Combat tags block logout exploits and a tagged logout receives the configured penalty",
+        "Staff armour switching/restock behaves as intended; normal players cannot obtain staff-only equipment or commands",
+        "Elytra, Riptide, and other combat movement restrictions apply consistently in normal combat",
+        "Any configured high-damage combat trigger correctly grants or denies the defined reward/effect"
+      ]],
+      ["Mace, Pearls, Potions & Item Limits", [
+        "A standard mace can be crafted and used normally; the End dragon egg reward is granted only under its intended condition",
+        "Mace damage is capped at 28 and restricted enchantments are denied or removed",
+        "Restricted mace enchantments cannot be stored in chests, shulkers, ender chests, or player inventories through a bypass",
+        "Ender pearls are blocked from use, movement, and relevant inventories without false positives for unrelated items",
+        "Strength drink and splash use follows the server policy, including its intended warning or restriction",
+        "Speed and other banned potion effects cannot be applied, persisted, or bypassed through items, commands, or plugins",
+        "Healing potion use, cooldowns, stack limits, and other consumable limits match the announced rules",
+        "Minecarts, boats, and other limited entities respect CartLimiter without breaking legitimate normal use"
+      ]],
+      ["World, Dimensions & Progression", [
+        "The world seed is -3085124641489919468, generated data persists across a restart, and spawn is as intended",
+        "The Overworld border is a 4,000 × 4,000 square centred at 0, 0 and blocks attempts to cross it",
+        "Nether and End follow intended availability; the End opens only at the announced time and remains persistent afterward",
+        "Stronghold/End locating, villager changes, TNT behaviour, breeze loot, and golden-apple rules match the published rules",
+        "Chunky pre-generation reaches the planned radius without unacceptable lag or generation outside the border",
+        "Anti-xray and map-mod restrictions behave as intended without breaking normal resource gathering"
+      ]],
+      ["Audit, Security & Compatibility", [
+        "CoreProtect records blocks, containers, and inventory changes; a narrow test rollback restores only the intended changes",
+        "GrimAC loads without errors and detects a safe controlled cheating test without falsely flagging normal movement",
+        "ViaVersion accepts supported client versions and rejects unsupported versions with a clear message",
+        "No deprecated or duplicate combat plugin remains enabled, and repository configuration is the source of truth",
+        "A clean restart loses no inventory, world, LifeSteal, audit, or configuration state"
+      ]],
       ["Network & LAN", [
         "Server LAN IP is 192.168.20.12",
         "Paper is listening on TCP port 25565",
