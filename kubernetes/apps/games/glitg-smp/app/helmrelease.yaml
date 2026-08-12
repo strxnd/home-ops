@@ -249,3 +249,9 @@ spec:
             app:
               - path: /usr/share/nginx/html/index.html
                 subPath: index.html
+      acceptance-checklist-tmp:
+        type: emptyDir
+        advancedMounts:
+          acceptance-checklist:
+            app:
+              - path: /tmp
