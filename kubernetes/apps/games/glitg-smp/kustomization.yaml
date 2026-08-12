@@ -19,24 +19,12 @@ configMapGenerator:
       - breeze.json=config/glitg-smp/datapacks/SMPChanges/data/minecraft/loot_table/entities/breeze.json
   - name: glitg-smp-cart-limiter
     files: [config/plugins/CartLimiter/config.yml]
-  - name: glitg-smp-conditional-events
-    files: [config/plugins/ConditionalEvents/config.yml]
-  - name: glitg-smp-disable-riptide
-  - name: glitg-smp-denizen
-    files: [config/plugins/Denizen/config.yml]
-    files: [config/plugins/DisableRiptide/config.yml]
-  - name: glitg-smp-epic-safe-pvp
-    files: [config/plugins/EpicSafePvp/config.yml]
-  - name: glitg-smp-force-xaero-fair-play
-    files: [config/plugins/ForceXaeroFairPlay/config.yml]
+  - name: glitg-smp-kai-core
+    files: [config/plugins/KaiCore/config.yml]
   - name: glitg-smp-item-blocker
     files:
       - config/plugins/ItemBlocker/config.yml
       - config/plugins/ItemBlocker/blocked-items.yml
-  - name: glitg-smp-item-limiter
-    files:
-      - config/plugins/ItemLimiter/config.yml
-      - config/plugins/ItemLimiter/items.yml
   - name: glitg-smp-life-steal-z
     files:
       - config/plugins/LifeStealZ/config.yml

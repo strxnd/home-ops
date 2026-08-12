@@ -3,7 +3,7 @@
 ## Access And Health
 
 - LAN: `192.168.20.12:25565`
-- External: `glitg.kumaraarav.dev:25565`, after forwarding WAN TCP `25565` to the LAN address.
+- External: `glitg.kumaraarav.dev:25565`, after forwarding WAN TCP `25565` to `192.168.20.12`.
 
 ```sh
 flux get kustomizations -n games glitg-smp
@@ -13,78 +13,58 @@ kubectl -n games logs deployment/glitg-smp --tail=200
 ```
 
 Expected: both Flux resources are `Ready`, the pod is `1/1 Running`, and the
-LoadBalancer service has external IP `192.168.20.12`.
+LoadBalancer service has IP `192.168.20.12`.
 
-## Installed Plugins
+## Plugin Ownership
 
-| Plugin | Purpose |
+| Plugin | Enforced behavior |
 | --- | --- |
-| LifeStealZ | Hearts, heart items, withdrawals, eliminations |
-| ConditionalEvents | Week-one and week-two heart-floor events |
-| EpicSafePvp | Combat tags, logout penalties, Elytra restrictions |
-| ItemLimiter | Global Mace and inventory limits |
-| ItemBlocker | Banned items, potions, enchantments |
+| KaiCore 1.5 | One Mace, combat tag/logging, combat Elytra/Riptide/restock restrictions, Xaero fair mode, villager restocks, enchantment caps, Netherite ban, End gate, locator bar, kit limits, vanished death messages |
+| LifeStealZ | Hearts, heart items, withdrawals, eliminations, crystal/bed/anchor prevention |
+| ItemBlocker | Banned items and potion restrictions not covered by KaiCore |
 | CartLimiter | TNT minecart damage cap |
-| DisableRiptide | Combat Riptide restriction |
-| ForceXaeroFairPlay | Xaero fair-play mode |
-| Instant Villager Restock | Immediate villager restocking |
-| Denizen | Installed without scripts or custom commands |
-| PlaceholderAPI | Plugin placeholder support |
 | CoreProtect CE | Audit logs and rollback |
 | GrimAC | Anti-cheat detection |
 | ViaVersion | Client protocol compatibility |
 | Chunky | World pre-generation |
 
-The stock Minecraft image downloads these version-pinned plugins at startup.
+KaiCore replaces ConditionalEvents, EpicSafePvp, ItemLimiter, DisableRiptide,
+ForceXaeroFairPlay, Instant Villager Restock, Denizen, and PlaceholderAPI. An
+init container removes their stale JARs from the persistent plugin directory
+before Paper starts, so only KaiCore owns the overlapping rules.
 
-## Native Operations
-
-There is no `/glitg` command and no custom script. Use native plugin and
-vanilla commands instead.
+## KaiCore Operations
 
 | Action | Command |
 | --- | --- |
-| Enable week-one floor | `/ce enable lifesteal_week1_floor`; `/ce disable lifesteal_week2_floor` |
-| Enable week-two floor | `/ce disable lifesteal_week1_floor`; `/ce enable lifesteal_week2_floor` |
-| Verify/reload ConditionalEvents | `/ce verify`; `/ce reload` |
-| Inspect combat state | `/esp admin inspect <player>` |
-| Clear combat state | `/esp admin clear <player>` |
-| Apply respawn protection | `/esp admin respawn <player> <seconds>` |
-| Reload EpicSafePvp | `/esp reload` |
+| Open KaiCore management UI | `/kaicore gui` or `/kc gui` |
+| Upload KaiCore logs | `/kc logs` |
+| Open the End | `/end open` |
+| Close the End | `/end close` |
 | Pre-generate a world | `/chunky world <world>`; `/chunky radius <blocks>`; `/chunky start` |
 | Monitor/pause Chunky | `/chunky progress`; `/chunky pause`; `/chunky continue` |
-| CoreProtect lookup | `/co i`, then inspect blocks and containers |
-| Performance profile | `/spark healthreport`; `/spark profiler start`; `/spark profiler stop` |
+| Inspect blocks/containers | `/co i` |
+| Roll back verified activity | `/co rollback` |
 
-Use native server commands for manual season state:
+`kaicore.use`, `antiend.use`, and `kaicore.bypass` are operator-only. Do not
+give bypass permissions to players.
 
-```text
-/pvpglobal off
-/pvpglobal on
-/worldborder center 0 0
-/worldborder set 4000
-/gamerule locatorBar false
-```
+## Season Operations
 
-Run borders and gamerules separately in each dimension.
+KaiCore starts with the End closed and locator bar disabled. Use `/end open`
+when the End event begins. Use the KaiCore GUI to change supported rule-state
+settings; changes persist in its plugin configuration on the server PVC.
 
-## Not Configured
-
-Removing the Denizen script also removes: automatic season schedules, End
-gating, locator-bar scheduling, post-death protection, Pearl teleport
-cancellation, chestplate recipe/protection, legendary-item protections, Mace
-damage cap, Strength II conversion, healing-potion cap, and vanished death
-message suppression.
-
-Do not advertise these as enforced until an off-the-shelf plugin implements and
-validates them.
+Week-specific Lifesteal heart floors and final-day elimination are not automated
+without a scheduling plugin. Change those only during a quiet period through
+LifeStealZ's native administration interface, then verify a floor death before
+announcing the phase.
 
 ## Smoke Test
 
 1. Confirm TCP accepts connections on `192.168.20.12:25565`.
-2. Confirm Paper and every listed plugin starts without errors.
-3. Confirm new players start at 10 hearts and PvP kills transfer one heart.
-4. Test both ConditionalEvents heart floors.
-5. Test combat logging, Elytra/Riptide restrictions, item limits, banned items, and enchantment limits.
-6. Test villager restocking and run Chunky only while monitoring `/spark healthreport`.
-7. Confirm CoreProtect records a block change and a container transaction.
+2. Confirm the log says KaiCore enabled and does not load ConditionalEvents, EpicSafePvp, ItemLimiter, DisableRiptide, ForceXaeroFairPlay, Instant Villager Restock, Denizen, or PlaceholderAPI.
+3. Confirm `/kc gui` opens for an operator and is denied to a player.
+4. Confirm `/end close` blocks access and `/end open` permits it.
+5. Test one Mace craft, combat logging, combat Elytra/Riptide restrictions, armour restock prevention, villager restocking, Xaero fair mode, item limits, enchant caps, and Netherite restrictions.
+6. Confirm CoreProtect records a block change and container transaction.

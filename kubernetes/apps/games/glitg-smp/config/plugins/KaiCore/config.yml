@@ -1,0 +1,66 @@
+---
+mace:
+  one-time-craft:
+    enabled: true
+    consumed: false
+  ban: false
+  stuns-shield: false
+pearls:
+  ban: false
+crystal-pvp:
+  ban: true
+minimap:
+  ban-xaeros: true
+  fair-mode: true
+dimensions:
+  allow-nether: true
+  allow-end: false
+infinite-restock:
+  enabled: true
+invisibility-qol:
+  hide-name-when-killing: true
+  hide-name-when-dying: true
+combat:
+  enabled: true
+  tag-time-seconds: 30
+  ban-restock-while-in-combat: true
+  combat-log-punishment: KILL
+  timer-display: ACTIONBAR
+  ban-riptide-while-in-combat: true
+  minimum-damage-to-tag: 0
+  ban-elytra-while-in-combat: true
+enchant-limit:
+  protection: 3
+  sharpness: 3
+  power: 4
+netherite-ban:
+  enabled: true
+  banned-items:
+    - NETHERITE_SWORD
+    - NETHERITE_AXE
+    - NETHERITE_HELMET
+    - NETHERITE_LEGGINGS
+    - NETHERITE_BOOTS
+locator-bar:
+  enabled: false
+pvp:
+  enabled: true
+weapon-cooldowns:
+  spear: 0.0
+  spear-blocks:
+    melee: true
+  lunge: 0.0
+  mace: 0.0
+  shield: 0.0
+  ender-pearl: 0.0
+  wind-charge: 0.0
+  riptide: 0.0
+  enchanted-apple: 0.0
+item-limiter:
+  enabled: true
+  limit-reached-message: "&cGLITG kit limit reached. Excess items are dropped."
+  item-limits:
+    EXPERIENCE_BOTTLE: 192
+    COBWEB: 128
+    GOLDEN_APPLE: 128
+    BREEZE_ROD: 64
