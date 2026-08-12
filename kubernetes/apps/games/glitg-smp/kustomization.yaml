@@ -1,0 +1,49 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./app/dnsendpoint.yaml
+  - ./app/helmrelease.yaml
+  - ./app/ocirepository.yaml
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+  - name: glitg-smp-paper-world-defaults
+    files:
+      - paper-world-defaults.yml=config/config/paper-world-defaults.yml
+  - name: glitg-smp-datapack
+    files:
+      - pack.mcmeta=config/glitg-smp/datapacks/SMPChanges/pack.mcmeta
+  - name: glitg-smp-datapack-loot
+    files:
+      - breeze.json=config/glitg-smp/datapacks/SMPChanges/data/minecraft/loot_table/entities/breeze.json
+  - name: glitg-smp-datapack-load
+    files:
+      - load.json=config/glitg-smp/datapacks/SMPChanges/data/minecraft/tags/function/load.json
+  - name: glitg-smp-datapack-functions
+    files:
+      - border.mcfunction=config/glitg-smp/datapacks/SMPChanges/data/glitg/function/border.mcfunction
+  - name: glitg-smp-datapack-recipes
+    files:
+      - golden_apple.json=config/glitg-smp/datapacks/SMPChanges/data/minecraft/recipe/golden_apple.json
+  - name: glitg-smp-cart-limiter
+    files: [config/plugins/CartLimiter/config.yml]
+  - name: glitg-smp-kai-core
+    files: [config/plugins/KaiCore/config.yml]
+  - name: glitg-smp-pvp-manager
+    files: [config/plugins/PvPManager/config.yml]
+  - name: glitg-smp-mace-damage-cap
+    files: [config/plugins/MaceDamageCap/config.yml]
+  - name: glitg-smp-longer-potion-levels
+    files: [config/plugins/LongerPotionLevels/config.yml]
+  - name: glitg-smp-item-control
+    files: [config/plugins/ItemControl/config.yml]
+  - name: glitg-smp-the-limiters
+    files: [config/plugins/TheLimiters/config.yml]
+  - name: glitg-smp-life-steal-z
+    files:
+      - config/plugins/LifeStealZ/config.yml
+      - config/plugins/LifeStealZ/items.yml
+  - name: glitg-smp-acceptance-checklist
+    files:
+      - index.html=config/acceptance-checklist.html

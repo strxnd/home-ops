@@ -1,0 +1,85 @@
+---
+# The Limiters owns enchantment and potion restrictions. Its item limiter stays
+# disabled: ItemControl owns global legends/storage and no spare-armour limit
+# is allowed.
+sweep:
+  interval-ticks: 20
+items:
+  settings:
+    notify-player: true
+    notify-message: "&cGLITG kit limit reached for &e{item}&c: &e{limit}&c."
+  limits: {}
+potions:
+  settings:
+    log_blocked: true
+  restrictions:
+    block_brewing: true
+    block_mob_drops: true
+    block_mob_effects: true
+    block_dispensers: true
+    block_food: true
+    block_totem: true
+    block_conduit: true
+    block_turtle_helmet: true
+    block_command: true
+    block_beacon: true
+    block_turtle_master: true
+  messages:
+    blocked: "&cThat potion is disabled on GLITG SMP. &7[{potion}]"
+  tier1:
+    swiftness: false
+    strength: false
+    healing: false
+    leaping: false
+    regeneration: false
+    turtle_master: true
+    fire_resistance: false
+    water_breathing: false
+    night_vision: false
+    invisibility: false
+    slow_falling: true
+    luck: false
+  tier2:
+    swiftness: true
+    strength: false
+    healing: false
+    leaping: false
+    regeneration: false
+    turtle_master: true
+  debuffs:
+    poison: true
+    weakness: true
+    harming: false
+    slowness: true
+    oozing: false
+    weaving: false
+    infestation: false
+    wind_charged: false
+  others:
+    resistance: false
+    absorption: false
+    haste: false
+    mining_fatigue: false
+    nausea: false
+    blindness: false
+    hunger: false
+    levitation: false
+    bad_omen: false
+    hero_of_the_village: false
+    darkness: false
+    trial_omen: false
+    raid_omen: false
+enchants:
+  debug: false
+  limits:
+    protection: 3
+    sharpness: 3
+    power: 4
+    density: 3
+    breach: 3
+    wind_burst: 1
+    thorns: 0
+    fire_aspect: 0
+    punch: 0
+    lunge: 0
+    riptide: 0

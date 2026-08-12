@@ -1,0 +1,31 @@
+---
+# LifeStealZ owns persistent hearts, withdrawals, crafted hearts and final-day bans.
+startHearts: 10
+maxHearts: 20
+heartsPerKill: 1
+heartsPerNaturalDeath: 1
+minHearts: 3
+dropHeartsPlayer: false
+dropHeartsNatural: false
+dropHeartsIfMax: false
+looseHeartsToNature: true
+looseHeartsToPlayer: true
+allowDyingFromWithdraw: false
+minWithdrawHearts: 1
+# Final-day elimination is enabled manually through Git.
+disablePlayerBanOnElimination: true
+heartRewardOnElimination: false
+preventTotems: true
+preventCrystalPVP: true
+preventRespawnAnchors: true
+preventBeds: true
+preventCustomItemsInItemFrames: true
+gracePeriod:
+  enabled: false
+bypassPermission:
+  enabled: false
+antiAlt:
+  enabled: true
+  logAttempt: true
+  preventKill: true
+  sendMessage: true

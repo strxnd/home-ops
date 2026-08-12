@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GLITG SMP — Networking &amp; World Acceptance</title>
+  <style>
+    :root { --page:#000; --paper:#171715; --ink:#f4f4ef; --muted:#a8a8a0; --line:#34342f; --wash:#20201d; --strong:#e8e8df; }
+    * { box-sizing:border-box; }
+    html { color-scheme:dark; scroll-behavior:smooth; }
+    body { max-width:1120px; margin:auto; padding:32px 16px 72px; background:var(--page); color:var(--ink); font:16px/1.5 Inter,system-ui,sans-serif; }
+    header { display:grid; grid-template-columns:1fr auto; gap:24px; border-bottom:1px solid var(--strong); padding-bottom:24px; }
+    .eyebrow, code, label, .count { font:12px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.06em; text-transform:uppercase; }
+    .eyebrow, .muted { color:var(--muted); }
+    h1 { margin:6px 0 10px; max-width:16ch; font:clamp(2.3rem,6vw,5rem)/.96 Georgia,serif; font-weight:500; }
+    h2 { margin:0; font:1.4rem Georgia,serif; font-weight:500; }
+    p { margin:8px 0; } code { color:var(--strong); text-transform:none; letter-spacing:0; }
+    .facts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px; min-width:300px; align-content:start; background:var(--line); border:1px solid var(--line); }
+    .fact { padding:12px; background:var(--paper); } .fact span { display:block; color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+    .controls { display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; margin:22px 0; }
+    button { padding:9px 12px; border:1px solid var(--line); border-radius:5px; color:var(--ink); background:var(--paper); font:600 13px system-ui,sans-serif; cursor:pointer; }
+    button:hover { border-color:var(--strong); } button:focus-visible,select:focus-visible,textarea:focus-visible { outline:2px solid var(--strong); outline-offset:2px; }
+    .notice { margin:20px 0; padding:14px; border-left:2px solid var(--strong); background:var(--wash); color:var(--muted); }
+    .section { margin-top:28px; border:1px solid var(--line); background:var(--paper); } .section-head { display:flex; justify-content:space-between; gap:12px; padding:15px 16px; border-bottom:1px solid var(--line); }
+    .checks { display:grid; } .check { display:grid; grid-template-columns:minmax(190px,1fr) 160px minmax(240px,1.2fr); gap:12px; align-items:start; padding:14px 16px; border-bottom:1px solid var(--line); } .check:last-child { border-bottom:0; }
+    .check label { display:block; margin-bottom:4px; color:var(--muted); } .check strong { font-size:14px; }
+    select,textarea { width:100%; min-height:38px; padding:8px; border:1px solid var(--line); border-radius:4px; background:#0d0d0c; color:var(--ink); } textarea { min-height:58px; resize:vertical; }
+    footer { margin-top:28px; color:var(--muted); font-size:13px; } dialog { max-width:680px; color:var(--ink); background:var(--paper); border:1px solid var(--strong); padding:20px; } dialog::backdrop { background:#000b; }
+    @media (max-width:760px) { header { grid-template-columns:1fr; } .facts { min-width:0; } .check { grid-template-columns:1fr; gap:8px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="eyebrow">GLITG SMP / acceptance checklist</div>
+      <h1>Networking &amp; World</h1>
+      <p class="muted">Mark only tests actually observed. Status and notes persist in this browser’s local storage; they are not shared with the server or other browsers.</p>
+    </div>
+    <div class="facts" aria-label="Required configuration">
+      <div class="fact"><span>LAN server</span><code>192.168.20.12:25565</code></div>
+      <div class="fact"><span>Public join</span><code>glitg.&lt;DOMAIN&gt;</code></div>
+      <div class="fact"><span>Transport</span><code>TCP / 25565</code></div>
+      <div class="fact"><span>Production seed</span><code>-3085124641489919468</code></div>
+    </div>
+  </header>
+  <div class="controls">
+    <div><button id="copy">Copy summary</button> <button id="export">Download JSON</button></div>
+    <div><button id="reset">Reset local status</button></div>
+  </div>
+  <div class="notice"><strong>External verification is required.</strong> A LAN connection to the public hostname can fail when hairpin NAT is unavailable. Do not mark networking complete until a real external Minecraft client joins, or record <em>Manual verification required</em> if an external test cannot be made.</div>
+  <main id="checklist"></main>
+  <footer>Configuration evidence: Paper listens on <code>25565</code> with an empty <code>server-ip</code>; the router forward remains WAN TCP <code>25565 → 192.168.20.12:25565</code>; the DNS A record is DNS-only; the datapack centres a <code>4000 × 4000</code> border at <code>0, 0</code>.</footer>
+  <dialog id="message"><p id="messageText"></p><button id="close">Close</button></dialog>
+  <script>
+    const storageKey = "glitg-smp-networking-world-v1";
+    const sections = [
+      ["Network & LAN", [
+        "Server LAN IP is 192.168.20.12",
+        "Paper is listening on TCP port 25565",
+        "server-ip is not incorrectly restricting access",
+        "LAN connection to 192.168.20.12:25565 succeeds",
+        "Minecraft server-list ping succeeds over LAN",
+        "Player can join over LAN",
+        "Existing router port forward points TCP 25565 to 192.168.20.12:25565"
+      ]],
+      ["DNS & External", [
+        "glitg.<DOMAIN> resolves to the correct public/WAN IP",
+        "DNS configuration does not proxy or block raw Minecraft TCP traffic",
+        "External TCP connection to port 25565 succeeds",
+        "Minecraft server-list ping works from outside the LAN",
+        "Player can join from outside the LAN using glitg.<DOMAIN>",
+        "No port needs to be appended when joining with glitg.<DOMAIN>"
+      ]],
+      ["World Generation", [
+        "Production level-seed is -3085124641489919468",
+        "Actual generated overworld seed matches -3085124641489919468",
+        "Nether belongs to the same correctly seeded world",
+        "End belongs to the same correctly seeded world",
+        "World border is centred at 0, 0",
+        "World border is exactly 4,000 × 4,000"
+      ]]
+    ];
+    let state = JSON.parse(localStorage.getItem(storageKey) || "{}");
+    const root = document.querySelector("#checklist");
+    const idFor = text => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    function save() { localStorage.setItem(storageKey, JSON.stringify(state)); }
+    function render() {
+      root.replaceChildren();
+      sections.forEach(([title, items]) => {
+        const section = document.createElement("section"); section.className = "section";
+        section.innerHTML = '<div class="section-head"><h2>' + title + '</h2><span class="count"></span></div><div class="checks"></div>';
+        const checks = section.querySelector(".checks");
+        items.forEach(text => {
+          const id = idFor(text), data = state[id] || { status:"not-tested", notes:"" };
+          const row = document.createElement("article"); row.className = "check";
+          row.innerHTML = '<div><label for="' + id + '-status">Test</label><strong></strong></div><div><label for="' + id + '-status">Status</label><select id="' + id + '-status"><option value="passed">Passed</option><option value="not-tested">Not tested</option><option value="failed">Failed / needs attention</option></select></div><div><label for="' + id + '-notes">Notes</label><textarea id="' + id + '-notes" placeholder="Evidence, date, test client, or blocker"></textarea></div>';
+          row.querySelector("strong").textContent = text;
+          const select = row.querySelector("select"), notes = row.querySelector("textarea");
+          select.value = data.status; notes.value = data.notes;
+          select.onchange = () => { state[id] = {status:select.value, notes:notes.value}; save(); updateCounts(); };
+          notes.oninput = () => { state[id] = {status:select.value, notes:notes.value}; save(); };
+          checks.append(row);
+        });
+        root.append(section);
+      });
+      updateCounts();
+    }
+    function updateCounts() {
+      document.querySelectorAll(".section").forEach((section, i) => {
+        const ids = sections[i][1].map(idFor), passed = ids.filter(id => (state[id] || {}).status === "passed").length;
+        section.querySelector(".count").textContent = passed + " / " + ids.length + " passed";
+      });
+    }
+    function summary() {
+      const lines = ["GLITG SMP — Networking & World Acceptance", "LAN: 192.168.20.12:25565", "Public: glitg.<DOMAIN>", "Seed: -3085124641489919468", ""];
+      sections.forEach(([title, items]) => { lines.push(title); items.forEach(text => { const d = state[idFor(text)] || {status:"not-tested",notes:""}; lines.push("- [" + d.status + "] " + text + (d.notes ? " — " + d.notes : "")); }); lines.push(""); });
+      return lines.join("\n");
+    }
+    const dialog = document.querySelector("#message");
+    function tell(text) { document.querySelector("#messageText").textContent = text; dialog.showModal(); }
+    document.querySelector("#close").onclick = () => dialog.close();
+    document.querySelector("#copy").onclick = async () => { try { await navigator.clipboard.writeText(summary()); tell("Summary copied to the clipboard."); } catch { tell("Clipboard permission was unavailable. Use Download JSON or select the checklist manually."); } };
+    document.querySelector("#export").onclick = () => { const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"}); const a = Object.assign(document.createElement("a"), {href:URL.createObjectURL(blob), download:"glitg-smp-networking-world-checklist.json"}); a.click(); URL.revokeObjectURL(a.href); };
+    document.querySelector("#reset").onclick = () => { if (confirm("Remove every saved checklist status and note from this browser?")) { state = {}; save(); render(); } };
+    render();
+  </script>
+</body>
+</html>

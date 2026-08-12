@@ -1,0 +1,4 @@
+---
+potions:
+  speed: false
+  strength: true

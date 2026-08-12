@@ -1,0 +1,7 @@
+---
+# One damage point is half a heart. Cap vanilla Mace hits at eight hearts.
+damage-cap: 16.0
+min-cap: 0.0
+max-cap: 1000.0
+messages-prefix: ""
+log-changes: false

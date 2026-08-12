@@ -1,0 +1,94 @@
+---
+# PvPManager is the sole combat-tag, combat-log, combat-Elytra, and respawn
+# protection owner. KaiCore's overlapping combat system is disabled.
+General Settings:
+  Locale: EN
+  Use Scoreboard Teams: false
+  World Exclusions: []
+Combat Tag:
+  Enabled: true
+  Time: 30
+  Display:
+    Nametags:
+      Enabled: false
+    Action Bar:
+      Enabled: true
+    Boss Bar:
+      Enabled: false
+  Actions Blocked:
+    Elytra:
+      Block Gliding: true
+      Block Fireworks: true
+Combat Log Punishments:
+  Kill on Logout:
+    Enabled: true
+    Player Drops:
+      Inventory: true
+      Experience: true
+      Armor: true
+  Punish On Kick:
+    Enabled: false
+  Commands On Combat Log: []
+PvP Toggle:
+  Default PvP: true
+  Cooldown: 0
+  NameTags:
+    Enabled: false
+  PvP Disabled Money Fee: 0
+  Commands PvP On: []
+  Commands PvP Off: []
+Anti Border Hopping:
+  Vulnerable:
+    Enabled: false
+  Push Back:
+    Enabled: false
+Newbie Protection:
+  Enabled: false
+Item Cooldowns:
+  Combat: {}
+  Global: {}
+Player Kills:
+  Money Reward: 0.0
+  Money Penalty: 0.0
+  Money Steal: false
+  Exp Steal: 0.0
+  Commands On Kill:
+    Cooldown: -1
+    Commands: []
+  Commands On Respawn: []
+  WorldGuard Exclusions: []
+  Anti Kill Abuse:
+    # PvPManager records respawns through this section; the high threshold
+    # prevents its anti-farming punishment from affecting normal gameplay.
+    Enabled: true
+    Max Kills: 999999
+    Time Limit: 1
+    Warn Before: false
+    Commands on Abuse: []
+    Respawn Protection: 1800
+Other Settings:
+  PvP Blood: false
+  Ignore No Damage Hits: true
+  Protection Messages to Action Bar: true
+  Player Drop Mode: ALWAYS
+  Show health under name:
+    Enabled: false
+Disable On Hit:
+  Fly: false
+  Restore Fly: false
+  GameMode: false
+  Disguise: false
+  GodMode: false
+  Elytra: true
+  Invisibility: false
+Database:
+  Type: SQLite
+Update Check:
+  Enabled: false
+  Auto Update: false
+Metrics:
+  Opt-out: true
+Harmful Potions: []
+Debug Mode: false
+Config Version: 206
+Database Version: 1
