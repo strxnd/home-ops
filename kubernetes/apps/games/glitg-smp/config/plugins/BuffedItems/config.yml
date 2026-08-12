@@ -1,0 +1,9 @@
+---
+debug-level: 0
+show-potion-icons: false
+messages:
+  prefix: ""
+  protection-prevent-drop: "&cThis legendary item cannot be dropped or stored."
+  protection-prevent-container-store: "&cThis legendary item cannot be stored."
+  protection-prevent-itemframe-store: "&cThis legendary item cannot be placed in an item frame."
+  protection-lost-on-death: "&cThis legendary item cannot be lost on death."

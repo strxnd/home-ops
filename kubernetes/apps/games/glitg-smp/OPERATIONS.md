@@ -15,56 +15,71 @@ kubectl -n games logs deployment/glitg-smp --tail=200
 Expected: both Flux resources are `Ready`, the pod is `1/1 Running`, and the
 LoadBalancer service has IP `192.168.20.12`.
 
-## Plugin Ownership
+## Rule Ownership
 
-| Plugin | Enforced behavior |
+| Owner | Enforced behavior |
 | --- | --- |
-| KaiCore 1.5 | One Mace, combat tag/logging, combat Elytra/Riptide/restock restrictions, Xaero fair mode, villager restocks, enchantment caps, Netherite ban, End gate, locator bar, kit limits, vanished death messages |
-| LifeStealZ | Hearts, heart items, withdrawals, eliminations, crystal/bed/anchor prevention |
-| ItemBlocker | Banned items and potion restrictions not covered by KaiCore |
+| LifeStealZ | Hearts, withdrawals, eliminations, anti-alt protection, crystal/bed/anchor prevention |
+| KaiCore 1.5 | One Mace, Pearl-use ban, combat tag/logging, combat Elytra/Riptide/restock restrictions, Xaero fair mode, villager restocks, enchant caps, Netherite ban, End gate, locator bar, kit limits, vanished death messages |
+| PvPManager 4.0.9 | 30-minute PvP-only respawn protection; all combat-tag, combat-log, toggle, cooldown, and update functions are disabled |
+| LongerPotionLevels 1.0.1 | Strength II and Speed II brewed drinkable and splash potions last eight minutes |
+| MaceDamageCap 1.0.2 | Mace damage capped at 16 points, or eight hearts |
+| BuffedItems 1.9.0 | Dragon-egg legendary Netherite chestplate recipe; unbreakable, soulbound, and protected from dropping, containers, and item frames |
+| ItemBlocker | Banned items, potions, and enchantments not owned by KaiCore |
 | CartLimiter | TNT minecart damage cap |
 | CoreProtect CE | Audit logs and rollback |
 | GrimAC | Anti-cheat detection |
 | ViaVersion | Client protocol compatibility |
 | Chunky | World pre-generation |
 
-KaiCore replaces ConditionalEvents, EpicSafePvp, ItemLimiter, DisableRiptide,
-ForceXaeroFairPlay, Instant Villager Restock, Denizen, and PlaceholderAPI. An
-init container removes their stale JARs from the persistent plugin directory
-before Paper starts, so only KaiCore owns the overlapping rules.
+All plugin versions are pinned in `app/helmrelease.yaml`. The stock image removes
+stale root-level plugin JARs before each startup, so removed rule owners cannot
+continue loading from the persistent volume.
 
-## KaiCore Operations
+## Manual Season Changes
+
+Week and final-day transitions are intentionally not scheduled. Make each change
+through Git during a quiet period, validate locally, push, reconcile Flux, and
+perform the relevant smoke test before announcing the phase.
+
+| Manual action | Git configuration |
+| --- | --- |
+| Open/close the End | `config/plugins/KaiCore/config.yml`: `dimensions.allow-end`; alternatively use `/end open` or `/end close` for an immediate operator action, then update Git to match |
+| Enable/disable locator bar | `config/plugins/KaiCore/config.yml`: `locator-bar.enabled` |
+| Adjust LifeSteal heart/elimination rules | `config/plugins/LifeStealZ/config.yml`: `minHearts`, `disablePlayerBanOnElimination`, and related heart settings |
+| Adjust respawn protection | `config/plugins/PvPManager/config.yml`: `Player Kills.Anti Kill Abuse.Respawn Protection` in seconds |
+| Adjust Mace cap | `config/plugins/MaceDamageCap/config.yml`: `damage-cap`, where one point is half a heart |
+
+The original week-one/second heart-floor behavior is not represented by any
+current non-custom plugin configuration. Do not claim that those floors are
+enforced until a compatible public plugin is selected and smoke-tested.
+
+## Admin Commands
 
 | Action | Command |
 | --- | --- |
-| Open KaiCore management UI | `/kaicore gui` or `/kc gui` |
-| Upload KaiCore logs | `/kc logs` |
-| Open the End | `/end open` |
-| Close the End | `/end close` |
+| Open KaiCore UI | `/kaicore gui` or `/kc gui` |
+| Open/close the End immediately | `/end open` or `/end close` |
+| Check/change Mace cap | `/macecap` |
+| Give the legendary chestplate | `/bi give <player> legendary_netherite_chestplate 1` |
+| List BuffedItems | `/bi list` |
 | Pre-generate a world | `/chunky world <world>`; `/chunky radius <blocks>`; `/chunky start` |
 | Monitor/pause Chunky | `/chunky progress`; `/chunky pause`; `/chunky continue` |
 | Inspect blocks/containers | `/co i` |
 | Roll back verified activity | `/co rollback` |
 
-`kaicore.use`, `antiend.use`, and `kaicore.bypass` are operator-only. Do not
-give bypass permissions to players.
-
-## Season Operations
-
-KaiCore starts with the End closed and locator bar disabled. Use `/end open`
-when the End event begins. Use the KaiCore GUI to change supported rule-state
-settings; changes persist in its plugin configuration on the server PVC.
-
-Week-specific Lifesteal heart floors and final-day elimination are not automated
-without a scheduling plugin. Change those only during a quiet period through
-LifeStealZ's native administration interface, then verify a floor death before
-announcing the phase.
+`kaicore.use`, `antiend.use`, `kaicore.bypass`, `macedamagecap.admin`, and
+`buffeditems.admin` are operator-only. Never grant bypass permissions to players.
 
 ## Smoke Test
 
 1. Confirm TCP accepts connections on `192.168.20.12:25565`.
-2. Confirm the log says KaiCore enabled and does not load ConditionalEvents, EpicSafePvp, ItemLimiter, DisableRiptide, ForceXaeroFairPlay, Instant Villager Restock, Denizen, or PlaceholderAPI.
-3. Confirm `/kc gui` opens for an operator and is denied to a player.
-4. Confirm `/end close` blocks access and `/end open` permits it.
-5. Test one Mace craft, combat logging, combat Elytra/Riptide restrictions, armour restock prevention, villager restocking, Xaero fair mode, item limits, enchant caps, and Netherite restrictions.
-6. Confirm CoreProtect records a block change and container transaction.
+2. Confirm logs enable KaiCore, PvPManager, LongerPotionLevels, MaceDamageCap, and BuffedItems without errors.
+3. Confirm an Ender Pearl cannot be used or teleport a non-operator.
+4. Confirm a respawned player cannot deal or receive PvP damage for 30 minutes.
+5. Confirm brewed Strength II is eight minutes for both drinkable and splash potion variants.
+6. Confirm a Mace hit never exceeds eight hearts of final damage.
+7. Confirm each Healing potion delivery type is capped at six per inventory.
+8. Confirm the dragon-egg recipe creates the named chestplate; verify it is unbreakable, remains after death, and cannot be dropped, container-stored, or frame-stored.
+9. Confirm `/end close` blocks access and `/end open` permits it.
+10. Confirm CoreProtect records a block change and container transaction.

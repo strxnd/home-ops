@@ -1,0 +1,14 @@
+---
+items:
+  legendary_netherite_chestplate:
+    material: NETHERITE_CHESTPLATE
+    display:
+      name: '&6GLITG Legendary Netherite Chestplate'
+      lore:
+        - '&7Forged with the Dragon Egg.'
+        - '&7Bound to its holder and protected from loss.'
+      glow: true
+    flags:
+      UNBREAKABLE: true
+      PREVENT_DEATH_DROP: true
+      PREVENT_DROP: true

@@ -6,7 +6,7 @@ mace:
   ban: false
   stuns-shield: false
 pearls:
-  ban: false
+  ban: true
 crystal-pvp:
   ban: true
 minimap:
@@ -60,6 +60,36 @@ item-limiter:
   enabled: true
   limit-reached-message: "&cGLITG kit limit reached. Excess items are dropped."
   item-limits:
+    healing-potion:
+      item:
+        DataVersion: 4790
+        id: minecraft:potion
+        count: 1
+        components:
+          minecraft:potion_contents:
+            potion: minecraft:healing
+        schema_version: 1
+      limit: 6
+    healing-splash-potion:
+      item:
+        DataVersion: 4790
+        id: minecraft:splash_potion
+        count: 1
+        components:
+          minecraft:potion_contents:
+            potion: minecraft:healing
+        schema_version: 1
+      limit: 6
+    healing-lingering-potion:
+      item:
+        DataVersion: 4790
+        id: minecraft:lingering_potion
+        count: 1
+        components:
+          minecraft:potion_contents:
+            potion: minecraft:healing
+        schema_version: 1
+      limit: 6
     EXPERIENCE_BOTTLE: 192
     COBWEB: 128
     GOLDEN_APPLE: 128

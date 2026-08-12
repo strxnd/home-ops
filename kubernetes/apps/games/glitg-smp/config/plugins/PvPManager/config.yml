@@ -1,0 +1,72 @@
+---
+# KaiCore is the sole combat-tag and combat-log owner. PvPManager only grants
+# temporary protection after respawn.
+General Settings:
+  Locale: EN
+  Use Scoreboard Teams: false
+  World Exclusions: []
+Combat Tag:
+  Enabled: false
+PvP Toggle:
+  Default PvP: true
+  Cooldown: 0
+  NameTags:
+    Enabled: false
+  PvP Disabled Money Fee: 0
+  Commands PvP On: []
+  Commands PvP Off: []
+Anti Border Hopping:
+  Vulnerable:
+    Enabled: false
+  Push Back:
+    Enabled: false
+Newbie Protection:
+  Enabled: false
+Item Cooldowns:
+  Combat: {}
+  Global: {}
+Player Kills:
+  Money Reward: 0.0
+  Money Penalty: 0.0
+  Money Steal: false
+  Exp Steal: 0.0
+  Commands On Kill:
+    Cooldown: -1
+    Commands: []
+  Commands On Respawn: []
+  WorldGuard Exclusions: []
+  Anti Kill Abuse:
+    # PvPManager records respawns through this section; the high threshold
+    # prevents its anti-farming punishment from affecting normal gameplay.
+    Enabled: true
+    Max Kills: 999999
+    Time Limit: 1
+    Warn Before: false
+    Commands on Abuse: []
+    Respawn Protection: 1800
+Other Settings:
+  PvP Blood: false
+  Ignore No Damage Hits: true
+  Protection Messages to Action Bar: true
+  Player Drop Mode: ALWAYS
+  Show health under name:
+    Enabled: false
+Disable On Hit:
+  Fly: false
+  Restore Fly: false
+  GameMode: false
+  Disguise: false
+  GodMode: false
+  Elytra: false
+  Invisibility: false
+Database:
+  Type: SQLite
+Update Check:
+  Enabled: false
+  Auto Update: false
+Metrics:
+  Opt-out: true
+Harmful Potions: []
+Debug Mode: false
+Config Version: 206
+Database Version: 1

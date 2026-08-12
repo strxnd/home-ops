@@ -21,6 +21,17 @@ configMapGenerator:
     files: [config/plugins/CartLimiter/config.yml]
   - name: glitg-smp-kai-core
     files: [config/plugins/KaiCore/config.yml]
+  - name: glitg-smp-pvp-manager
+    files: [config/plugins/PvPManager/config.yml]
+  - name: glitg-smp-mace-damage-cap
+    files: [config/plugins/MaceDamageCap/config.yml]
+  - name: glitg-smp-longer-potion-levels
+    files: [config/plugins/LongerPotionLevels/config.yml]
+  - name: glitg-smp-buffed-items
+    files:
+      - config/plugins/BuffedItems/config.yml
+      - config/plugins/BuffedItems/items.yml
+      - config/plugins/BuffedItems/recipes.yml
   - name: glitg-smp-item-blocker
     files:
       - config/plugins/ItemBlocker/config.yml
