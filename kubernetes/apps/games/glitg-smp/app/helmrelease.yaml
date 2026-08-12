@@ -65,6 +65,9 @@ spec:
                 https://cdn.modrinth.com/data/LJNGWSvH/versions/fbt7nJt5/grimac-bukkit-2.3.74-2614909.jar
                 https://cdn.modrinth.com/data/P1OZGk5p/versions/N1tHqKId/ViaVersion-5.12.0-SNAPSHOT.jar
                 https://cdn.modrinth.com/data/fALzjamp/versions/P3y2MXnd/Chunky-Bukkit-1.4.40.jar
+              REMOVE_OLD_MODS: "TRUE"
+              REMOVE_OLD_MODS_INCLUDE: "*.jar"
+              REMOVE_OLD_MODS_DEPTH: "1"
               COPY_CONFIG_DEST: /data
               # Image-managed rule config is authoritative for this fresh season.
               SYNC_SKIP_NEWER_IN_DESTINATION: "false"
