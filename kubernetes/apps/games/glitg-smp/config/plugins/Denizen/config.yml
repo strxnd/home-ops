@@ -1,6 +1,6 @@
+---
 Debug:
   Show Debug: false
   Show Stack Traces: true
 Scripts:
-  Scripts Are Strict: true
   Automatic Reload Scripts: false

@@ -21,11 +21,9 @@ configMapGenerator:
     files: [config/plugins/CartLimiter/config.yml]
   - name: glitg-smp-conditional-events
     files: [config/plugins/ConditionalEvents/config.yml]
+  - name: glitg-smp-disable-riptide
   - name: glitg-smp-denizen
     files: [config/plugins/Denizen/config.yml]
-  - name: glitg-smp-denizen-scripts
-    files: [config/plugins/Denizen/scripts/glitg.dsc]
-  - name: glitg-smp-disable-riptide
     files: [config/plugins/DisableRiptide/config.yml]
   - name: glitg-smp-epic-safe-pvp
     files: [config/plugins/EpicSafePvp/config.yml]
