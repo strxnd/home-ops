@@ -1,8 +1,0 @@
----
-# Global/item-storage limits are intentionally created through ItemControl's
-# operator-only GUI. They persist in its database on the GLITG data PVC.
-prefix: "&8[&bItemControl&8] &7"
-messages:
-  global-limit-reached: "&cGLITG global limit reached for &e%item%&c."
-  storage-blocked: "&cLegendary items cannot be stored there on GLITG SMP."
-  item-use-blocked: "&cThis item is restricted on GLITG SMP."

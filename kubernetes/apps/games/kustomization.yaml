@@ -7,4 +7,3 @@ components:
   - ../../components/sops
 resources:
   - ./namespace.yaml
-  - ./glitg-smp/ks.yaml
