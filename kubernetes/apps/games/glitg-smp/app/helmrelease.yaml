@@ -30,33 +30,6 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             fsGroup: 1000
-        initContainers:
-          remove-replaced-plugins:
-            image:
-              repository: docker.io/library/busybox
-              tag: 1.37.0@sha256:9db7b59979c38555a39def84a31fb98b5296952f9e3afd4f6f11f05b07adfab0
-            command: [/bin/sh, -ec]
-            args:
-              - |
-                rm -f /data/plugins/ConditionalEvents-*.jar
-                rm -f /data/plugins/Denizen-*.jar
-                rm -f /data/plugins/disable-riptide-*.jar /data/plugins/DisableRiptide-*.jar
-                rm -f /data/plugins/EpicSafePvp-*.jar
-                rm -f /data/plugins/forcexaerofairplay-*.jar /data/plugins/ForceXaeroFairPlay-*.jar
-                rm -f /data/plugins/ItemLimiter-*.jar /data/plugins/ItemLimiter-v*.jar
-                rm -f /data/plugins/InstaRestock-*.jar /data/plugins/InstantVillagerRestock-*.jar
-                rm -f /data/plugins/PlaceholderAPI-*.jar
-            resources:
-              requests:
-                cpu: 10m
-                memory: 16Mi
-              limits:
-                memory: 32Mi
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities:
-                drop: [ALL]
             fsGroupChangePolicy: OnRootMismatch
             seccompProfile: { type: RuntimeDefault }
         containers:
