@@ -22,6 +22,7 @@ is a separate controller in the same Helm release.
 | Owner | Enforced behavior |
 | --- | --- |
 | LifeStealZ | Hearts, withdrawals, eliminations, anti-alt protection, crystal/bed/anchor prevention |
+| SMPGracePeriod 1.0 | One server-wide launch grace, PvP damage blocking, countdown, pause/resume, and persisted state |
 | KaiCore 1.5 | One normally craftable Mace, Pearl-use ban, crystal restriction, Xaero fair mode, villager restocks, Netherite ban, End gate, locator bar, and vanished death messages |
 | ItemControl 1.2.0 | Global two-Mace ceiling, legendary-item storage rules, and banned-item controls configured through its persistent operator UI |
 | The Limiters 2.0 | Potion restrictions and enchantment caps/bans; its item limiter is disabled |
@@ -66,7 +67,7 @@ perform the relevant smoke test before announcing the phase.
 | --- | --- |
 | Open/close the End | `config/plugins/KaiCore/config.yml`: `dimensions.allow-end`; alternatively use `/end open` or `/end close` for an immediate operator action, then update Git to match |
 | Enable/disable locator bar | `config/plugins/KaiCore/config.yml`: `locator-bar.enabled` |
-| Opening grace | The requested baseline is `PVP: "true"`; do not change it for networking work. A separate grace-period mechanism must be specified and tested before enabling one |
+| Opening grace | Run `/smpg start` once when the SMP launch window opens; `SMPGracePeriod/config.yml` supplies the one-hour duration and its active/paused state persists on the data PVC |
 | Week one heart floor | The initial configuration is `minHearts: 3` with `disablePlayerBanOnElimination: true` |
 | Week two heart floor | Set `config/plugins/LifeStealZ/config.yml`: `minHearts: 1`, keeping `disablePlayerBanOnElimination: true`; set both `invisibility-qol.hide-name-when-*` values to `false` in KaiCore; run `/end open` and commit the matching `dimensions.allow-end: true` |
 | Final-day elimination | Set `config/plugins/LifeStealZ/config.yml`: `minHearts: 0` and `disablePlayerBanOnElimination: false` |
@@ -74,9 +75,10 @@ perform the relevant smoke test before announcing the phase.
 | Adjust Mace cap | `config/plugins/MaceDamageCap/config.yml`: `damage-cap`, where one point is half a heart |
 
 The initial configuration is the Week 1 phase: a three-heart floor with no
-elimination bans. PvP is enabled to match the production server-properties
-baseline. The manual settings above are LifeStealZ's native floor and
-elimination controls; smoke-test each phase change before announcing it.
+elimination bans. The server-properties baseline keeps `PVP: "true"`; the
+dedicated SMPGracePeriod plugin blocks PvP only while its launch grace is active.
+The manual settings above are LifeStealZ's native floor and elimination controls;
+smoke-test each phase change before announcing it.
 
 ## Admin Commands
 

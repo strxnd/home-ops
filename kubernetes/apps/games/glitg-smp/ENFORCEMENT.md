@@ -8,7 +8,7 @@ implementation and verification only; it never changes the public rules.
 | Week 1 hearts | Three-heart floor; no elimination bans | Configured, unverified | Active LifeStealZ phase is `minHearts: 3`, bans disabled |
 | Week 2 hearts | One-heart floor; no elimination bans | Pending manual transition | Admin runbook changes the phase |
 | Final day | No floor; elimination bans enabled | Pending manual transition | Admin runbook changes the phase |
-| Start grace | One global hour of PvP grace | Not configured | The requested production baseline is `PVP: "true"`; specify and test a separate grace mechanism before enabling one |
+| Start grace | One global hour of PvP grace | Configured, not yet smoke-tested | `SMPGracePeriod` is configured for `1h`; run `/smpg start` at launch and verify `/smpg status` plus real PvP blocking |
 | Post-death attack cancellation | Attacking a player ends 30-minute protection | Missing | PvPManager Lite has a duration-only respawn protection setting; staff must remove protection-abuse privileges until a compatible implementation is verified |
 | Legendary storage | Hearts and both Maces cannot enter listed storage | Pending ItemControl initialization | The persistent ItemControl rules must be created by an operator before launch; test its custom-heart support without imposing a heart cap, otherwise retain that part as staff-enforced |
 | Mace protection | Protect from accidental destruction where possible | Missing | Admin recovery procedure only |

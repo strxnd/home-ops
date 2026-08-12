@@ -65,6 +65,7 @@ spec:
               PVP: "true"
               PLUGINS: |-
                 https://github.com/ZetaPlugins/LifeStealZ/releases/download/2.21.1/lifestealz-2.21.1.jar
+                https://cdn.modrinth.com/data/llBXN1az/versions/UDmXINBt/SMPGracePeriod-1.0.jar
                 https://cdn.modrinth.com/data/kV8iMq85/versions/yCPbvC8z/kaicore-1.5.jar
                 https://cdn.modrinth.com/data/1Ffl2uIq/versions/OhJOp27l/PvPManager.jar
                 https://cdn.modrinth.com/data/oU6KywXa/versions/I1Q42DEU/LongerPotionsLevels1.0.1.jar
@@ -244,6 +245,10 @@ spec:
         type: configMap
         name: glitg-smp-life-steal-z
         globalMounts: [{path: /config/plugins/LifeStealZ}]
+      smp-grace-period:
+        type: configMap
+        name: glitg-smp-smp-grace-period
+        globalMounts: [{path: /config/plugins/SMPGracePeriod}]
       acceptance-checklist:
         type: configMap
         name: glitg-smp-acceptance-checklist

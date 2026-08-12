@@ -57,14 +57,17 @@
       ["Preflight & Access", [
         "Flux Kustomization and HelmRelease report Ready at the expected Git revision",
         "Minecraft and checklist workloads are Running and Ready with no CrashLoopBackOff events",
-        "All required plugins enable cleanly: KaiCore, LifeStealZ, PvPManager, ItemControl, TheLimiters, MaceDamageCap, CartLimiter, GrimAC, CoreProtect, Chunky, and ViaVersion",
+        "All required plugins enable cleanly: SMPGracePeriod, KaiCore, LifeStealZ, PvPManager, ItemControl, TheLimiters, MaceDamageCap, CartLimiter, GrimAC, CoreProtect, Chunky, and ViaVersion",
         "A non-operator account can see GLITG SMP in the LAN list and join using 192.168.20.12:25565",
         "A non-operator account can join using the public hostname after DNS and router forwarding are complete",
         "Operator commands work for staff while a normal player cannot use admin commands or bypass restrictions"
       ]],
       ["Launch Grace & Season Rules", [
-        "The intended one-hour global launch grace is actually enforced for every player, including new joins",
-        "During grace, PvP damage and prohibited launch actions are blocked; after expiry, restrictions lift exactly as announced",
+        "SMPGracePeriod loads cleanly; staff can use /smpg start, /smpg stop, /smpg pause, and /smpg resume, while players can use /smpg status",
+        "Running /smpg start activates exactly one hour of server-wide launch grace and /smpg status reports the active countdown",
+        "During plugin grace, PvP damage and prohibited launch actions are blocked for all players, including players who join late",
+        "The active grace state survives a clean server restart and resumes with the correct remaining time",
+        "After the one-hour countdown ends, the plugin announces that PvP is enabled and normal PvP works",
         "LifeSteal week 1 permits deaths down to the three-heart floor without bans",
         "LifeSteal week 2 permits deaths down to the two-heart floor without bans",
         "The final-phase elimination rule behaves as intended and staff restoration follows the documented procedure"

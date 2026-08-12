@@ -44,6 +44,8 @@ configMapGenerator:
     files:
       - config/plugins/LifeStealZ/config.yml
       - config/plugins/LifeStealZ/items.yml
+  - name: glitg-smp-smp-grace-period
+    files: [config/plugins/SMPGracePeriod/config.yml]
   - name: glitg-smp-acceptance-checklist
     files:
       - index.html=config/acceptance-checklist.html
