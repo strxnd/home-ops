@@ -13,8 +13,8 @@ kubectl -n games get pods,svc
 kubectl -n games logs deployment/glitg-smp --tail=200
 ```
 
-Expected: both Flux resources are `Ready`, the Minecraft pod is `1/1 Running`
-on the single node's host network at `192.168.20.12:25565`. The checklist site
+Expected: both Flux resources are `Ready`, the Minecraft pod is `1/1 Running`,
+and the Cilium LoadBalancer Service has IP `192.168.20.12`. The checklist site
 is a separate controller in the same Helm release.
 
 ## Rule Ownership

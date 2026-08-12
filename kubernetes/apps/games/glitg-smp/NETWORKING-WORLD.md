@@ -7,10 +7,9 @@
 - Protocol: TCP
 - Existing router forward: WAN TCP `25565` to `192.168.20.12:25565`
 
-The Minecraft Pod uses the single node's host network, so Paper binds directly
-to `192.168.20.12:25565` while retaining an empty `server-ip`. This avoids
-claiming the node IP as a Cilium LoadBalancer virtual IP. Do not replace the
-existing router forward. The `DNSEndpoint` keeps the
+The Minecraft Service claims Cilium LoadBalancer IP `192.168.20.12` and
+forwards TCP `25565` to Paper while retaining an empty `server-ip`. Do not
+replace the existing router forward. The `DNSEndpoint` keeps the
 `glitg` A record DNS-only and pointed at `${SECRET_PUBLIC_IP}`.
 
 ## World Safety

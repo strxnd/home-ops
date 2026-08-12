@@ -24,8 +24,6 @@ spec:
         strategy: Recreate
         pod:
           automountServiceAccountToken: false
-          # The router already forwards to this single node's LAN address.
-          hostNetwork: true
           terminationGracePeriodSeconds: 120
           securityContext:
             runAsNonRoot: true
@@ -156,7 +154,10 @@ spec:
     service:
       app:
         controller: *app
-        type: ClusterIP
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: "192.168.20.12"
+        externalTrafficPolicy: Local
         ports:
           minecraft:
             port: *port
