@@ -12,7 +12,8 @@ looseHeartsToNature: true
 looseHeartsToPlayer: true
 allowDyingFromWithdraw: false
 minWithdrawHearts: 1
-disablePlayerBanOnElimination: false
+# Final-day elimination is enabled manually through Git.
+disablePlayerBanOnElimination: true
 heartRewardOnElimination: false
 preventTotems: true
 preventCrystalPVP: true

@@ -46,13 +46,15 @@ perform the relevant smoke test before announcing the phase.
 | --- | --- |
 | Open/close the End | `config/plugins/KaiCore/config.yml`: `dimensions.allow-end`; alternatively use `/end open` or `/end close` for an immediate operator action, then update Git to match |
 | Enable/disable locator bar | `config/plugins/KaiCore/config.yml`: `locator-bar.enabled` |
-| Adjust LifeSteal heart/elimination rules | `config/plugins/LifeStealZ/config.yml`: `minHearts`, `disablePlayerBanOnElimination`, and related heart settings |
+| Week one heart floor | Set `config/plugins/LifeStealZ/config.yml`: `minHearts: 3`, keeping `disablePlayerBanOnElimination: true` |
+| Week two heart floor | Set `config/plugins/LifeStealZ/config.yml`: `minHearts: 1`, keeping `disablePlayerBanOnElimination: true` |
+| Final-day elimination | Set `config/plugins/LifeStealZ/config.yml`: `minHearts: 0` and `disablePlayerBanOnElimination: false` |
 | Adjust respawn protection | `config/plugins/PvPManager/config.yml`: `Player Kills.Anti Kill Abuse.Respawn Protection` in seconds |
 | Adjust Mace cap | `config/plugins/MaceDamageCap/config.yml`: `damage-cap`, where one point is half a heart |
 
-The original week-one/second heart-floor behavior is not represented by any
-current non-custom plugin configuration. Do not claim that those floors are
-enforced until a compatible public plugin is selected and smoke-tested.
+The default configuration has no heart floor and does not ban eliminations.
+The manual settings above are LifeStealZ's native floor and elimination controls;
+smoke-test each phase change before announcing it.
 
 ## Admin Commands
 
