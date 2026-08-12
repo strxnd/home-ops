@@ -17,6 +17,15 @@ configMapGenerator:
   - name: glitg-smp-datapack-loot
     files:
       - breeze.json=config/glitg-smp/datapacks/SMPChanges/data/minecraft/loot_table/entities/breeze.json
+  - name: glitg-smp-datapack-load
+    files:
+      - load.json=config/glitg-smp/datapacks/SMPChanges/data/minecraft/tags/function/load.json
+  - name: glitg-smp-datapack-functions
+    files:
+      - border.mcfunction=config/glitg-smp/datapacks/SMPChanges/data/glitg/function/border.mcfunction
+  - name: glitg-smp-datapack-recipes
+    files:
+      - golden_apple.json=config/glitg-smp/datapacks/SMPChanges/data/minecraft/recipe/golden_apple.json
   - name: glitg-smp-cart-limiter
     files: [config/plugins/CartLimiter/config.yml]
   - name: glitg-smp-kai-core
@@ -34,10 +43,10 @@ configMapGenerator:
       - config/plugins/BuffedItems/recipes.yml
       - config/plugins/BuffedItems/sets.yml
       - config/plugins/BuffedItems/upgrades.yml
-  - name: glitg-smp-item-blocker
-    files:
-      - config/plugins/ItemBlocker/config.yml
-      - config/plugins/ItemBlocker/blocked-items.yml
+  - name: glitg-smp-item-control
+    files: [config/plugins/ItemControl/config.yml]
+  - name: glitg-smp-the-limiters
+    files: [config/plugins/TheLimiters/config.yml]
   - name: glitg-smp-life-steal-z
     files:
       - config/plugins/LifeStealZ/config.yml

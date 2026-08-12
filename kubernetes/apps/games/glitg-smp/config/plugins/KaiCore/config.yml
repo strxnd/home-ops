@@ -1,4 +1,11 @@
 ---
+easy-recipes:
+  # The datapack replaces the vanilla Golden Apple recipe exactly. Do not add a
+  # KaiCore variant, or the normal eight-ingot recipe may remain available.
+  gaps:
+    enabled: false
+  webs:
+    enabled: false
 mace:
   one-time-craft:
     enabled: true
@@ -21,18 +28,7 @@ invisibility-qol:
   hide-name-when-killing: true
   hide-name-when-dying: true
 combat:
-  enabled: true
-  tag-time-seconds: 30
-  ban-restock-while-in-combat: true
-  combat-log-punishment: KILL
-  timer-display: ACTIONBAR
-  ban-riptide-while-in-combat: true
-  minimum-damage-to-tag: 0
-  ban-elytra-while-in-combat: true
-enchant-limit:
-  protection: 3
-  sharpness: 3
-  power: 4
+  enabled: false
 netherite-ban:
   enabled: true
   banned-items:
@@ -41,10 +37,14 @@ netherite-ban:
     - NETHERITE_HELMET
     - NETHERITE_LEGGINGS
     - NETHERITE_BOOTS
+tnt-minecarts:
+  ban: false
+string-dupers:
+  revive-enabled: false
 locator-bar:
   enabled: false
 pvp:
-  enabled: true
+  enabled: false
 weapon-cooldowns:
   spear: 0.0
   spear-blocks:
@@ -57,40 +57,4 @@ weapon-cooldowns:
   riptide: 0.0
   enchanted-apple: 0.0
 item-limiter:
-  enabled: true
-  limit-reached-message: "&cGLITG kit limit reached. Excess items are dropped."
-  item-limits:
-    healing-potion:
-      item:
-        DataVersion: 4790
-        id: minecraft:potion
-        count: 1
-        components:
-          minecraft:potion_contents:
-            potion: minecraft:healing
-        schema_version: 1
-      limit: 6
-    healing-splash-potion:
-      item:
-        DataVersion: 4790
-        id: minecraft:splash_potion
-        count: 1
-        components:
-          minecraft:potion_contents:
-            potion: minecraft:healing
-        schema_version: 1
-      limit: 6
-    healing-lingering-potion:
-      item:
-        DataVersion: 4790
-        id: minecraft:lingering_potion
-        count: 1
-        components:
-          minecraft:potion_contents:
-            potion: minecraft:healing
-        schema_version: 1
-      limit: 6
-    EXPERIENCE_BOTTLE: 192
-    COBWEB: 128
-    GOLDEN_APPLE: 128
-    BREEZE_ROD: 64
+  enabled: false

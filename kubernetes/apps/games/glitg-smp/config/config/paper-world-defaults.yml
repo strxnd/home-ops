@@ -1,5 +1,11 @@
 ---
 _version: 31
+anticheat:
+  anti-xray:
+    enabled: true
+    engine-mode: 2
+    update-radius: 2
+    use-permission: false
 chunks:
   entity-per-chunk-save-limit:
     tnt_minecart: 8

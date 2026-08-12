@@ -56,6 +56,8 @@ spec:
               SIMULATION_DISTANCE: "8"
               ENABLE_RCON: "false"
               MOTD: "GLITG S1 - LifeSteal"
+              # Opening grace is global. Admins set this to true one hour after launch.
+              PVP: "false"
               PLUGINS: |-
                 https://github.com/ZetaPlugins/LifeStealZ/releases/download/2.21.1/lifestealz-2.21.1.jar
                 https://cdn.modrinth.com/data/kV8iMq85/versions/yCPbvC8z/kaicore-1.5.jar
@@ -63,7 +65,8 @@ spec:
                 https://cdn.modrinth.com/data/oU6KywXa/versions/I1Q42DEU/LongerPotionsLevels1.0.1.jar
                 https://cdn.modrinth.com/data/x882y0hP/versions/tnIRjZj2/MaceDamageCap-1.0.2.jar
                 https://hangarcdn.papermc.io/plugins/AltKat/BuffedItems/versions/1.9.0/PAPER/BuffedItems-1.9.0.jar
-                https://hangarcdn.papermc.io/plugins/kuqk/ItemBlocker/versions/1.1.3/PAPER/ItemBlocker-1.1.3.jar
+                https://cdn.modrinth.com/data/NiJ6gIEq/versions/lO8gD88d/ItemControl-1.2.0.jar
+                https://cdn.modrinth.com/data/4oi6UbJ7/versions/q0badV96/the-limiters-1.0.0.jar
                 https://cdn.modrinth.com/data/j2g3fqUV/versions/t8bMoUaC/cartlimiter-1.7.jar
                 https://cdn.modrinth.com/data/Lu3KuzdV/versions/Kma0kBsY/CoreProtect-CE-24.0.jar
                 https://cdn.modrinth.com/data/LJNGWSvH/versions/fbt7nJt5/grimac-bukkit-2.3.74-2614909.jar
@@ -138,6 +141,18 @@ spec:
         type: configMap
         name: glitg-smp-datapack-loot
         globalMounts: [{path: /config/glitg-smp/datapacks/SMPChanges/data/minecraft/loot_table/entities}]
+      datapack-load:
+        type: configMap
+        name: glitg-smp-datapack-load
+        globalMounts: [{path: /config/glitg-smp/datapacks/SMPChanges/data/minecraft/tags/function}]
+      datapack-functions:
+        type: configMap
+        name: glitg-smp-datapack-functions
+        globalMounts: [{path: /config/glitg-smp/datapacks/SMPChanges/data/glitg/function}]
+      datapack-recipes:
+        type: configMap
+        name: glitg-smp-datapack-recipes
+        globalMounts: [{path: /config/glitg-smp/datapacks/SMPChanges/data/minecraft/recipe}]
       cart-limiter:
         type: configMap
         name: glitg-smp-cart-limiter
@@ -162,10 +177,14 @@ spec:
         type: configMap
         name: glitg-smp-buffed-items
         globalMounts: [{path: /config/plugins/BuffedItems}]
-      item-blocker:
+      item-control:
         type: configMap
-        name: glitg-smp-item-blocker
-        globalMounts: [{path: /config/plugins/ItemBlocker}]
+        name: glitg-smp-item-control
+        globalMounts: [{path: /config/plugins/ItemControl}]
+      the-limiters:
+        type: configMap
+        name: glitg-smp-the-limiters
+        globalMounts: [{path: /config/plugins/TheLimiters}]
       life-steal-z:
         type: configMap
         name: glitg-smp-life-steal-z

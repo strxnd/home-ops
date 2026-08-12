@@ -1,19 +1,34 @@
 ---
-# KaiCore is the sole combat-tag and combat-log owner. PvPManager only grants
-# temporary protection after respawn.
+# PvPManager is the sole combat-tag, combat-log, combat-Elytra, and respawn
+# protection owner. KaiCore's overlapping combat system is disabled.
 General Settings:
   Locale: EN
   Use Scoreboard Teams: false
   World Exclusions: []
 Combat Tag:
-  Enabled: false
+  Enabled: true
+  Time: 30
   Display:
     Nametags:
       Enabled: false
     Action Bar:
-      Enabled: false
+      Enabled: true
     Boss Bar:
       Enabled: false
+  Actions Blocked:
+    Elytra:
+      Block Gliding: true
+      Block Fireworks: true
+Combat Log Punishments:
+  Kill on Logout:
+    Enabled: true
+    Player Drops:
+      Inventory: true
+      Experience: true
+      Armor: true
+  Punish On Kick:
+    Enabled: false
+  Commands On Combat Log: []
 PvP Toggle:
   Default PvP: true
   Cooldown: 0
@@ -64,7 +79,7 @@ Disable On Hit:
   GameMode: false
   Disguise: false
   GodMode: false
-  Elytra: false
+  Elytra: true
   Invisibility: false
 Database:
   Type: SQLite
