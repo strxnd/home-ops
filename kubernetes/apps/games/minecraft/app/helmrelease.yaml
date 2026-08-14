@@ -44,7 +44,8 @@ spec:
               VERSION: "26.2"
               FABRIC_LOADER_VERSION: "0.19.3"
               FABRIC_LAUNCHER_VERSION: "1.1.2"
-              LEVEL: minecraft-26-2
+              LEVEL: minecraft-26-2-glitg-seed
+              SEED: "-3085124641489919468"
               MODE: survival
               FORCE_GAMEMODE: "false"
               DIFFICULTY: hard
