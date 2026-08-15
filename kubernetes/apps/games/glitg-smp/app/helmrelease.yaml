@@ -63,6 +63,8 @@ spec:
               ENABLE_RCON: "false"
               PVP: "true"
               MOTD: GLITG SMP S1 - LifeSteal
+              COPY_CONFIG_DEST: /data
+              SYNC_SKIP_NEWER_IN_DESTINATION: "false"
               # Immutable Modrinth version URLs; the official stock image downloads
               # and reconciles these into /data/plugins at container startup.
               PLUGINS: |-
@@ -123,3 +125,8 @@ spec:
         retain: true
         globalMounts:
           - path: /data
+      spawn-protection:
+        type: configMap
+        name: glitg-smp-spawn-protection
+        globalMounts:
+          - path: /config/plugins/SpawnProtection

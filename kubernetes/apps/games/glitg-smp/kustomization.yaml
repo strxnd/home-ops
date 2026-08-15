@@ -6,3 +6,9 @@ resources:
   - ./app/dnsendpoint.yaml
   - ./app/helmrelease.yaml
   - ./app/ocirepository.yaml
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+  - name: glitg-smp-spawn-protection
+    files:
+      - config.yml=config/plugins/SpawnProtection/config.yml

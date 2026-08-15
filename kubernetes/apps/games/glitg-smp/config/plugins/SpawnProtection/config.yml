@@ -1,0 +1,567 @@
+# ============================================================
+#  SpawnProtection — Main configuration
+#  SpawnProtection — Configuración principal
+#
+#  Minimalist plugin to protect the spawn area.
+#  Plugin minimalista para proteger el área de spawn.
+#
+#  No dependencies required. No unnecessary commands.
+#  No requiere dependencias. No añade comandos innecesarios.
+#
+#  Keep this file simple for a clean, lightweight experience.
+#  Mantén este archivo simple para una experiencia ligera y clara.
+# ============================================================
+
+config-version: 7
+
+protection-area:
+  # Protection mode used by the plugin.
+  # Modo de protección usado por el plugin.
+  #
+  # radius = protects an area around the configured world spawn.
+  # radius = protege un área alrededor del spawn del mundo configurado.
+  #
+  # world = protects the entire configured world.
+  # world = protege todo el mundo configurado.
+  #
+  # Available options: radius, world
+  # Opciones disponibles: radius, world
+  mode: "radius"
+
+spawn:
+  # World whose spawn location will be protected.
+  # Mundo cuya ubicación de spawn será protegida.
+  world: "glitg-smp-26-2"
+
+  # Protection radius around the configured world spawn.
+  # Radio de protección alrededor del spawn del mundo configurado.
+  #
+  # Measured in blocks.
+  # Se mide en bloques.
+  radius: 15
+
+  # Whether the Y axis should be included in radius checks.
+  # Si se debe incluir el eje Y en las comprobaciones de radio.
+  #
+  # false = cylindrical protection, based only on X/Z distance.
+  # false = protección cilíndrica, basada solo en distancia X/Z.
+  #
+  # true = spherical protection, including height difference.
+  # true = protección esférica, incluyendo diferencia de altura.
+  check-y-axis: false
+
+  # Whether SpawnProtection should use a custom protection center.
+  # Si SpawnProtection debe usar un centro de protección personalizado.
+  #
+  # false = uses the configured world's spawn location.
+  # false = usa la ubicación de spawn del mundo configurado.
+  #
+  # true = uses the coordinates below as the protection center.
+  # true = usa las coordenadas inferiores como centro de protección.
+  use-custom-center: false
+
+  # Custom protection center coordinates.
+  # Coordenadas del centro de protección personalizado.
+  #
+  # These values are used only when use-custom-center is true.
+  # Estos valores solo se usan cuando use-custom-center está en true.
+  center:
+    x: 0.5
+    y: 64.0
+    z: 0.5
+
+protections:
+  # Prevents players from breaking blocks inside the protected radius.
+  # Evita que los jugadores rompan bloques dentro del radio protegido.
+  block-break: true
+
+  # Prevents players from placing blocks inside the protected radius.
+  # Evita que los jugadores coloquen bloques dentro del radio protegido.
+  block-place: true
+
+  # Blocks PvP inside the protected radius.
+  # Bloquea PvP dentro del radio protegido.
+  pvp: true
+
+  # Prevents explosions from destroying blocks inside the protected radius.
+  # Evita que las explosiones destruyan bloques dentro del radio protegido.
+  explosions: true
+
+  # Blocks interactions with chests, doors, mechanisms, shulkers, etc.
+  # Double chests are protected when either half touches the area. Entity-driven
+  # physical triggers and redstone current changes inside the area are also blocked.
+  # Bloquea interacciones con cofres, puertas, mecanismos, shulkers, etc.
+  # Los cofres dobles quedan protegidos si cualquiera de sus mitades toca el área.
+  # También se bloquean activaciones físicas y cambios de redstone dentro del área.
+  interactions: true
+
+  # Prevents fire from starting or burning blocks inside the protected area.
+  # Evita que el fuego se inicie o queme bloques dentro del área protegida.
+  fire: true
+
+  # Blocks placing, taking and flowing water/lava inside the spawn area.
+  # Bloquea colocar, recoger y fluir agua/lava dentro del área de spawn.
+  fluids: true
+
+  # Prevents pistons from moving blocks into, out of, or inside the protected area.
+  # Evita que los pistones muevan bloques hacia dentro, fuera o dentro del área protegida.
+  pistons: true
+
+  # Protects decorative and passive entities from damage inside the spawn area.
+  # Decorative entities cannot be manipulated, while normal use of villagers,
+  # animals, boats and minecarts remains available. Protected storage and mount
+  # inventories remain locked.
+  # In world mode, this damage protection applies across the entire configured world.
+  # Protege entidades decorativas y pasivas contra daños dentro del área de spawn.
+  # Las entidades decorativas no se pueden manipular, mientras que el uso normal de
+  # aldeanos, animales, barcos y vagonetas continúa disponible. Los inventarios de
+  # almacenamiento y los inventarios de monturas protegidas permanecen bloqueados.
+  # En modo world, esta protección contra daños se aplica a todo el mundo configurado.
+  entities: true
+
+  # Prevents hoppers and other inventories from moving items into or out of protected inventories.
+  # Protected dispensers and droppers cannot eject items through redstone.
+  # Evita que tolvas y otros inventarios muevan objetos hacia o desde inventarios protegidos.
+  # Los dispensadores y soltadores protegidos no pueden expulsar objetos mediante redstone.
+  inventory-transfer: true
+
+  # Prevents natural state changes inside spawn, such as growth, decay, melting,
+  # spreading and cauldron level changes.
+  # Evita cambios naturales dentro del spawn, como crecimiento, caída de hojas,
+  # deshielo, propagación y cambios de nivel de calderos.
+  environment: true
+
+settings:
+  # Language used for plugin messages.
+  # Idioma utilizado para los mensajes del plugin.
+  #
+  # Available options: en, es, fr, de, it, pt-br
+  # Opciones disponibles: en, es, fr, de, it, pt-br
+  language: "en"
+
+  # Cooldown between repeated protection messages shown to the same player.
+  # Set to 0 to disable message cooldown.
+  # Tiempo de espera entre mensajes repetidos mostrados al mismo jugador.
+  # Usa 0 para desactivar el cooldown de mensajes.
+  message-cooldown-seconds: 1.5
+
+# ============================================================
+#  Plugin messages
+#  Mensajes del plugin
+#
+#  Each language contains the same keys for consistency.
+#  Cada idioma contiene las mismas claves para mantener consistencia.
+#
+#  The plugin will automatically use the language configured above.
+#  El plugin usará automáticamente el idioma configurado arriba.
+# ============================================================
+
+messages:
+
+  # -------------------------
+  # 🇬🇧 English (en)
+  # -------------------------
+  en:
+    no-build: "&cYou cannot build in the spawn area."
+    no-pvp: "&cYou cannot fight in the spawn area."
+    no-interact: "&cYou cannot interact with blocks in the spawn area."
+    no-entity: "&cYou cannot interact with protected entities in the spawn area."
+    no-fire: "&cYou cannot start fires in the spawn area."
+    no-environment: "&cYou cannot modify the environment in the spawn area."
+    no-permission: "&cYou do not have permission to do that."
+    unknown-command: "&cUnknown command."
+    reloaded: "&aSpawnProtection reloaded successfully."
+    command:
+      common:
+        enabled: "&aenabled"
+        disabled: "&cdisabled"
+        not-loaded: "&c(not loaded)"
+        unknown: "unknown"
+        center-custom: "custom"
+        center-world-spawn: "world spawn"
+        shape-spherical: "spherical"
+        shape-cylindrical: "cylindrical"
+      header: "&6&lSpawnProtection &7v{version}"
+      help:
+        help: "&e/{label} help &7- Shows this help message."
+        info: "&e/{label} info &7- Shows current protection settings."
+        reload: "&e/{label} reload &7- Reloads the plugin."
+        setcenter: "&e/{label} setcenter &7- Sets the protection center to your current location."
+        resetcenter: "&e/{label} resetcenter &7- Resets the protection center to the configured world spawn."
+        preview: "&e/{label} preview &7- Shows the protected radius with particles."
+      info:
+        title: "&eCurrent Protection Setup:"
+        mode: " &7- Mode: &b{value}"
+        world: " &7- World: &b{value}"
+        center: " &7- Center: &b{value} &7({type})"
+        area-world: " &7- Area: &bEntire world protected"
+        radius: " &7- Radius: &b{value}"
+        shape: " &7- Shape: &b{value}"
+        language: " &7- Language: &b{value}"
+        cooldown: " &7- Message cooldown: &b{value}"
+        protections-title: "&eActive Protections:"
+        block-break: " &7- Block break: {state}"
+        block-place: " &7- Block place: {state}"
+        pvp: " &7- PvP: {state}"
+        explosions: " &7- Explosions: {state}"
+        interactions: " &7- Interactions: {state}"
+        fire: " &7- Fire: {state}"
+        fluids: " &7- Fluids: {state}"
+        pistons: " &7- Pistons: {state}"
+        entities: " &7- Entities: {state}"
+        inventory-transfer: " &7- Inventory transfer: {state}"
+        environment: " &7- Environment: {state}"
+      setcenter:
+        player-only: "&cOnly players can set the protection center."
+        success: "&aProtection center set to your current location."
+        world: "&7World: &b{value}"
+        center: "&7Center: &b{value}"
+      resetcenter:
+        success: "&aProtection center reset. SpawnProtection now uses the configured world spawn."
+      preview:
+        player-only: "&cOnly players can preview the protection radius."
+        world-mode: "&eWorld mode protects the entire configured world. Radius preview is only available in radius mode."
+        center-unavailable: "&cThe protection center is not available. Check your configured world."
+        wrong-world: "&cYou must be in the protected world to preview the radius."
+        invalid-radius: "&cThe protection radius must be greater than 0 to use preview."
+        started: "&aShowing protection radius preview for a few seconds."
+
+  # -------------------------
+  # 🇪🇸 Español (es)
+  # -------------------------
+  es:
+    no-build: "&cNo puedes construir en la zona de spawn."
+    no-pvp: "&cNo puedes pelear en la zona de spawn."
+    no-interact: "&cNo puedes interactuar con bloques en la zona de spawn."
+    no-entity: "&cNo puedes interactuar con entidades protegidas en la zona de spawn."
+    no-fire: "&cNo puedes iniciar fuego en la zona de spawn."
+    no-environment: "&cNo puedes modificar el entorno en la zona de spawn."
+    no-permission: "&cNo tienes permiso para hacer eso."
+    unknown-command: "&cComando desconocido."
+    reloaded: "&aSpawnProtection se ha recargado correctamente."
+    command:
+      common:
+        enabled: "&aactivado"
+        disabled: "&cdesactivado"
+        not-loaded: "&c(no cargado)"
+        unknown: "desconocido"
+        center-custom: "personalizado"
+        center-world-spawn: "spawn del mundo"
+        shape-spherical: "esférica"
+        shape-cylindrical: "cilíndrica"
+      header: "&6&lSpawnProtection &7v{version}"
+      help:
+        help: "&e/{label} help &7- Muestra este mensaje de ayuda."
+        info: "&e/{label} info &7- Muestra la configuración de protección actual."
+        reload: "&e/{label} reload &7- Recarga el plugin."
+        setcenter: "&e/{label} setcenter &7- Fija el centro de protección en tu ubicación actual."
+        resetcenter: "&e/{label} resetcenter &7- Restablece el centro al spawn del mundo configurado."
+        preview: "&e/{label} preview &7- Muestra el radio protegido con partículas."
+      info:
+        title: "&eConfiguración de protección actual:"
+        mode: " &7- Modo: &b{value}"
+        world: " &7- Mundo: &b{value}"
+        center: " &7- Centro: &b{value} &7({type})"
+        area-world: " &7- Área: &bTodo el mundo protegido"
+        radius: " &7- Radio: &b{value}"
+        shape: " &7- Forma: &b{value}"
+        language: " &7- Idioma: &b{value}"
+        cooldown: " &7- Cooldown de mensajes: &b{value}"
+        protections-title: "&eProtecciones activas:"
+        block-break: " &7- Rotura de bloques: {state}"
+        block-place: " &7- Colocación de bloques: {state}"
+        pvp: " &7- PvP: {state}"
+        explosions: " &7- Explosiones: {state}"
+        interactions: " &7- Interacciones: {state}"
+        fire: " &7- Fuego: {state}"
+        fluids: " &7- Fluidos: {state}"
+        pistons: " &7- Pistones: {state}"
+        entities: " &7- Entidades: {state}"
+        inventory-transfer: " &7- Transferencia de inventarios: {state}"
+        environment: " &7- Entorno: {state}"
+      setcenter:
+        player-only: "&cSolo los jugadores pueden fijar el centro de protección."
+        success: "&aCentro de protección fijado en tu ubicación actual."
+        world: "&7Mundo: &b{value}"
+        center: "&7Centro: &b{value}"
+      resetcenter:
+        success: "&aCentro de protección restablecido. SpawnProtection usa ahora el spawn del mundo configurado."
+      preview:
+        player-only: "&cSolo los jugadores pueden previsualizar el radio de protección."
+        world-mode: "&eEl modo world protege todo el mundo configurado. La previsualización solo está disponible en modo radius."
+        center-unavailable: "&cEl centro de protección no está disponible. Revisa el mundo configurado."
+        wrong-world: "&cDebes estar en el mundo protegido para previsualizar el radio."
+        invalid-radius: "&cEl radio de protección debe ser mayor que 0 para usar la previsualización."
+        started: "&aMostrando el radio de protección durante unos segundos."
+
+  # -------------------------
+  # 🇫🇷 Français (fr)
+  # -------------------------
+  fr:
+    no-build: "&cVous ne pouvez pas construire dans la zone de spawn."
+    no-pvp: "&cVous ne pouvez pas vous battre dans la zone de spawn."
+    no-interact: "&cVous ne pouvez pas interagir avec des blocs dans la zone de spawn."
+    no-entity: "&cVous ne pouvez pas interagir avec des entités protégées dans la zone de spawn."
+    no-fire: "&cVous ne pouvez pas allumer de feu dans la zone de spawn."
+    no-environment: "&cVous ne pouvez pas modifier l'environnement dans la zone de spawn."
+    no-permission: "&cVous n'avez pas la permission de faire cela."
+    unknown-command: "&cCommande inconnue."
+    reloaded: "&aSpawnProtection a été rechargé avec succès."
+    command:
+      common:
+        enabled: "&aactivé"
+        disabled: "&cdésactivé"
+        not-loaded: "&c(non chargé)"
+        unknown: "inconnu"
+        center-custom: "personnalisé"
+        center-world-spawn: "spawn du monde"
+        shape-spherical: "sphérique"
+        shape-cylindrical: "cylindrique"
+      header: "&6&lSpawnProtection &7v{version}"
+      help:
+        help: "&e/{label} help &7- Affiche ce message d’aide."
+        info: "&e/{label} info &7- Affiche les paramètres de protection actuels."
+        reload: "&e/{label} reload &7- Recharge le plugin."
+        setcenter: "&e/{label} setcenter &7- Définit le centre de protection à votre position."
+        resetcenter: "&e/{label} resetcenter &7- Rétablit le centre au spawn du monde configuré."
+        preview: "&e/{label} preview &7- Affiche le rayon protégé avec des particules."
+      info:
+        title: "&eConfiguration de protection actuelle :"
+        mode: " &7- Mode : &b{value}"
+        world: " &7- Monde : &b{value}"
+        center: " &7- Centre : &b{value} &7({type})"
+        area-world: " &7- Zone : &bMonde entier protégé"
+        radius: " &7- Rayon : &b{value}"
+        shape: " &7- Forme : &b{value}"
+        language: " &7- Langue : &b{value}"
+        cooldown: " &7- Délai des messages : &b{value}"
+        protections-title: "&eProtections actives :"
+        block-break: " &7- Destruction de blocs : {state}"
+        block-place: " &7- Placement de blocs : {state}"
+        pvp: " &7- PvP : {state}"
+        explosions: " &7- Explosions : {state}"
+        interactions: " &7- Interactions : {state}"
+        fire: " &7- Feu : {state}"
+        fluids: " &7- Fluides : {state}"
+        pistons: " &7- Pistons : {state}"
+        entities: " &7- Entités : {state}"
+        inventory-transfer: " &7- Transfert d’inventaire : {state}"
+        environment: " &7- Environnement : {state}"
+      setcenter:
+        player-only: "&cSeuls les joueurs peuvent définir le centre de protection."
+        success: "&aCentre de protection défini à votre position actuelle."
+        world: "&7Monde : &b{value}"
+        center: "&7Centre : &b{value}"
+      resetcenter:
+        success: "&aCentre de protection réinitialisé. SpawnProtection utilise maintenant le spawn du monde configuré."
+      preview:
+        player-only: "&cSeuls les joueurs peuvent prévisualiser le rayon de protection."
+        world-mode: "&eLe mode world protège tout le monde configuré. La prévisualisation est disponible uniquement en mode radius."
+        center-unavailable: "&cLe centre de protection n’est pas disponible. Vérifiez le monde configuré."
+        wrong-world: "&cVous devez être dans le monde protégé pour prévisualiser le rayon."
+        invalid-radius: "&cLe rayon de protection doit être supérieur à 0 pour utiliser la prévisualisation."
+        started: "&aAffichage du rayon de protection pendant quelques secondes."
+
+  # -------------------------
+  # 🇩🇪 Deutsch (de)
+  # -------------------------
+  de:
+    no-build: "&cDu kannst im Spawn-Bereich nicht bauen."
+    no-pvp: "&cDu kannst im Spawn-Bereich nicht kämpfen."
+    no-interact: "&cDu kannst im Spawn-Bereich nicht mit Blöcken interagieren."
+    no-entity: "&cDu kannst im Spawn-Bereich nicht mit geschützten Entitäten interagieren."
+    no-fire: "&cDu kannst im Spawn-Bereich kein Feuer entzünden."
+    no-environment: "&cDu kannst die Umgebung im Spawn-Bereich nicht verändern."
+    no-permission: "&cDu hast keine Berechtigung dafür."
+    unknown-command: "&cUnbekannter Befehl."
+    reloaded: "&aSpawnProtection wurde erfolgreich neu geladen."
+    command:
+      common:
+        enabled: "&aaktiviert"
+        disabled: "&cdeaktiviert"
+        not-loaded: "&c(nicht geladen)"
+        unknown: "unbekannt"
+        center-custom: "benutzerdefiniert"
+        center-world-spawn: "Welt-Spawn"
+        shape-spherical: "kugelförmig"
+        shape-cylindrical: "zylindrisch"
+      header: "&6&lSpawnProtection &7v{version}"
+      help:
+        help: "&e/{label} help &7- Zeigt diese Hilfe an."
+        info: "&e/{label} info &7- Zeigt die aktuellen Schutzeinstellungen."
+        reload: "&e/{label} reload &7- Lädt das Plugin neu."
+        setcenter: "&e/{label} setcenter &7- Setzt das Schutzzentrum auf deine Position."
+        resetcenter: "&e/{label} resetcenter &7- Setzt das Zentrum auf den konfigurierten Welt-Spawn zurück."
+        preview: "&e/{label} preview &7- Zeigt den geschützten Radius mit Partikeln."
+      info:
+        title: "&eAktuelle Schutzeinstellungen:"
+        mode: " &7- Modus: &b{value}"
+        world: " &7- Welt: &b{value}"
+        center: " &7- Zentrum: &b{value} &7({type})"
+        area-world: " &7- Bereich: &bGesamte Welt geschützt"
+        radius: " &7- Radius: &b{value}"
+        shape: " &7- Form: &b{value}"
+        language: " &7- Sprache: &b{value}"
+        cooldown: " &7- Nachrichten-Cooldown: &b{value}"
+        protections-title: "&eAktive Schutzfunktionen:"
+        block-break: " &7- Blöcke abbauen: {state}"
+        block-place: " &7- Blöcke platzieren: {state}"
+        pvp: " &7- PvP: {state}"
+        explosions: " &7- Explosionen: {state}"
+        interactions: " &7- Interaktionen: {state}"
+        fire: " &7- Feuer: {state}"
+        fluids: " &7- Flüssigkeiten: {state}"
+        pistons: " &7- Kolben: {state}"
+        entities: " &7- Entitäten: {state}"
+        inventory-transfer: " &7- Inventartransfer: {state}"
+        environment: " &7- Umgebung: {state}"
+      setcenter:
+        player-only: "&cNur Spieler können das Schutzzentrum setzen."
+        success: "&aSchutzzentrum auf deine aktuelle Position gesetzt."
+        world: "&7Welt: &b{value}"
+        center: "&7Zentrum: &b{value}"
+      resetcenter:
+        success: "&aSchutzzentrum zurückgesetzt. SpawnProtection verwendet jetzt den Spawn der konfigurierten Welt."
+      preview:
+        player-only: "&cNur Spieler können den Schutzradius anzeigen."
+        world-mode: "&eDer world-Modus schützt die gesamte konfigurierte Welt. Die Vorschau ist nur im radius-Modus verfügbar."
+        center-unavailable: "&cDas Schutzzentrum ist nicht verfügbar. Prüfe die konfigurierte Welt."
+        wrong-world: "&cDu musst dich in der geschützten Welt befinden, um den Radius anzuzeigen."
+        invalid-radius: "&cDer Schutzradius muss größer als 0 sein."
+        started: "&aDer Schutzradius wird für einige Sekunden angezeigt."
+
+  # -------------------------
+  # 🇮🇹 Italiano (it)
+  # -------------------------
+  it:
+    no-build: "&cNon puoi costruire nell'area di spawn."
+    no-pvp: "&cNon puoi combattere nell'area di spawn."
+    no-interact: "&cNon puoi interagire con i blocchi nell'area di spawn."
+    no-entity: "&cNon puoi interagire con entità protette nell'area di spawn."
+    no-fire: "&cNon puoi accendere fuochi nell'area di spawn."
+    no-environment: "&cNon puoi modificare l'ambiente nell'area di spawn."
+    no-permission: "&cNon hai il permesso per farlo."
+    unknown-command: "&cComando sconosciuto."
+    reloaded: "&aSpawnProtection è stato ricaricato con successo."
+    command:
+      common:
+        enabled: "&aattivato"
+        disabled: "&cdisattivato"
+        not-loaded: "&c(non caricato)"
+        unknown: "sconosciuto"
+        center-custom: "personalizzato"
+        center-world-spawn: "spawn del mondo"
+        shape-spherical: "sferica"
+        shape-cylindrical: "cilindrica"
+      header: "&6&lSpawnProtection &7v{version}"
+      help:
+        help: "&e/{label} help &7- Mostra questo messaggio di aiuto."
+        info: "&e/{label} info &7- Mostra le impostazioni di protezione attuali."
+        reload: "&e/{label} reload &7- Ricarica il plugin."
+        setcenter: "&e/{label} setcenter &7- Imposta il centro di protezione sulla tua posizione."
+        resetcenter: "&e/{label} resetcenter &7- Ripristina il centro allo spawn del mondo configurato."
+        preview: "&e/{label} preview &7- Mostra il raggio protetto con particelle."
+      info:
+        title: "&eConfigurazione di protezione attuale:"
+        mode: " &7- Modalità: &b{value}"
+        world: " &7- Mondo: &b{value}"
+        center: " &7- Centro: &b{value} &7({type})"
+        area-world: " &7- Area: &bIntero mondo protetto"
+        radius: " &7- Raggio: &b{value}"
+        shape: " &7- Forma: &b{value}"
+        language: " &7- Lingua: &b{value}"
+        cooldown: " &7- Cooldown messaggi: &b{value}"
+        protections-title: "&eProtezioni attive:"
+        block-break: " &7- Rottura blocchi: {state}"
+        block-place: " &7- Posizionamento blocchi: {state}"
+        pvp: " &7- PvP: {state}"
+        explosions: " &7- Esplosioni: {state}"
+        interactions: " &7- Interazioni: {state}"
+        fire: " &7- Fuoco: {state}"
+        fluids: " &7- Fluidi: {state}"
+        pistons: " &7- Pistoni: {state}"
+        entities: " &7- Entità: {state}"
+        inventory-transfer: " &7- Trasferimento inventario: {state}"
+        environment: " &7- Ambiente: {state}"
+      setcenter:
+        player-only: "&cSolo i giocatori possono impostare il centro di protezione."
+        success: "&aCentro di protezione impostato sulla tua posizione attuale."
+        world: "&7Mondo: &b{value}"
+        center: "&7Centro: &b{value}"
+      resetcenter:
+        success: "&aCentro di protezione ripristinato. SpawnProtection ora usa lo spawn del mondo configurato."
+      preview:
+        player-only: "&cSolo i giocatori possono visualizzare il raggio di protezione."
+        world-mode: "&eLa modalità world protegge l’intero mondo configurato. L’anteprima è disponibile solo in modalità radius."
+        center-unavailable: "&cIl centro di protezione non è disponibile. Controlla il mondo configurato."
+        wrong-world: "&cDevi trovarti nel mondo protetto per visualizzare il raggio."
+        invalid-radius: "&cIl raggio di protezione deve essere maggiore di 0."
+        started: "&aVisualizzazione del raggio di protezione per alcuni secondi."
+
+  # -------------------------
+  # 🇧🇷 Português (pt-br)
+  # -------------------------
+  pt-br:
+    no-build: "&cVocê não pode construir na área de spawn."
+    no-pvp: "&cVocê não pode lutar na área de spawn."
+    no-interact: "&cVocê não pode interagir com blocos na área de spawn."
+    no-entity: "&cVocê não pode interagir com entidades protegidas na área de spawn."
+    no-fire: "&cVocê não pode iniciar fogo na área de spawn."
+    no-environment: "&cVocê não pode modificar o ambiente na área de spawn."
+    no-permission: "&cVocê não tem permissão para fazer isso."
+    unknown-command: "&cComando desconhecido."
+    reloaded: "&aSpawnProtection recarregado com sucesso."
+    command:
+      common:
+        enabled: "&aativado"
+        disabled: "&cdesativado"
+        not-loaded: "&c(não carregado)"
+        unknown: "desconhecido"
+        center-custom: "personalizado"
+        center-world-spawn: "spawn do mundo"
+        shape-spherical: "esférica"
+        shape-cylindrical: "cilíndrica"
+      header: "&6&lSpawnProtection &7v{version}"
+      help:
+        help: "&e/{label} help &7- Mostra esta mensagem de ajuda."
+        info: "&e/{label} info &7- Mostra as configurações atuais de proteção."
+        reload: "&e/{label} reload &7- Recarrega o plugin."
+        setcenter: "&e/{label} setcenter &7- Define o centro de proteção na sua localização."
+        resetcenter: "&e/{label} resetcenter &7- Redefine o centro para o spawn do mundo configurado."
+        preview: "&e/{label} preview &7- Mostra o raio protegido com partículas."
+      info:
+        title: "&eConfiguração de proteção atual:"
+        mode: " &7- Modo: &b{value}"
+        world: " &7- Mundo: &b{value}"
+        center: " &7- Centro: &b{value} &7({type})"
+        area-world: " &7- Área: &bMundo inteiro protegido"
+        radius: " &7- Raio: &b{value}"
+        shape: " &7- Forma: &b{value}"
+        language: " &7- Idioma: &b{value}"
+        cooldown: " &7- Cooldown de mensagens: &b{value}"
+        protections-title: "&eProteções ativas:"
+        block-break: " &7- Quebra de blocos: {state}"
+        block-place: " &7- Colocação de blocos: {state}"
+        pvp: " &7- PvP: {state}"
+        explosions: " &7- Explosões: {state}"
+        interactions: " &7- Interações: {state}"
+        fire: " &7- Fogo: {state}"
+        fluids: " &7- Fluidos: {state}"
+        pistons: " &7- Pistões: {state}"
+        entities: " &7- Entidades: {state}"
+        inventory-transfer: " &7- Transferência de inventário: {state}"
+        environment: " &7- Ambiente: {state}"
+      setcenter:
+        player-only: "&cApenas jogadores podem definir o centro de proteção."
+        success: "&aCentro de proteção definido na sua localização atual."
+        world: "&7Mundo: &b{value}"
+        center: "&7Centro: &b{value}"
+      resetcenter:
+        success: "&aCentro de proteção redefinido. O SpawnProtection agora usa o spawn do mundo configurado."
+      preview:
+        player-only: "&cApenas jogadores podem visualizar o raio de proteção."
+        world-mode: "&eO modo world protege o mundo configurado inteiro. A visualização só está disponível no modo radius."
+        center-unavailable: "&cO centro de proteção não está disponível. Verifique o mundo configurado."
+        wrong-world: "&cVocê deve estar no mundo protegido para visualizar o raio."
+        invalid-radius: "&cO raio de proteção deve ser maior que 0."
+        started: "&aMostrando o raio de proteção por alguns segundos."
