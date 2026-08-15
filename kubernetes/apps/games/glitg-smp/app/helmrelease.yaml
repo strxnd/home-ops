@@ -1,0 +1,125 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app glitg-smp
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    timeout: 15m
+    remediation:
+      retries: 1
+  interval: 1h
+  maxHistory: 1
+  upgrade:
+    timeout: 15m
+    remediation:
+      retries: 1
+  values:
+    controllers:
+      glitg-smp:
+        strategy: Recreate
+        pod:
+          automountServiceAccountToken: false
+          terminationGracePeriodSeconds: 120
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+        containers:
+          app:
+            image:
+              repository: docker.io/itzg/minecraft-server
+              tag: 2026.8.0-java25@sha256:e3335993929a1565f73c30b2041bcbc1473fc9c406fdd5a0d0ea24c08ef73320
+            env:
+              TZ: Asia/Singapore
+              EULA: "TRUE"
+              TYPE: PAPER
+              VERSION: "26.2"
+              PAPER_BUILD: "112"
+              LEVEL: glitg-smp-26-2
+              MODE: survival
+              FORCE_GAMEMODE: "false"
+              DIFFICULTY: hard
+              HARDCORE: "false"
+              ALLOW_NETHER: "true"
+              # SpawnProtection owns this behavior; avoid overlapping vanilla protection.
+              SPAWN_PROTECTION: "0"
+              SERVER_IP: ""
+              SERVER_PORT: "25565"
+              ENABLE_COMMAND_BLOCK: "false"
+              MAX_PLAYERS: "10"
+              OPS: Strxnd
+              EXISTING_OPS_FILE: MERGE
+              MEMORY: 6G
+              VIEW_DISTANCE: "10"
+              SIMULATION_DISTANCE: "8"
+              ENABLE_RCON: "false"
+              PVP: "true"
+              MOTD: GLITG SMP S1 - LifeSteal
+              # Immutable Modrinth version URLs; the official stock image downloads
+              # and reconciles these into /data/plugins at container startup.
+              PLUGINS: |-
+                https://cdn.modrinth.com/data/wPNdCkBA/versions/nbsVIKot/ezlifesteal-v1.2.0.jar
+                https://cdn.modrinth.com/data/kV8iMq85/versions/yCPbvC8z/kaicore-1.5.jar
+                https://cdn.modrinth.com/data/4oi6UbJ7/versions/o56vDXDE/the-limiters-2.1.jar
+                https://cdn.modrinth.com/data/O1WrNhcu/versions/YI6tKoWR/SpawnProtection-1.6.6.jar
+                https://cdn.modrinth.com/data/LJNGWSvH/versions/GPdAbB8o/grimac-bukkit-2.3.74-5920e74.jar
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: &port 25565
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *probe
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 90
+            resources:
+              requests:
+                cpu: 2000m
+                memory: 7Gi
+              limits:
+                cpu: 4000m
+                memory: 8Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+    service:
+      app:
+        controller: *app
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: "192.168.20.12"
+        externalTrafficPolicy: Local
+        ports:
+          minecraft:
+            port: *port
+            protocol: TCP
+    persistence:
+      data:
+        type: persistentVolumeClaim
+        suffix: 26-2
+        accessMode: ReadWriteOnce
+        size: 20Gi
+        storageClass: local-path
+        retain: true
+        globalMounts:
+          - path: /data
