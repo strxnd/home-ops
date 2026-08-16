@@ -1,0 +1,3 @@
+# Flux excludes image files from GitRepository artifacts by default. Keep the
+# GLITG SMP server icon because Kustomize consumes it as a binary ConfigMap key.
+!kubernetes/apps/games/glitg-smp/config/server-icon.png
