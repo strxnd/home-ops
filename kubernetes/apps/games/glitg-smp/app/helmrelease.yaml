@@ -43,13 +43,21 @@ spec:
             args:
               - |
                 marker=/data/.codex-glitg-smp-reset-20260816
+                legacy_marker=/data/.codex-glitg-smp-slash-string-20260816
                 backup=/data/.codex-glitg-smp-reset-backup-20260816
+
+                mkdir -p "$backup/world" "$backup/plugins" "$backup/server"
+
+                if [ ! -e "$legacy_marker" ]; then
+                  if [ -f /data/commands.yml ]; then
+                    mv /data/commands.yml "$backup/server/commands.yml"
+                  fi
+                  touch "$legacy_marker"
+                fi
 
                 if [ -e "$marker" ]; then
                   exit 0
                 fi
-
-                mkdir -p "$backup/world" "$backup/plugins" "$backup/server"
 
                 if [ -d /data/glitg-smp-26-2 ]; then
                   mv /data/glitg-smp-26-2 "$backup/world/glitg-smp-26-2"
