@@ -12,3 +12,17 @@ configMapGenerator:
   - name: glitg-smp-spawn-protection
     files:
       - config.yml=config/plugins/SpawnProtection/config.yml
+  - name: glitg-smp-runtime
+    files:
+      - commands.yml=config/commands.yml
+      - StringCommand-pack.mcmeta=config/datapacks/StringCommand/pack.mcmeta
+      - StringCommand-load.json=config/datapacks/StringCommand/data/minecraft/tags/function/load.json
+      - StringCommand-tick.json=config/datapacks/StringCommand/data/minecraft/tags/function/tick.json
+      - StringCommand-load.mcfunction=config/datapacks/StringCommand/data/stringcommand/function/load.mcfunction
+      - StringCommand-tick.mcfunction=config/datapacks/StringCommand/data/stringcommand/function/tick.mcfunction
+      - StringCommand-fill.mcfunction=config/datapacks/StringCommand/data/stringcommand/function/fill.mcfunction
+      - DoubleBreezeRods-pack.mcmeta=config/datapacks/DoubleBreezeRods/pack.mcmeta
+      - DoubleBreezeRods-breeze.json=config/datapacks/DoubleBreezeRods/data/doublebreezerods/loot_table/entities/breeze.json
+      - EightMinuteStrength-pack.mcmeta=config/datapacks/EightMinuteStrength/pack.mcmeta
+      - EightMinuteStrength-consume.json=config/datapacks/EightMinuteStrength/data/eightminutestrength/advancement/consume_strong_strength.json
+      - EightMinuteStrength-extend.mcfunction=config/datapacks/EightMinuteStrength/data/eightminutestrength/function/extend_strength.mcfunction

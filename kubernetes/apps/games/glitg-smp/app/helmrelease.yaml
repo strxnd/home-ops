@@ -44,6 +44,7 @@ spec:
               VERSION: "26.2"
               PAPER_BUILD: "112"
               LEVEL: glitg-smp-26-2
+              SEED: "-3085124641489919468"
               MODE: survival
               FORCE_GAMEMODE: "false"
               DIFFICULTY: hard
@@ -65,14 +66,32 @@ spec:
               MOTD: GLITG SMP S1 - LifeSteal
               COPY_CONFIG_DEST: /data
               SYNC_SKIP_NEWER_IN_DESTINATION: "false"
+              APPLY_EXTRA_FILES: |-
+                glitg-smp-26-2/commands.yml</config/glitg-smp-runtime/commands.yml
+                glitg-smp-26-2/datapacks/StringCommand/pack.mcmeta</config/glitg-smp-runtime/StringCommand-pack.mcmeta
+                glitg-smp-26-2/datapacks/StringCommand/data/minecraft/tags/function/load.json</config/glitg-smp-runtime/StringCommand-load.json
+                glitg-smp-26-2/datapacks/StringCommand/data/minecraft/tags/function/tick.json</config/glitg-smp-runtime/StringCommand-tick.json
+                glitg-smp-26-2/datapacks/StringCommand/data/stringcommand/function/load.mcfunction</config/glitg-smp-runtime/StringCommand-load.mcfunction
+                glitg-smp-26-2/datapacks/StringCommand/data/stringcommand/function/tick.mcfunction</config/glitg-smp-runtime/StringCommand-tick.mcfunction
+                glitg-smp-26-2/datapacks/StringCommand/data/stringcommand/function/fill.mcfunction</config/glitg-smp-runtime/StringCommand-fill.mcfunction
+                glitg-smp-26-2/datapacks/DoubleBreezeRods/pack.mcmeta</config/glitg-smp-runtime/DoubleBreezeRods-pack.mcmeta
+                glitg-smp-26-2/datapacks/DoubleBreezeRods/data/doublebreezerods/loot_table/entities/breeze.json</config/glitg-smp-runtime/DoubleBreezeRods-breeze.json
+                glitg-smp-26-2/datapacks/EightMinuteStrength/pack.mcmeta</config/glitg-smp-runtime/EightMinuteStrength-pack.mcmeta
+                glitg-smp-26-2/datapacks/EightMinuteStrength/data/eightminutestrength/advancement/consume_strong_strength.json</config/glitg-smp-runtime/EightMinuteStrength-consume.json
+                glitg-smp-26-2/datapacks/EightMinuteStrength/data/eightminutestrength/function/extend_strength.mcfunction</config/glitg-smp-runtime/EightMinuteStrength-extend.mcfunction
               # Immutable Modrinth version URLs; the official stock image downloads
               # and reconciles these into /data/plugins at container startup.
               PLUGINS: |-
-                https://cdn.modrinth.com/data/wPNdCkBA/versions/nbsVIKot/ezlifesteal-v1.2.0.jar
+                https://cdn.modrinth.com/data/l8Uv7FzS/versions/DqixaESV/lifestealz-2.21.1.jar
                 https://cdn.modrinth.com/data/kV8iMq85/versions/yCPbvC8z/kaicore-1.5.jar
-                https://cdn.modrinth.com/data/4oi6UbJ7/versions/o56vDXDE/the-limiters-2.1.jar
-                https://cdn.modrinth.com/data/O1WrNhcu/versions/YI6tKoWR/SpawnProtection-1.6.6.jar
-                https://cdn.modrinth.com/data/LJNGWSvH/versions/GPdAbB8o/grimac-bukkit-2.3.74-5920e74.jar
+                https://cdn.modrinth.com/data/NiJ6gIEq/versions/lO8gD88d/ItemControl-1.2.0.jar
+                https://cdn.modrinth.com/data/6owv5fWs/versions/v88A9PFQ/BukkitOfUtils-1.19.0.jar
+                https://cdn.modrinth.com/data/NyGNHccT/versions/3gZerYe7/Pacifism-1.19.0.jar
+                https://cdn.modrinth.com/data/dl7Te7dw/versions/20GgUcNT/SpawnProtection.jar
+                https://cdn.modrinth.com/data/j2g3fqUV/versions/t8bMoUaC/cartlimiter-1.7.jar
+                https://cdn.modrinth.com/data/LJNGWSvH/versions/Cflesrfj/grimac-bukkit-2.3.74-0a18c77.jar
+                https://maven.playpro.com/net/coreprotect/coreprotect/24.0/coreprotect-24.0.jar
+                https://cdn.modrinth.com/data/bYazc7fd/versions/cAOIkpWF/InvSee%2B%2B.jar
             probes:
               liveness: &probe
                 enabled: true
@@ -130,3 +149,8 @@ spec:
         name: glitg-smp-spawn-protection
         globalMounts:
           - path: /config/plugins/SpawnProtection
+      runtime-config:
+        type: configMap
+        name: glitg-smp-runtime
+        globalMounts:
+          - path: /config/glitg-smp-runtime
