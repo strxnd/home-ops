@@ -8,7 +8,7 @@ defaultheart:
   customItemType: "heart"
   customHeartValue: 1
   minHearts: 0
-  maxHearts: 9
+  maxHearts: 10
   requirePermission: false
   craftable: true
   recipes:
