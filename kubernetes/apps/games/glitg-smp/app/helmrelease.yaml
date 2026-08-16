@@ -61,11 +61,17 @@ spec:
               MEMORY: 6G
               VIEW_DISTANCE: "10"
               SIMULATION_DISTANCE: "8"
-              ENABLE_RCON: "false"
+              # The image's internal startup command runner uses RCON. No RCON
+              # port is exposed by this Service.
+              ENABLE_RCON: "true"
+              RCON_CMDS_STARTUP: |-
+                worldborder set 4000
+                gamerule locatorBar false
               PVP: "true"
               MOTD: GLITG SMP S1 - LifeSteal
               COPY_CONFIG_DEST: /data
-              SYNC_SKIP_NEWER_IN_DESTINATION: "false"
+              SYNC_SKIP_NEWER_IN_DESTINATION: "true"
+              PATCH_DEFINITIONS: /config/glitg-smp-patches
               APPLY_EXTRA_FILES: |-
                 world/datapacks/DoubleBreezeRods</config/glitg-smp-doublebreezerods/pack.mcmeta
                 world/datapacks/DoubleBreezeRods/data/doublebreezerods/loot_table/entities</config/glitg-smp-doublebreezerods/breeze.json
@@ -145,6 +151,11 @@ spec:
         name: glitg-smp-spawn-protection
         globalMounts:
           - path: /config/plugins/SpawnProtection
+      patches:
+        type: configMap
+        name: glitg-smp-patches
+        globalMounts:
+          - path: /config/glitg-smp-patches
       doublebreezerods-datapack:
         type: configMap
         name: glitg-smp-doublebreezerods

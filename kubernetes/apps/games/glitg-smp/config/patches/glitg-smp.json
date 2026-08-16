@@ -1,0 +1,328 @@
+{
+  "patches": [
+    {
+      "file": "/data/plugins/LifeStealZ/config.yml",
+      "ops": [
+        {"$set": {"path": "$.minHearts", "value": 2}},
+        {"$set": {"path": "$.reviveHearts", "value": 3}},
+        {"$set": {"path": "$.disablePlayerBanOnElimination", "value": true}},
+        {"$set": {"path": "$.heartRewardOnElimination", "value": false}},
+        {"$set": {"path": "$.announceElimination", "value": false}},
+        {"$set": {"path": "$.dropHeartsNatural", "value": false}},
+        {"$set": {"path": "$.allowDyingFromWithdraw", "value": false}},
+        {"$set": {"path": "$.maxRevives", "value": 0}},
+        {"$set": {"path": "$.preventRespawnAnchors", "value": true}},
+        {"$set": {"path": "$.preventBeds", "value": true}}
+      ]
+    },
+    {
+      "file": "/data/plugins/LifeStealZ/items.yml",
+      "ops": [
+        {"$set": {"path": "$.defaultheart.maxHearts", "value": 9}},
+        {"$set": {"path": "$.revive.craftable", "value": false}}
+      ]
+    },
+    {
+      "file": "/data/plugins/KaiCore/config.yml",
+      "ops": [
+        {"$set": {"path": "$.easy-recipes.webs.enabled", "value": true}},
+        {"$set": {"path": "$.easy-recipes.webs.shape", "value": ["S0S", "0S0", "S0S"]}},
+        {"$set": {"path": "$.easy-recipes.webs.ingredient", "value": "STRING"}},
+        {"$set": {"path": "$.easy-recipes.gaps.enabled", "value": true}},
+        {"$set": {"path": "$.easy-recipes.gaps.shape", "value": ["0G0", "GAG", "0G0"]}},
+        {"$set": {"path": "$.easy-recipes.gaps['gold-ingredient']", "value": "GOLD_NUGGET"}},
+        {"$set": {"path": "$.easy-recipes.gaps['apple-ingredient']", "value": "APPLE"}},
+        {"$set": {"path": "$.dimensions['allow-nether']", "value": true}},
+        {"$set": {"path": "$.infinite-restock.enabled", "value": true}},
+        {"$set": {"path": "$.invisibility-qol['hide-name-when-killing']", "value": true}},
+        {"$set": {"path": "$.invisibility-qol['hide-name-when-dying']", "value": true}},
+        {"$set": {"path": "$.combat.enabled", "value": true}},
+        {"$set": {"path": "$.combat['ban-restock-while-in-combat']", "value": false}},
+        {"$set": {"path": "$.combat['ban-riptide-while-in-combat']", "value": false}},
+        {"$set": {"path": "$.combat['ban-elytra-while-in-combat']", "value": true}},
+        {"$set": {"path": "$.mace.ban", "value": false}},
+        {"$set": {"path": "$.pearls.ban", "value": false}},
+        {"$set": {"path": "$.crystal-pvp.ban", "value": false}},
+        {"$set": {"path": "$.tnt-minecarts.ban", "value": false}},
+        {"$set": {"path": "$.netherite-ban.enabled", "value": false}},
+        {"$set": {"path": "$.locator-bar.enabled", "value": false}},
+        {"$set": {"path": "$.item-limiter.enabled", "value": false}},
+        {"$set": {"path": "$.pvp.enabled", "value": true}}
+      ]
+    },
+    {
+      "file": "/data/plugins/Pacifism/config.yml",
+      "ops": [
+        {"$set": {"path": "$.player['force-toggle'].after", "value": 72000}},
+        {"$set": {"path": "$.player['force-toggle'].enabled", "value": true}},
+        {"$set": {"path": "$.player['force-toggle']['set-as']", "value": true}}
+      ]
+    },
+    {
+      "file": "/data/plugins/SpawnProtection/config.yml",
+      "ops": [
+        {"$set": {"path": "$.protection['default-seconds']", "value": 1800}},
+        {"$set": {"path": "$.protection['first-join-seconds']", "value": 0}},
+        {"$set": {"path": "$.protection['continue-offline']", "value": true}},
+        {"$set": {"path": "$.protection['disable-attack-confirm']", "value": true}},
+        {"$set": {"path": "$.mob-protection.enabled", "value": false}},
+        {"$set": {"path": "$.claim.enabled", "value": false}}
+      ]
+    },
+    {
+      "file": "/data/plugins/CartLimiter/config.yml",
+      "ops": [
+        {"$set": {"path": "$.max-damage", "value": 20}}
+      ]
+    },
+    {
+      "file": "/data/plugins/SlashString/config.yml",
+      "ops": [
+        {"$set": {"path": "$.cooldown-seconds", "value": 0}}
+      ]
+    },
+    {
+      "file": "/data/plugins/ItemControl/limits.yml",
+      "ops": [
+        {
+          "$set": {
+            "path": "$.player-item-limits",
+            "value": {
+              "POTION|BASE=STRONG_HEALING": 6,
+              "SPLASH_POTION|BASE=STRONG_HEALING": 6,
+              "LINGERING_POTION|BASE=STRONG_HEALING": 6,
+              "EXPERIENCE_BOTTLE": 192,
+              "COBWEB": 128,
+              "GOLDEN_APPLE": 128,
+              "BREEZE_ROD": 64
+            }
+          }
+        },
+        {
+          "$set": {
+            "path": "$.global-item-max",
+            "value": {
+              "NETHERITE_HELMET": 0,
+              "NETHERITE_CHESTPLATE": 0,
+              "NETHERITE_LEGGINGS": 0,
+              "NETHERITE_BOOTS": 0,
+              "NETHERITE_SWORD": 0,
+              "NETHERITE_AXE": 0,
+              "MACE": 0,
+              "END_CRYSTAL": 0,
+              "ENCHANTED_GOLDEN_APPLE": 0,
+              "TOTEM_OF_UNDYING": 0,
+              "ENDER_PEARL": 0,
+              "TIPPED_ARROW": 0,
+              "POTION|BASE=STRONG_SWIFTNESS": 0,
+              "SPLASH_POTION|BASE=STRONG_SWIFTNESS": 0,
+              "LINGERING_POTION|BASE=STRONG_SWIFTNESS": 0,
+              "POTION|BASE=POISON": 0,
+              "SPLASH_POTION|BASE=POISON": 0,
+              "LINGERING_POTION|BASE=POISON": 0,
+              "POTION|BASE=LONG_POISON": 0,
+              "SPLASH_POTION|BASE=LONG_POISON": 0,
+              "LINGERING_POTION|BASE=LONG_POISON": 0,
+              "POTION|BASE=STRONG_POISON": 0,
+              "SPLASH_POTION|BASE=STRONG_POISON": 0,
+              "LINGERING_POTION|BASE=STRONG_POISON": 0,
+              "POTION|BASE=TURTLE_MASTER": 0,
+              "SPLASH_POTION|BASE=TURTLE_MASTER": 0,
+              "LINGERING_POTION|BASE=TURTLE_MASTER": 0,
+              "POTION|BASE=LONG_TURTLE_MASTER": 0,
+              "SPLASH_POTION|BASE=LONG_TURTLE_MASTER": 0,
+              "LINGERING_POTION|BASE=LONG_TURTLE_MASTER": 0,
+              "POTION|BASE=SLOW_FALLING": 0,
+              "SPLASH_POTION|BASE=SLOW_FALLING": 0,
+              "LINGERING_POTION|BASE=SLOW_FALLING": 0,
+              "POTION|BASE=LONG_SLOW_FALLING": 0,
+              "SPLASH_POTION|BASE=LONG_SLOW_FALLING": 0,
+              "LINGERING_POTION|BASE=LONG_SLOW_FALLING": 0,
+              "POTION|BASE=WEAKNESS": 0,
+              "SPLASH_POTION|BASE=WEAKNESS": 0,
+              "LINGERING_POTION|BASE=WEAKNESS": 0,
+              "POTION|BASE=LONG_WEAKNESS": 0,
+              "SPLASH_POTION|BASE=LONG_WEAKNESS": 0,
+              "LINGERING_POTION|BASE=LONG_WEAKNESS": 0,
+              "POTION|BASE=SLOWNESS": 0,
+              "SPLASH_POTION|BASE=SLOWNESS": 0,
+              "LINGERING_POTION|BASE=SLOWNESS": 0,
+              "POTION|BASE=LONG_SLOWNESS": 0,
+              "SPLASH_POTION|BASE=LONG_SLOWNESS": 0,
+              "LINGERING_POTION|BASE=LONG_SLOWNESS": 0,
+              "POTION|BASE=STRONG_SLOWNESS": 0,
+              "SPLASH_POTION|BASE=STRONG_SLOWNESS": 0,
+              "LINGERING_POTION|BASE=STRONG_SLOWNESS": 0
+            }
+          }
+        },
+        {
+          "$set": {
+            "path": "$.global-item-storage",
+            "value": {
+              "NETHERITE_HELMET": false,
+              "NETHERITE_CHESTPLATE": false,
+              "NETHERITE_LEGGINGS": false,
+              "NETHERITE_BOOTS": false,
+              "NETHERITE_SWORD": false,
+              "NETHERITE_AXE": false,
+              "MACE": false,
+              "END_CRYSTAL": false,
+              "ENCHANTED_GOLDEN_APPLE": false,
+              "TOTEM_OF_UNDYING": false,
+              "ENDER_PEARL": false,
+              "TIPPED_ARROW": false,
+              "POTION|BASE=STRONG_SWIFTNESS": false,
+              "SPLASH_POTION|BASE=STRONG_SWIFTNESS": false,
+              "LINGERING_POTION|BASE=STRONG_SWIFTNESS": false,
+              "POTION|BASE=POISON": false,
+              "SPLASH_POTION|BASE=POISON": false,
+              "LINGERING_POTION|BASE=POISON": false,
+              "POTION|BASE=LONG_POISON": false,
+              "SPLASH_POTION|BASE=LONG_POISON": false,
+              "LINGERING_POTION|BASE=LONG_POISON": false,
+              "POTION|BASE=STRONG_POISON": false,
+              "SPLASH_POTION|BASE=STRONG_POISON": false,
+              "LINGERING_POTION|BASE=STRONG_POISON": false,
+              "POTION|BASE=TURTLE_MASTER": false,
+              "SPLASH_POTION|BASE=TURTLE_MASTER": false,
+              "LINGERING_POTION|BASE=TURTLE_MASTER": false,
+              "POTION|BASE=LONG_TURTLE_MASTER": false,
+              "SPLASH_POTION|BASE=LONG_TURTLE_MASTER": false,
+              "LINGERING_POTION|BASE=LONG_TURTLE_MASTER": false,
+              "POTION|BASE=SLOW_FALLING": false,
+              "SPLASH_POTION|BASE=SLOW_FALLING": false,
+              "LINGERING_POTION|BASE=SLOW_FALLING": false,
+              "POTION|BASE=LONG_SLOW_FALLING": false,
+              "SPLASH_POTION|BASE=LONG_SLOW_FALLING": false,
+              "LINGERING_POTION|BASE=LONG_SLOW_FALLING": false,
+              "POTION|BASE=WEAKNESS": false,
+              "SPLASH_POTION|BASE=WEAKNESS": false,
+              "LINGERING_POTION|BASE=WEAKNESS": false,
+              "POTION|BASE=LONG_WEAKNESS": false,
+              "SPLASH_POTION|BASE=LONG_WEAKNESS": false,
+              "LINGERING_POTION|BASE=LONG_WEAKNESS": false,
+              "POTION|BASE=SLOWNESS": false,
+              "SPLASH_POTION|BASE=SLOWNESS": false,
+              "LINGERING_POTION|BASE=SLOWNESS": false,
+              "POTION|BASE=LONG_SLOWNESS": false,
+              "SPLASH_POTION|BASE=LONG_SLOWNESS": false,
+              "LINGERING_POTION|BASE=LONG_SLOWNESS": false,
+              "POTION|BASE=STRONG_SLOWNESS": false,
+              "SPLASH_POTION|BASE=STRONG_SLOWNESS": false,
+              "LINGERING_POTION|BASE=STRONG_SLOWNESS": false
+            }
+          }
+        },
+        {
+          "$set": {
+            "path": "$.global-item-usable",
+            "value": {
+              "NETHERITE_HELMET": false,
+              "NETHERITE_CHESTPLATE": false,
+              "NETHERITE_LEGGINGS": false,
+              "NETHERITE_BOOTS": false,
+              "NETHERITE_SWORD": false,
+              "NETHERITE_AXE": false,
+              "MACE": false,
+              "END_CRYSTAL": false,
+              "ENCHANTED_GOLDEN_APPLE": false,
+              "TOTEM_OF_UNDYING": false,
+              "ENDER_PEARL": false,
+              "TIPPED_ARROW": false,
+              "POTION|BASE=STRONG_SWIFTNESS": false,
+              "SPLASH_POTION|BASE=STRONG_SWIFTNESS": false,
+              "LINGERING_POTION|BASE=STRONG_SWIFTNESS": false,
+              "POTION|BASE=POISON": false,
+              "SPLASH_POTION|BASE=POISON": false,
+              "LINGERING_POTION|BASE=POISON": false,
+              "POTION|BASE=LONG_POISON": false,
+              "SPLASH_POTION|BASE=LONG_POISON": false,
+              "LINGERING_POTION|BASE=LONG_POISON": false,
+              "POTION|BASE=STRONG_POISON": false,
+              "SPLASH_POTION|BASE=STRONG_POISON": false,
+              "LINGERING_POTION|BASE=STRONG_POISON": false,
+              "POTION|BASE=TURTLE_MASTER": false,
+              "SPLASH_POTION|BASE=TURTLE_MASTER": false,
+              "LINGERING_POTION|BASE=TURTLE_MASTER": false,
+              "POTION|BASE=LONG_TURTLE_MASTER": false,
+              "SPLASH_POTION|BASE=LONG_TURTLE_MASTER": false,
+              "LINGERING_POTION|BASE=LONG_TURTLE_MASTER": false,
+              "POTION|BASE=SLOW_FALLING": false,
+              "SPLASH_POTION|BASE=SLOW_FALLING": false,
+              "LINGERING_POTION|BASE=SLOW_FALLING": false,
+              "POTION|BASE=LONG_SLOW_FALLING": false,
+              "SPLASH_POTION|BASE=LONG_SLOW_FALLING": false,
+              "LINGERING_POTION|BASE=LONG_SLOW_FALLING": false,
+              "POTION|BASE=WEAKNESS": false,
+              "SPLASH_POTION|BASE=WEAKNESS": false,
+              "LINGERING_POTION|BASE=WEAKNESS": false,
+              "POTION|BASE=LONG_WEAKNESS": false,
+              "SPLASH_POTION|BASE=LONG_WEAKNESS": false,
+              "LINGERING_POTION|BASE=LONG_WEAKNESS": false,
+              "POTION|BASE=SLOWNESS": false,
+              "SPLASH_POTION|BASE=SLOWNESS": false,
+              "LINGERING_POTION|BASE=SLOWNESS": false,
+              "POTION|BASE=LONG_SLOWNESS": false,
+              "SPLASH_POTION|BASE=LONG_SLOWNESS": false,
+              "LINGERING_POTION|BASE=LONG_SLOWNESS": false,
+              "POTION|BASE=STRONG_SLOWNESS": false,
+              "SPLASH_POTION|BASE=STRONG_SLOWNESS": false,
+              "LINGERING_POTION|BASE=STRONG_SLOWNESS": false
+            }
+          }
+        },
+        {
+          "$set": {
+            "path": "$.player-enchant-limits",
+            "value": {
+              "minecraft:protection": 3,
+              "minecraft:fire_protection": 4,
+              "minecraft:feather_falling": 4,
+              "minecraft:blast_protection": 4,
+              "minecraft:projectile_protection": 4,
+              "minecraft:respiration": 3,
+              "minecraft:aqua_affinity": 1,
+              "minecraft:thorns": 0,
+              "minecraft:depth_strider": 3,
+              "minecraft:frost_walker": 2,
+              "minecraft:binding_curse": 1,
+              "minecraft:sharpness": 3,
+              "minecraft:smite": 5,
+              "minecraft:bane_of_arthropods": 5,
+              "minecraft:knockback": 2,
+              "minecraft:fire_aspect": 0,
+              "minecraft:looting": 3,
+              "minecraft:sweeping_edge": 3,
+              "minecraft:efficiency": 5,
+              "minecraft:silk_touch": 1,
+              "minecraft:unbreaking": 3,
+              "minecraft:fortune": 3,
+              "minecraft:power": 4,
+              "minecraft:punch": 0,
+              "minecraft:flame": 1,
+              "minecraft:infinity": 1,
+              "minecraft:luck_of_the_sea": 3,
+              "minecraft:lure": 3,
+              "minecraft:loyalty": 3,
+              "minecraft:impaling": 5,
+              "minecraft:riptide": 0,
+              "minecraft:channeling": 1,
+              "minecraft:multishot": 1,
+              "minecraft:quick_charge": 3,
+              "minecraft:piercing": 4,
+              "minecraft:density": 5,
+              "minecraft:breach": 4,
+              "minecraft:wind_burst": 1,
+              "minecraft:mending": 1,
+              "minecraft:vanishing_curse": 1,
+              "minecraft:soul_speed": 3,
+              "minecraft:swift_sneak": 3,
+              "minecraft:lunge": 0
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

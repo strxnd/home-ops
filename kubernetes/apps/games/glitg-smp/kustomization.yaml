@@ -12,6 +12,9 @@ configMapGenerator:
   - name: glitg-smp-spawn-protection
     files:
       - config.yml=config/plugins/SpawnProtection/config.yml
+  - name: glitg-smp-patches
+    files:
+      - glitg-smp.json=config/patches/glitg-smp.json
   - name: glitg-smp-doublebreezerods
     files:
       - pack.mcmeta=config/datapacks/DoubleBreezeRods/pack.mcmeta
