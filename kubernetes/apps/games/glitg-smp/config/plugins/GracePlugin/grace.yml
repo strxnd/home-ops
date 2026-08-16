@@ -1,0 +1,13 @@
+global-flags:
+  allow-pvp: false
+  allow-block-breaking: true
+  allow-block-placing: true
+  allow-mob-damage: true
+  allow-mob-spawning: true
+  allow-player-damage: true
+  allow-commands: true
+  allow-flight: false
+  allow-item-drop: true
+  allow-item-pickup: true
+
+regions: {}

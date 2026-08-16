@@ -26,6 +26,7 @@ configMapGenerator:
   - name: glitg-smp-grace999
     files:
       - config.yml=config/plugins/GracePlugin/config.yml
+      - grace.yml=config/plugins/GracePlugin/grace.yml
   - name: glitg-smp-cartlimiter
     files:
       - config.yml=config/plugins/CartLimiter/config.yml
