@@ -81,13 +81,18 @@ spec:
                 world/datapacks/EightMinuteStrength</config/glitg-smp-eightminutestrength/pack.mcmeta
                 world/datapacks/EightMinuteStrength/data/eightminutestrength/advancement</config/glitg-smp-eightminutestrength/consume_strong_strength.json
                 world/datapacks/EightMinuteStrength/data/eightminutestrength/function</config/glitg-smp-eightminutestrength/extend_strength.mcfunction
+                world/datapacks/GLITGRecipes</config/glitg-smp-glitgrecipes/pack.mcmeta
+                world/datapacks/GLITGRecipes/data/minecraft/recipe</config/glitg-smp-glitgrecipes/golden_apple.json
+                world/datapacks/GLITGRecipes/data/glitgrecipes/recipe</config/glitg-smp-glitgrecipes/cobweb.json
               # Pinned upstream/artifact URLs; the official stock image downloads
               # and reconciles these into /data/plugins at container startup.
               # CoreProtect is built from PlayPro/CoreProtect@0bb1d5d with the
               # required 26.2 adapter and development branch metadata.
               PLUGINS: |-
                 https://cdn.modrinth.com/data/l8Uv7FzS/versions/DqixaESV/lifestealz-2.21.1.jar
-                https://cdn.modrinth.com/data/kV8iMq85/versions/yCPbvC8z/kaicore-1.5.jar
+                https://cdn.modrinth.com/data/LI8sodAD/versions/6IFR8wxZ/CombatLog.jar
+                https://cdn.modrinth.com/data/7pdfxYHV/versions/evMqQmJi/instantrestock_2.6.4.jar
+                https://cdn.modrinth.com/data/rSEEI32A/versions/LwHnS6dM/lock-end-1.5.0.jar
                 https://cdn.modrinth.com/data/NiJ6gIEq/versions/lO8gD88d/ItemControl-1.2.0.jar
                 https://cdn.modrinth.com/data/6owv5fWs/versions/v88A9PFQ/BukkitOfUtils-1.19.0.jar
                 https://cdn.modrinth.com/data/Yp18gs4n/versions/nX6Kce7A/Grace999-1.0.8.jar
@@ -170,11 +175,21 @@ spec:
         name: glitg-smp-lifestealz
         globalMounts:
           - path: /config/plugins/LifeStealZ
-      kaicore:
+      combatlog:
         type: configMap
-        name: glitg-smp-kaicore
+        name: glitg-smp-combatlog
         globalMounts:
-          - path: /config/plugins/KaiCore
+          - path: /config/plugins/CombatLog
+      instantrestock:
+        type: configMap
+        name: glitg-smp-instantrestock
+        globalMounts:
+          - path: /config/plugins/InstantRestock
+      endlock:
+        type: configMap
+        name: glitg-smp-endlock
+        globalMounts:
+          - path: /config/plugins/EndLock
       grace999:
         type: configMap
         name: glitg-smp-grace999

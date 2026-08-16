@@ -23,9 +23,15 @@ configMapGenerator:
       - config.yml=config/plugins/LifeStealZ/config.yml
       - items.yml=config/plugins/LifeStealZ/items.yml
       - storage.yml=config/plugins/LifeStealZ/storage.yml
-  - name: glitg-smp-kaicore
+  - name: glitg-smp-combatlog
     files:
-      - config.yml=config/plugins/KaiCore/config.yml
+      - config.yml=config/plugins/CombatLog/config.yml
+  - name: glitg-smp-instantrestock
+    files:
+      - config.json=config/plugins/InstantRestock/config.json
+  - name: glitg-smp-endlock
+    files:
+      - config.yml=config/plugins/EndLock/config.yml
   - name: glitg-smp-grace999
     files:
       - config.yml=config/plugins/GracePlugin/config.yml
@@ -65,3 +71,8 @@ configMapGenerator:
       - pack.mcmeta=config/datapacks/EightMinuteStrength/pack.mcmeta
       - consume_strong_strength.json=config/datapacks/EightMinuteStrength/data/eightminutestrength/advancement/consume_strong_strength.json
       - extend_strength.mcfunction=config/datapacks/EightMinuteStrength/data/eightminutestrength/function/extend_strength.mcfunction
+  - name: glitg-smp-glitgrecipes
+    files:
+      - pack.mcmeta=config/datapacks/GLITGRecipes/pack.mcmeta
+      - golden_apple.json=config/datapacks/GLITGRecipes/data/minecraft/recipe/golden_apple.json
+      - cobweb.json=config/datapacks/GLITGRecipes/data/glitgrecipes/recipe/cobweb.json

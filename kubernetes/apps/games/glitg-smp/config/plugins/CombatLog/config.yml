@@ -1,0 +1,44 @@
+config-version: 2
+
+combat-log:
+  timer:
+    duration-seconds: 30
+    display: actionbar
+
+  restrictions:
+    elytra:
+      disabled-in-combat: true
+
+    teleporting:
+      disabled-in-combat: true
+
+    mending:
+      disabled-in-combat: false
+
+    riptide:
+      stop: false
+
+    explosions:
+      set-combat-on-explosion: true
+
+  punishment:
+    damage: 0.0
+    kill-on-logout: true
+
+  triggers:
+    enderpearl:
+      set-combat-on-land: false
+
+  ignored-worlds: []
+
+  blocked-commands: []
+
+  combat-zone:
+    enabled: false
+
+  worldguard:
+    safe-zone-barrier:
+      enabled: false
+
+anti-kill-abuse:
+  enabled: false
