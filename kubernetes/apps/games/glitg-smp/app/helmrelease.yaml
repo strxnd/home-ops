@@ -32,6 +32,61 @@ spec:
             fsGroup: 1000
             fsGroupChangePolicy: OnRootMismatch
             seccompProfile: { type: RuntimeDefault }
+        initContainers:
+          reset-player-data:
+            image:
+              repository: docker.io/library/busybox
+              tag: 1.37.0
+            command:
+              - /bin/sh
+              - -ec
+            args:
+              - |
+                marker=/data/.codex-glitg-smp-reset-20260816
+                backup=/data/.codex-glitg-smp-reset-backup-20260816
+
+                if [ -e "$marker" ]; then
+                  exit 0
+                fi
+
+                mkdir -p "$backup/world" "$backup/plugins" "$backup/server"
+
+                if [ -d /data/glitg-smp-26-2 ]; then
+                  mv /data/glitg-smp-26-2 "$backup/world/glitg-smp-26-2"
+                fi
+                if [ -f /data/plugins/LifeStealZ/userData.db ]; then
+                  mv /data/plugins/LifeStealZ/userData.db "$backup/plugins/LifeStealZ-userData.db"
+                fi
+                if [ -f /data/plugins/Pacifism/storage/pacifism.db ]; then
+                  mv /data/plugins/Pacifism/storage/pacifism.db "$backup/plugins/Pacifism-pacifism.db"
+                fi
+                if [ -f /data/plugins/SpawnProtection/todayPlaytime.yml ]; then
+                  mv /data/plugins/SpawnProtection/todayPlaytime.yml "$backup/plugins/SpawnProtection-todayPlaytime.yml"
+                fi
+                if [ -d /data/plugins/EzLifesteal/data/players ]; then
+                  mkdir -p "$backup/plugins/EzLifesteal"
+                  mv /data/plugins/EzLifesteal/data/players "$backup/plugins/EzLifesteal/players"
+                fi
+                if [ -f /data/usercache.json ]; then
+                  mv /data/usercache.json "$backup/server/usercache.json"
+                fi
+
+                touch "$marker"
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsNonRoot: true
+              runAsUser: 1000
+              runAsGroup: 1000
+              capabilities:
+                drop:
+                  - ALL
         containers:
           app:
             image:
@@ -43,7 +98,7 @@ spec:
               TYPE: PAPER
               VERSION: "26.2"
               PAPER_BUILD: "112"
-              LEVEL: glitg-smp-26-2
+              LEVEL: glitg-smp-26-2-reset-20260816
               SEED: "-3085124641489919468"
               MODE: survival
               FORCE_GAMEMODE: "false"
@@ -67,18 +122,11 @@ spec:
               COPY_CONFIG_DEST: /data
               SYNC_SKIP_NEWER_IN_DESTINATION: "false"
               APPLY_EXTRA_FILES: |-
-                .</config/glitg-smp-commands/commands.yml
-                glitg-smp-26-2/datapacks/StringCommand</config/glitg-smp-stringcommand/pack.mcmeta
-                glitg-smp-26-2/datapacks/StringCommand/data/minecraft/tags/function</config/glitg-smp-stringcommand/load.json
-                glitg-smp-26-2/datapacks/StringCommand/data/minecraft/tags/function</config/glitg-smp-stringcommand/tick.json
-                glitg-smp-26-2/datapacks/StringCommand/data/stringcommand/function</config/glitg-smp-stringcommand/load.mcfunction
-                glitg-smp-26-2/datapacks/StringCommand/data/stringcommand/function</config/glitg-smp-stringcommand/tick.mcfunction
-                glitg-smp-26-2/datapacks/StringCommand/data/stringcommand/function</config/glitg-smp-stringcommand/fill.mcfunction
-                glitg-smp-26-2/datapacks/DoubleBreezeRods</config/glitg-smp-doublebreezerods/pack.mcmeta
-                glitg-smp-26-2/datapacks/DoubleBreezeRods/data/doublebreezerods/loot_table/entities</config/glitg-smp-doublebreezerods/breeze.json
-                glitg-smp-26-2/datapacks/EightMinuteStrength</config/glitg-smp-eightminutestrength/pack.mcmeta
-                glitg-smp-26-2/datapacks/EightMinuteStrength/data/eightminutestrength/advancement</config/glitg-smp-eightminutestrength/consume_strong_strength.json
-                glitg-smp-26-2/datapacks/EightMinuteStrength/data/eightminutestrength/function</config/glitg-smp-eightminutestrength/extend_strength.mcfunction
+                glitg-smp-26-2-reset-20260816/datapacks/DoubleBreezeRods</config/glitg-smp-doublebreezerods/pack.mcmeta
+                glitg-smp-26-2-reset-20260816/datapacks/DoubleBreezeRods/data/doublebreezerods/loot_table/entities</config/glitg-smp-doublebreezerods/breeze.json
+                glitg-smp-26-2-reset-20260816/datapacks/EightMinuteStrength</config/glitg-smp-eightminutestrength/pack.mcmeta
+                glitg-smp-26-2-reset-20260816/datapacks/EightMinuteStrength/data/eightminutestrength/advancement</config/glitg-smp-eightminutestrength/consume_strong_strength.json
+                glitg-smp-26-2-reset-20260816/datapacks/EightMinuteStrength/data/eightminutestrength/function</config/glitg-smp-eightminutestrength/extend_strength.mcfunction
               # Pinned upstream/artifact URLs; the official stock image downloads
               # and reconciles these into /data/plugins at container startup.
               # CoreProtect is built from PlayPro/CoreProtect@0bb1d5d with the
@@ -94,6 +142,7 @@ spec:
                 https://cdn.modrinth.com/data/LJNGWSvH/versions/Cflesrfj/grimac-bukkit-2.3.74-0a18c77.jar
                 https://raw.githubusercontent.com/strxnd/home-ops/fac3475c361a42d26b7c67251ee5806e177a014d/kubernetes/apps/games/glitg-smp/app/artifacts/CoreProtect-24.0-26.2-0bb1d5d.jar
                 https://cdn.modrinth.com/data/bYazc7fd/versions/cAOIkpWF/InvSee%2B%2B.jar
+                https://cdn.modrinth.com/data/nFLmET4i/versions/7a1fv1Yn/SlashString-1.1.0-mc26.2.jar
             probes:
               liveness: &probe
                 enabled: true
@@ -151,16 +200,6 @@ spec:
         name: glitg-smp-spawn-protection
         globalMounts:
           - path: /config/plugins/SpawnProtection
-      commands-config:
-        type: configMap
-        name: glitg-smp-commands
-        globalMounts:
-          - path: /config/glitg-smp-commands
-      stringcommand-datapack:
-        type: configMap
-        name: glitg-smp-stringcommand
-        globalMounts:
-          - path: /config/glitg-smp-stringcommand
       doublebreezerods-datapack:
         type: configMap
         name: glitg-smp-doublebreezerods

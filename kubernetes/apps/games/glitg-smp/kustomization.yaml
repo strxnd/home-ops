@@ -12,17 +12,6 @@ configMapGenerator:
   - name: glitg-smp-spawn-protection
     files:
       - config.yml=config/plugins/SpawnProtection/config.yml
-  - name: glitg-smp-commands
-    files:
-      - commands.yml=config/commands.yml
-  - name: glitg-smp-stringcommand
-    files:
-      - pack.mcmeta=config/datapacks/StringCommand/pack.mcmeta
-      - load.json=config/datapacks/StringCommand/data/minecraft/tags/function/load.json
-      - tick.json=config/datapacks/StringCommand/data/minecraft/tags/function/tick.json
-      - load.mcfunction=config/datapacks/StringCommand/data/stringcommand/function/load.mcfunction
-      - tick.mcfunction=config/datapacks/StringCommand/data/stringcommand/function/tick.mcfunction
-      - fill.mcfunction=config/datapacks/StringCommand/data/stringcommand/function/fill.mcfunction
   - name: glitg-smp-doublebreezerods
     files:
       - pack.mcmeta=config/datapacks/DoubleBreezeRods/pack.mcmeta

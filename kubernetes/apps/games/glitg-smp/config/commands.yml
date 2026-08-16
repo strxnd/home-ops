@@ -1,8 +1,0 @@
-# Paper command aliases for the datapack-backed SMP utilities.
-command-block-overrides: []
-ignore-vanilla-permissions: false
-aliases:
-  icanhasbukkit:
-  - version $1-
-  string:
-  - trigger stringcommand set 1
