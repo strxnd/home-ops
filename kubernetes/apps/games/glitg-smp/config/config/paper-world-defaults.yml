@@ -1,0 +1,7 @@
+_version: 31
+anticheat:
+  anti-xray:
+    enabled: true
+    engine-mode: 3
+    update-radius: 2
+    use-permission: false

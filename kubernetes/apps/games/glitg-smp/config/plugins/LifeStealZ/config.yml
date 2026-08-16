@@ -16,7 +16,10 @@ heartItem:
   maxHearts: "defaultheart"
 dropHeartsPlayer: false
 dropHeartsNatural: false
-dropHeartsIfMax: true
+# Do not drop a max-health heart before the minimum-heart floor is evaluated.
+# LifeStealZ checks this branch before the floor branch; disabling it prevents
+# the floor-edge case from creating an unintended heart drop.
+dropHeartsIfMax: false
 looseHeartsToNature: true
 looseHeartsToPlayer: true
 announceElimination: false

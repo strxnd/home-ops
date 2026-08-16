@@ -55,10 +55,10 @@ spec:
               SERVER_IP: ""
               SERVER_PORT: "25565"
               ENABLE_COMMAND_BLOCK: "false"
-              MAX_PLAYERS: "10"
+              MAX_PLAYERS: "40"
               OPS: Strxnd
               EXISTING_OPS_FILE: MERGE
-              MEMORY: 6G
+              MEMORY: 10G
               VIEW_DISTANCE: "10"
               SIMULATION_DISTANCE: "8"
               # The image's internal startup command runner uses RCON. No RCON
@@ -88,7 +88,7 @@ spec:
                 https://cdn.modrinth.com/data/kV8iMq85/versions/yCPbvC8z/kaicore-1.5.jar
                 https://cdn.modrinth.com/data/NiJ6gIEq/versions/lO8gD88d/ItemControl-1.2.0.jar
                 https://cdn.modrinth.com/data/6owv5fWs/versions/v88A9PFQ/BukkitOfUtils-1.19.0.jar
-                https://cdn.modrinth.com/data/NyGNHccT/versions/3gZerYe7/Pacifism-1.19.0.jar
+                https://cdn.modrinth.com/data/Yp18gs4n/versions/nX6Kce7A/Grace999-1.0.8.jar
                 https://cdn.modrinth.com/data/dl7Te7dw/versions/20GgUcNT/SpawnProtection.jar
                 https://cdn.modrinth.com/data/j2g3fqUV/versions/t8bMoUaC/cartlimiter-1.7.jar
                 https://cdn.modrinth.com/data/LJNGWSvH/versions/Cflesrfj/grimac-bukkit-2.3.74-0a18c77.jar
@@ -117,11 +117,11 @@ spec:
                   failureThreshold: 90
             resources:
               requests:
-                cpu: 2000m
-                memory: 7Gi
-              limits:
                 cpu: 4000m
-                memory: 8Gi
+                memory: 12Gi
+              limits:
+                cpu: 8000m
+                memory: 16Gi
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
@@ -147,6 +147,11 @@ spec:
         retain: true
         globalMounts:
           - path: /data
+      paper-world-defaults:
+        type: configMap
+        name: glitg-smp-paper-world-defaults
+        globalMounts:
+          - path: /config/config
       spawn-protection:
         type: configMap
         name: glitg-smp-spawn-protection
@@ -162,11 +167,11 @@ spec:
         name: glitg-smp-kaicore
         globalMounts:
           - path: /config/plugins/KaiCore
-      pacifism:
+      grace999:
         type: configMap
-        name: glitg-smp-pacifism
+        name: glitg-smp-grace999
         globalMounts:
-          - path: /config/plugins/Pacifism
+          - path: /config/plugins/GracePlugin
       cartlimiter:
         type: configMap
         name: glitg-smp-cartlimiter
