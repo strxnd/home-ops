@@ -32,69 +32,6 @@ spec:
             fsGroup: 1000
             fsGroupChangePolicy: OnRootMismatch
             seccompProfile: { type: RuntimeDefault }
-        initContainers:
-          reset-player-data:
-            image:
-              repository: docker.io/library/busybox
-              tag: 1.37.0
-            command:
-              - /bin/sh
-              - -ec
-            args:
-              - |
-                marker=/data/.codex-glitg-smp-reset-20260816
-                legacy_marker=/data/.codex-glitg-smp-slash-string-20260816
-                backup=/data/.codex-glitg-smp-reset-backup-20260816
-
-                mkdir -p "$backup/world" "$backup/plugins" "$backup/server"
-
-                if [ ! -e "$legacy_marker" ]; then
-                  if [ -f /data/commands.yml ]; then
-                    mv /data/commands.yml "$backup/server/commands.yml"
-                  fi
-                  touch "$legacy_marker"
-                fi
-
-                if [ -e "$marker" ]; then
-                  exit 0
-                fi
-
-                if [ -d /data/glitg-smp-26-2 ]; then
-                  mv /data/glitg-smp-26-2 "$backup/world/glitg-smp-26-2"
-                fi
-                if [ -f /data/plugins/LifeStealZ/userData.db ]; then
-                  mv /data/plugins/LifeStealZ/userData.db "$backup/plugins/LifeStealZ-userData.db"
-                fi
-                if [ -f /data/plugins/Pacifism/storage/pacifism.db ]; then
-                  mv /data/plugins/Pacifism/storage/pacifism.db "$backup/plugins/Pacifism-pacifism.db"
-                fi
-                if [ -f /data/plugins/SpawnProtection/todayPlaytime.yml ]; then
-                  mv /data/plugins/SpawnProtection/todayPlaytime.yml "$backup/plugins/SpawnProtection-todayPlaytime.yml"
-                fi
-                if [ -d /data/plugins/EzLifesteal/data/players ]; then
-                  mkdir -p "$backup/plugins/EzLifesteal"
-                  mv /data/plugins/EzLifesteal/data/players "$backup/plugins/EzLifesteal/players"
-                fi
-                if [ -f /data/usercache.json ]; then
-                  mv /data/usercache.json "$backup/server/usercache.json"
-                fi
-
-                touch "$marker"
-            resources:
-              requests:
-                cpu: 10m
-                memory: 16Mi
-              limits:
-                memory: 64Mi
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              runAsNonRoot: true
-              runAsUser: 1000
-              runAsGroup: 1000
-              capabilities:
-                drop:
-                  - ALL
         containers:
           app:
             image:
@@ -106,7 +43,7 @@ spec:
               TYPE: PAPER
               VERSION: "26.2"
               PAPER_BUILD: "112"
-              LEVEL: glitg-smp-26-2-reset-20260816
+              LEVEL: world
               SEED: "-3085124641489919468"
               MODE: survival
               FORCE_GAMEMODE: "false"
@@ -130,11 +67,11 @@ spec:
               COPY_CONFIG_DEST: /data
               SYNC_SKIP_NEWER_IN_DESTINATION: "false"
               APPLY_EXTRA_FILES: |-
-                glitg-smp-26-2-reset-20260816/datapacks/DoubleBreezeRods</config/glitg-smp-doublebreezerods/pack.mcmeta
-                glitg-smp-26-2-reset-20260816/datapacks/DoubleBreezeRods/data/doublebreezerods/loot_table/entities</config/glitg-smp-doublebreezerods/breeze.json
-                glitg-smp-26-2-reset-20260816/datapacks/EightMinuteStrength</config/glitg-smp-eightminutestrength/pack.mcmeta
-                glitg-smp-26-2-reset-20260816/datapacks/EightMinuteStrength/data/eightminutestrength/advancement</config/glitg-smp-eightminutestrength/consume_strong_strength.json
-                glitg-smp-26-2-reset-20260816/datapacks/EightMinuteStrength/data/eightminutestrength/function</config/glitg-smp-eightminutestrength/extend_strength.mcfunction
+                world/datapacks/DoubleBreezeRods</config/glitg-smp-doublebreezerods/pack.mcmeta
+                world/datapacks/DoubleBreezeRods/data/doublebreezerods/loot_table/entities</config/glitg-smp-doublebreezerods/breeze.json
+                world/datapacks/EightMinuteStrength</config/glitg-smp-eightminutestrength/pack.mcmeta
+                world/datapacks/EightMinuteStrength/data/eightminutestrength/advancement</config/glitg-smp-eightminutestrength/consume_strong_strength.json
+                world/datapacks/EightMinuteStrength/data/eightminutestrength/function</config/glitg-smp-eightminutestrength/extend_strength.mcfunction
               # Pinned upstream/artifact URLs; the official stock image downloads
               # and reconciles these into /data/plugins at container startup.
               # CoreProtect is built from PlayPro/CoreProtect@0bb1d5d with the
