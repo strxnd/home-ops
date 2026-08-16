@@ -28,13 +28,7 @@ titles:
 #     - e_xx is a regular enderchest 'container' slot (xx being the slot number)
 #   Note that normally a player's enderchest is only 3*9=27 slots in size, but on Purpur this can go up to 54.
 templates:
-  inventory: |
-    i_00 i_01 i_02 i_03 i_04 i_05 i_06 i_07 i_08
-    i_09 i_10 i_11 i_12 i_13 i_14 i_15 i_16 i_17
-    i_18 i_19 i_20 i_21 i_22 i_23 i_24 i_25 i_26
-    i_27 i_28 i_29 i_30 i_31 i_32 i_33 i_34 i_35
-    a_b  a_l  a_c  a_h  oh   b    s    c    _
-    p_00 p_01 p_02 p_03 p_04 p_05 p_06 p_07 p_08
+  inventory: "i_00 i_01 i_02 i_03 i_04 i_05 i_06 i_07 i_08\ni_09 i_10 i_11 i_12 i_13 i_14 i_15 i_16 i_17\ni_18 i_19 i_20 i_21 i_22 i_23 i_24 i_25 i_26\ni_27 i_28 i_29 i_30 i_31 i_32 i_33 i_34 i_35\na_b  a_l  a_c  a_h  oh   b    s    c    _\x20\x20\x20\np_00 p_01 p_02 p_03 p_04 p_05 p_06 p_07 p_08\n"
   enderchest: |
     e_00 e_01 e_02 e_03 e_04 e_05 e_06 e_07 e_08
     e_09 e_10 e_11 e_12 e_13 e_14 e_15 e_16 e_17
