@@ -69,6 +69,8 @@ spec:
                 gamerule locator_bar false
               PVP: "true"
               MOTD: GLITG SMP S1 - LifeSteal
+              ICON: /config/server-icon.png
+              OVERRIDE_ICON: "true"
               COPY_CONFIG_DEST: /data
               # Checked-in plugin files are authoritative and are synchronized
               # into the persistent data volume on every container start.
@@ -152,6 +154,12 @@ spec:
         name: glitg-smp-paper-world-defaults
         globalMounts:
           - path: /config/config
+      server-icon:
+        type: configMap
+        name: glitg-smp-server-icon
+        globalMounts:
+          - path: /config/server-icon.png
+            subPath: server-icon.png
       spawn-protection:
         type: configMap
         name: glitg-smp-spawn-protection
