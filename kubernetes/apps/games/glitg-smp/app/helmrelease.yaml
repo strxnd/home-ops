@@ -71,7 +71,7 @@ spec:
               MOTD: GLITG SMP S1 - LifeSteal
               COPY_CONFIG_DEST: /data
               SYNC_SKIP_NEWER_IN_DESTINATION: "true"
-              PATCH_DEFINITIONS: /config/glitg-smp-patches
+              PATCH_DEFINITIONS: /config/glitg-smp-patches/glitg-smp.json
               APPLY_EXTRA_FILES: |-
                 world/datapacks/DoubleBreezeRods</config/glitg-smp-doublebreezerods/pack.mcmeta
                 world/datapacks/DoubleBreezeRods/data/doublebreezerods/loot_table/entities</config/glitg-smp-doublebreezerods/breeze.json
