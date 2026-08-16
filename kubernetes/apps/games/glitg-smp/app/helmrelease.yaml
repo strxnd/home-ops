@@ -240,3 +240,8 @@ spec:
         name: glitg-smp-eightminutestrength
         globalMounts:
           - path: /config/glitg-smp-eightminutestrength
+      glitgrecipes-datapack:
+        type: configMap
+        name: glitg-smp-glitgrecipes
+        globalMounts:
+          - path: /config/glitg-smp-glitgrecipes
