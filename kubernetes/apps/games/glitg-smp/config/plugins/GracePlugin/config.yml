@@ -1,7 +1,9 @@
 # GLITG SMP uses one server-wide launch grace period.
 grace-duration-seconds: 3600
 auto-start-duration-seconds: 3600
-auto-start: true
+# The one-time launch grace has elapsed; do not restart it after routine
+# container restarts. Admins can start a new grace period explicitly.
+auto-start: false
 
 # Runtime state is maintained by Grace999 on the persistent data volume.
 grace-active: false
@@ -16,7 +18,9 @@ no-damage-everything: false
 no-hunger-loss: false
 
 default-flags:
-  allow-pvp: false
+  # The active grace timer blocks PvP separately. Keep the inactive baseline
+  # permissive so PvP is restored after the timer ends.
+  allow-pvp: true
   allow-block-breaking: true
   allow-block-placing: true
   allow-mob-damage: true
@@ -32,14 +36,14 @@ worlds:
     grace-enabled: true
     duration: 3600
     flags:
-      allow-pvp: false
+      allow-pvp: true
   world_nether:
     grace-enabled: true
     duration: 3600
     flags:
-      allow-pvp: false
+      allow-pvp: true
   world_the_end:
     grace-enabled: true
     duration: 3600
     flags:
-      allow-pvp: false
+      allow-pvp: true
