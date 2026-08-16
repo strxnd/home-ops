@@ -1,0 +1,77 @@
+checkForUpdates: true
+lang: "en-US"
+startHearts: 10
+maxHearts: 20
+reviveHearts: 3
+heartsPerKill: 1
+heartsPerNaturalDeath: 1
+minHearts: 2
+enforceMaxHeartsOnAdminCommands: false
+heartItem:
+  default: "defaultheart"
+  withdraw: "defaultheart"
+  kill: "defaultheart"
+  naturalDeath: "defaultheart"
+  heartGainCooldown: "defaultheart"
+  maxHearts: "defaultheart"
+dropHeartsPlayer: false
+dropHeartsNatural: false
+dropHeartsIfMax: true
+looseHeartsToNature: true
+looseHeartsToPlayer: true
+announceElimination: false
+allowDyingFromWithdraw: false
+minWithdrawHearts: 0
+healOnHeartUse: false
+playTotemEffect: false
+heartCooldown: 0
+maxRevives: 0
+preventTotems: false
+preventCrystalPVP: false
+preventRespawnAnchors: true
+preventBeds: true
+preventCustomItemsInItemFrames: true
+disablePlayerBanOnElimination: true
+heartRewardOnElimination: false
+eliminationCommands: null
+heartuseCommands: null
+reviveuseCommands: null
+reviveStartCommands: null
+showBossbar: false
+bossbarColor: "RED"
+bossbarStyle: "SOLID"
+gracePeriod:
+  enabled: false
+  duration: 60
+  announce: true
+  playSound: true
+  damageFromPlayers: false
+  damageToPlayers: false
+  useHearts: false
+  looseHearts: false
+  gainHearts: false
+  allowWithdraw: false
+  startCommands: null
+  endCommands: null
+bypassPermission:
+  enabled: true
+  damageFromPlayers: false
+  damageToPlayers: false
+  useHearts: false
+  looseHearts: false
+  gainHearts: false
+heartGainCooldown:
+  enabled: false
+  cooldown: 120000
+  dropOnCooldown: true
+  preventPickup: true
+antiAlt:
+  enabled: true
+  logAttempt: true
+  preventKill: false
+  sendMessage: false
+  commands: null
+webhook:
+  elimination: false
+  revive: false
+  url: ""

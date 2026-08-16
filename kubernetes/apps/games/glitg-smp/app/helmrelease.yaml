@@ -70,8 +70,9 @@ spec:
               PVP: "true"
               MOTD: GLITG SMP S1 - LifeSteal
               COPY_CONFIG_DEST: /data
-              SYNC_SKIP_NEWER_IN_DESTINATION: "true"
-              PATCH_DEFINITIONS: /config/glitg-smp-patches/glitg-smp.json
+              # Checked-in plugin files are authoritative and are synchronized
+              # into the persistent data volume on every container start.
+              SYNC_SKIP_NEWER_IN_DESTINATION: "false"
               APPLY_EXTRA_FILES: |-
                 world/datapacks/DoubleBreezeRods</config/glitg-smp-doublebreezerods/pack.mcmeta
                 world/datapacks/DoubleBreezeRods/data/doublebreezerods/loot_table/entities</config/glitg-smp-doublebreezerods/breeze.json
@@ -151,11 +152,56 @@ spec:
         name: glitg-smp-spawn-protection
         globalMounts:
           - path: /config/plugins/SpawnProtection
-      patches:
+      lifestealz:
         type: configMap
-        name: glitg-smp-patches
+        name: glitg-smp-lifestealz
         globalMounts:
-          - path: /config/glitg-smp-patches
+          - path: /config/plugins/LifeStealZ
+      kaicore:
+        type: configMap
+        name: glitg-smp-kaicore
+        globalMounts:
+          - path: /config/plugins/KaiCore
+      pacifism:
+        type: configMap
+        name: glitg-smp-pacifism
+        globalMounts:
+          - path: /config/plugins/Pacifism
+      cartlimiter:
+        type: configMap
+        name: glitg-smp-cartlimiter
+        globalMounts:
+          - path: /config/plugins/CartLimiter
+      slashstring:
+        type: configMap
+        name: glitg-smp-slashstring
+        globalMounts:
+          - path: /config/plugins/SlashString
+      itemcontrol:
+        type: configMap
+        name: glitg-smp-itemcontrol
+        globalMounts:
+          - path: /config/plugins/ItemControl
+      coreprotect:
+        type: configMap
+        name: glitg-smp-coreprotect
+        globalMounts:
+          - path: /config/plugins/CoreProtect
+      grim:
+        type: configMap
+        name: glitg-smp-grim
+        globalMounts:
+          - path: /config/plugins/GrimAC
+      invsee:
+        type: configMap
+        name: glitg-smp-invsee
+        globalMounts:
+          - path: /config/plugins/InvSeePlusPlus
+      bukkitofutils:
+        type: configMap
+        name: glitg-smp-bukkitofutils
+        globalMounts:
+          - path: /config/plugins/BukkitOfUtils
       doublebreezerods-datapack:
         type: configMap
         name: glitg-smp-doublebreezerods

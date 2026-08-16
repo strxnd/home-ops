@@ -12,9 +12,45 @@ configMapGenerator:
   - name: glitg-smp-spawn-protection
     files:
       - config.yml=config/plugins/SpawnProtection/config.yml
-  - name: glitg-smp-patches
+  - name: glitg-smp-lifestealz
     files:
-      - glitg-smp.json=config/patches/glitg-smp.json
+      - config.yml=config/plugins/LifeStealZ/config.yml
+      - items.yml=config/plugins/LifeStealZ/items.yml
+      - storage.yml=config/plugins/LifeStealZ/storage.yml
+  - name: glitg-smp-kaicore
+    files:
+      - config.yml=config/plugins/KaiCore/config.yml
+  - name: glitg-smp-pacifism
+    files:
+      - config.yml=config/plugins/Pacifism/config.yml
+      - messages.yml=config/plugins/Pacifism/messages.yml
+      - worlds.yml=config/plugins/Pacifism/worlds.yml
+  - name: glitg-smp-cartlimiter
+    files:
+      - config.yml=config/plugins/CartLimiter/config.yml
+  - name: glitg-smp-slashstring
+    files:
+      - config.yml=config/plugins/SlashString/config.yml
+  - name: glitg-smp-itemcontrol
+    files:
+      - config.yml=config/plugins/ItemControl/config.yml
+      - limits.yml=config/plugins/ItemControl/limits.yml
+  - name: glitg-smp-coreprotect
+    files:
+      - config.yml=config/plugins/CoreProtect/config.yml
+  - name: glitg-smp-grim
+    files:
+      - config.yml=config/plugins/GrimAC/config.yml
+      - database.yml=config/plugins/GrimAC/database.yml
+      - discord.yml=config/plugins/GrimAC/discord.yml
+      - messages.yml=config/plugins/GrimAC/messages.yml
+      - punishments.yml=config/plugins/GrimAC/punishments.yml
+  - name: glitg-smp-invsee
+    files:
+      - config.yml=config/plugins/InvSeePlusPlus/config.yml
+  - name: glitg-smp-bukkitofutils
+    files:
+      - base-config.yml=config/plugins/BukkitOfUtils/base-config.yml
   - name: glitg-smp-doublebreezerods
     files:
       - pack.mcmeta=config/datapacks/DoubleBreezeRods/pack.mcmeta

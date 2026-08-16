@@ -1,0 +1,150 @@
+player:
+  force-toggle:
+    enabled: true
+    after: 72000 # 1 hour
+    set-as: true
+    message: "&7&oYou seem fit to &c&lfight&8&o! &7&oWe have enabled your &c&lPVP&8&o!"
+    send-message: true
+    countdown:
+      enabled: true
+      commands:
+        "6000":
+        - "(message) %player_name% &7&oYou have &a&o5 &f&ominutes &7&oleft of your\
+          \ grace period."
+        "1200":
+        - "(message) %player_name% &7&oYou have &a&o1 &f&ominute &7&oleft of your\
+          \ grace period."
+        "600":
+        - "(message) %player_name% &7&oYou have &a&o30 &f&oseconds &7&oleft of your\
+          \ grace period."
+        "300":
+        - "(message) %player_name% &7&oYou have &a&o15 &f&oseconds &7&oleft of your\
+          \ grace period."
+        "100":
+        - "(message) %player_name% &7&oYou have &a&o5 &f&oseconds &7&oleft of your\
+          \ grace period."
+        "80":
+        - "(message) %player_name% &a&o4 &f&oseconds&7&o..."
+        "60":
+        - "(message) %player_name% &a&o3 &f&oseconds&7&o..."
+        "40":
+        - "(message) %player_name% &a&o2 &f&oseconds&7&o..."
+        "20":
+        - "(message) %player_name% &a&o1 &f&osecond&7&o..."
+  toggle:
+    cool-down:
+      enabled: true
+      ticks: 600
+explosions:
+  materials:
+    list:
+    - "WHITE_BED"
+    - "ORANGE_BED"
+    - "MAGENTA_BED"
+    - "LIGHT_BLUE_BED"
+    - "YELLOW_BED"
+    - "LIME_BED"
+    - "PINK_BED"
+    - "GRAY_BED"
+    - "LIGHT_GRAY_BED"
+    - "CYAN_BED"
+    - "PURPLE_BED"
+    - "BLUE_BED"
+    - "BROWN_BED"
+    - "GREEN_BED"
+    - "RED_BED"
+    - "BLACK_BED"
+    - "TNT"
+    - "RESPAWN_ANCHOR"
+    is-blacklist: false
+    radius: 15
+  entities:
+    list:
+    - "MINECART_TNT"
+    - "PRIMED_TNT"
+    - "ENDER_CRYSTAL"
+    is-blacklist: false
+    radius: 15
+placeholders:
+  gracetime:
+    left:
+      negatives:
+        replace: true
+        replace-to: 0
+      ticks:
+        simple: "%gracetime_left_ticks%"
+        fancy: "&a%gracetime_left_ticks% &fticks"
+      seconds:
+        simple: "%gracetime_left_seconds%"
+        fancy: "&a%gracetime_left_seconds% &fseconds"
+      minutes:
+        simple: "%gracetime_left_minutes%"
+        fancy: "&a%gracetime_left_minutes% &fminutes"
+      hours:
+        simple: "%gracetime_left_hours%"
+        fancy: "&a%gracetime_left_hours% &fhours"
+      days:
+        simple: "%gracetime_left_days%"
+        fancy: "&a%gracetime_left_days% &fdays"
+      weeks:
+        simple: "%gracetime_left_weeks%"
+        fancy: "&a%gracetime_left_weeks% &fweeks"
+      combined:
+        fancy: "%weeks% %days% %hours% %minutes% %seconds% %ticks%"
+        sections:
+          only-show-if-not-zero: true
+          weeks: "&a%amount% &fweeks"
+          days: "&a%amount% &fdays"
+          hours: "&a%amount% &fhours"
+          minutes: "&a%amount% &fminutes"
+          seconds: "&a%amount% &fseconds"
+          ticks: "&a%amount% &fticks"
+  cooldown:
+    left:
+      negatives:
+        replace: true
+        replace-to: 0
+      ticks:
+        simple: "%cooldown_left_ticks%"
+        fancy: "&a%cooldown_left_ticks% &fticks"
+      seconds:
+        simple: "%cooldown_left_seconds%"
+        fancy: "&a%cooldown_left_seconds% &fseconds"
+      minutes:
+        simple: "%cooldown_left_minutes%"
+        fancy: "&a%cooldown_left_minutes% &fminutes"
+      hours:
+        simple: "%cooldown_left_hours%"
+        fancy: "&a%cooldown_left_hours% &fhours"
+      days:
+        simple: "%cooldown_left_days%"
+        fancy: "&a%cooldown_left_days% &fdays"
+      weeks:
+        simple: "%cooldown_left_weeks%"
+        fancy: "&a%cooldown_left_weeks% &fweeks"
+      combined:
+        fancy: "%weeks% %days% %hours% %minutes% %seconds% %ticks%"
+        sections:
+          only-show-if-not-zero: true
+          weeks: "&a%amount% &fweeks"
+          days: "&a%amount% &fdays"
+          hours: "&a%amount% &fhours"
+          minutes: "&a%amount% &fminutes"
+          seconds: "&a%amount% &fseconds"
+          ticks: "&a%amount% &fticks"
+  status:
+    pvp-off:
+      simple: "%status_pvp%"
+      fancy: "&c&lOFF"
+    pvp-on:
+      simple: "%status_pvp%"
+      fancy: "&a&lON"
+database:
+  type: "SQLITE"
+  host: "localhost"
+  port: 3306
+  username: ""
+  password: ""
+  table-prefix: "pacifism_"
+  database: "pacifism"
+  sqlite-file-name: "pacifism.db"
