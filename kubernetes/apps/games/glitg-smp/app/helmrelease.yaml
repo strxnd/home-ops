@@ -24,7 +24,7 @@ spec:
         strategy: Recreate
         pod:
           annotations:
-            glitg.home-ops/config-revision: recipes-v2
+            glitg.home-ops/config-revision: itemcontrol-heart-storage-v1
           automountServiceAccountToken: false
           terminationGracePeriodSeconds: 120
           securityContext:
