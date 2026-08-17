@@ -85,7 +85,7 @@ spec:
                 world/datapacks/EightMinuteStrength/data/eightminutestrength/function</config/glitg-smp-eightminutestrength/extend_strength.mcfunction
                 world/datapacks/EightMinuteStrength/data/eightminutestrength/function</config/glitg-smp-eightminutestrength/scale_thrown_strength.mcfunction
                 world/datapacks/EightMinuteStrength/data/eightminutestrength/item_modifier</config/glitg-smp-eightminutestrength/set_duration_scale.json
-                world/datapacks/EightMinuteStrength/data/minecraft/tags/function</config/glitg-smp-eightminutestrength/eightminutestrength_tick.json
+                world/datapacks/EightMinuteStrength/data/minecraft/tags/function</config/glitg-smp-eightminutestrength/tick.json
                 world/datapacks/GLITGRecipes</config/glitg-smp-glitgrecipes/pack.mcmeta
                 world/datapacks/GLITGRecipes/data/minecraft/recipe</config/glitg-smp-glitgrecipes/golden_apple.json
                 world/datapacks/GLITGRecipes/data/glitgrecipes/recipe</config/glitg-smp-glitgrecipes/cobweb.json

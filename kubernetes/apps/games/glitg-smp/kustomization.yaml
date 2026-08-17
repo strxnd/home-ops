@@ -73,7 +73,7 @@ configMapGenerator:
       - extend_strength.mcfunction=config/datapacks/EightMinuteStrength/data/eightminutestrength/function/extend_strength.mcfunction
       - scale_thrown_strength.mcfunction=config/datapacks/EightMinuteStrength/data/eightminutestrength/function/scale_thrown_strength.mcfunction
       - set_duration_scale.json=config/datapacks/EightMinuteStrength/data/eightminutestrength/item_modifier/set_duration_scale.json
-      - eightminutestrength_tick.json=config/datapacks/EightMinuteStrength/data/minecraft/tags/function/tick.json
+      - tick.json=config/datapacks/EightMinuteStrength/data/minecraft/tags/function/tick.json
   - name: glitg-smp-glitgrecipes
     files:
       - pack.mcmeta=config/datapacks/GLITGRecipes/pack.mcmeta
