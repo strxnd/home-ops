@@ -34,6 +34,22 @@ spec:
             fsGroup: 1000
             fsGroupChangePolicy: OnRootMismatch
             seccompProfile: { type: RuntimeDefault }
+        initContainers:
+          remove-spawnprotection:
+            image:
+              repository: docker.io/itzg/minecraft-server
+              tag: 2026.8.0-java25@sha256:e3335993929a1565f73c30b2041bcbc1473fc9c406fdd5a0d0ea24c08ef73320
+            command:
+              - /bin/sh
+              - -ec
+            args:
+              - rm -f /data/plugins/SpawnProtection*.jar
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
         containers:
           app:
             image:
@@ -52,7 +68,7 @@ spec:
               DIFFICULTY: hard
               HARDCORE: "false"
               ALLOW_NETHER: "true"
-              # SpawnProtection owns this behavior; avoid overlapping vanilla protection.
+              # Keep vanilla block spawn protection disabled; no protected spawn area is configured.
               SPAWN_PROTECTION: "0"
               SERVER_IP: ""
               SERVER_PORT: "25565"
@@ -101,7 +117,6 @@ spec:
                 https://cdn.modrinth.com/data/NiJ6gIEq/versions/lO8gD88d/ItemControl-1.2.0.jar
                 https://cdn.modrinth.com/data/6owv5fWs/versions/v88A9PFQ/BukkitOfUtils-1.19.0.jar
                 https://cdn.modrinth.com/data/Yp18gs4n/versions/nX6Kce7A/Grace999-1.0.8.jar
-                https://cdn.modrinth.com/data/dl7Te7dw/versions/20GgUcNT/SpawnProtection.jar
                 https://cdn.modrinth.com/data/j2g3fqUV/versions/t8bMoUaC/cartlimiter-1.7.jar
                 https://cdn.modrinth.com/data/LJNGWSvH/versions/Cflesrfj/grimac-bukkit-2.3.74-0a18c77.jar
                 https://raw.githubusercontent.com/strxnd/home-ops/fac3475c361a42d26b7c67251ee5806e177a014d/kubernetes/apps/games/glitg-smp/app/artifacts/CoreProtect-24.0-26.2-0bb1d5d.jar
@@ -170,11 +185,6 @@ spec:
         globalMounts:
           - path: /config/server-icon.png
             subPath: server-icon.png
-      spawn-protection:
-        type: configMap
-        name: glitg-smp-spawn-protection
-        globalMounts:
-          - path: /config/plugins/SpawnProtection
       lifestealz:
         type: configMap
         name: glitg-smp-lifestealz

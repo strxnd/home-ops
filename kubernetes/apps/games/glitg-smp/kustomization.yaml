@@ -15,9 +15,6 @@ configMapGenerator:
   - name: glitg-smp-server-icon
     files:
       - server-icon.png=config/server-icon.png
-  - name: glitg-smp-spawn-protection
-    files:
-      - config.yml=config/plugins/SpawnProtection/config.yml
   - name: glitg-smp-lifestealz
     files:
       - config.yml=config/plugins/LifeStealZ/config.yml
