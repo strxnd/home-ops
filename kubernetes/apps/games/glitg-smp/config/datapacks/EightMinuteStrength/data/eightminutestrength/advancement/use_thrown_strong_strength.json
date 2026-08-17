@@ -1,11 +1,12 @@
 {
   "criteria": {
-    "consume_strong_strength": {
-      "trigger": "minecraft:consume_item",
+    "use_thrown_strong_strength": {
+      "trigger": "minecraft:using_item",
       "conditions": {
         "item": {
           "items": [
-            "minecraft:potion"
+            "minecraft:splash_potion",
+            "minecraft:lingering_potion"
           ],
           "components": {
             "minecraft:potion_contents": {
@@ -17,6 +18,6 @@
     }
   },
   "rewards": {
-    "function": "eightminutestrength:extend_strength"
+    "function": "eightminutestrength:scale_thrown_strength"
   }
 }
