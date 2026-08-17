@@ -9,7 +9,7 @@ minHearts: 2
 enforceMaxHeartsOnAdminCommands: false
 heartItem:
   default: "defaultheart"
-  withdraw: "defaultheart"
+  withdraw: "withdrawnheart"
   kill: "defaultheart"
   naturalDeath: "defaultheart"
   heartGainCooldown: "defaultheart"

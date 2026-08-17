@@ -14,17 +14,39 @@ defaultheart:
   recipes:
     "1":
       rowOne:
-      - "GOLD_BLOCK"
-      - "GOLD_BLOCK"
-      - "GOLD_BLOCK"
+      - "TRIAL_KEY"
+      - "GHAST_TEAR"
+      - "TRIAL_KEY"
       rowTwo:
-      - "OBSIDIAN"
-      - "NETHER_STAR"
-      - "OBSIDIAN"
+      - "GHAST_TEAR"
+      - "ENDER_EYE"
+      - "GHAST_TEAR"
       rowThree:
-      - "DIAMOND_BLOCK"
-      - "DIAMOND_BLOCK"
-      - "DIAMOND_BLOCK"
+      - "TRIAL_KEY"
+      - "GHAST_TEAR"
+      - "TRIAL_KEY"
+  invulnerable: false
+  despawnable: true
+  whitelistedWorlds: []
+  sound:
+    enabled: true
+    sound: "ENTITY_PLAYER_LEVELUP"
+    volume: 1.0
+    pitch: 1.0
+withdrawnheart:
+  name: "&6Withdrawn Heart"
+  lore:
+  - "&7Rightclick to use"
+  material: "NETHER_STAR"
+  enchanted: false
+  customModelId: 0
+  customItemType: "heart"
+  customHeartValue: 1
+  minHearts: 0
+  maxHearts: -1
+  requirePermission: false
+  craftable: false
+  recipes: {}
   invulnerable: false
   despawnable: true
   whitelistedWorlds: []
