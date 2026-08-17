@@ -1,0 +1,5 @@
+# CombatLog declares this permission as operator-only by default. GLITG SMP
+# must apply combat tagging and logout punishment to operators as well.
+combatlog.bypass:
+  description: CombatLog bypass is disabled on GLITG SMP.
+  default: false

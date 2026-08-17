@@ -12,6 +12,9 @@ configMapGenerator:
   - name: glitg-smp-paper-world-defaults
     files:
       - paper-world-defaults.yml=config/config/paper-world-defaults.yml
+  - name: glitg-smp-permissions
+    files:
+      - permissions.yml=config/permissions.yml
   - name: glitg-smp-server-icon
     files:
       - server-icon.png=config/server-icon.png

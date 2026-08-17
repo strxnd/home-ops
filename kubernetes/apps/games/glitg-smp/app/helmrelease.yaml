@@ -179,6 +179,12 @@ spec:
         name: glitg-smp-paper-world-defaults
         globalMounts:
           - path: /config/config
+      permissions:
+        type: configMap
+        name: glitg-smp-permissions
+        globalMounts:
+          - path: /config/permissions.yml
+            subPath: permissions.yml
       server-icon:
         type: configMap
         name: glitg-smp-server-icon
