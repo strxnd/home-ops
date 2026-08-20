@@ -44,28 +44,20 @@ spec:
               - -ec
             args:
               - |
-                marker=/data/.codex-glitg-smp-reset-20260820
-                backup=/data/.codex-glitg-smp-reset-backup-20260820
+                marker=/data/.codex-glitg-smp-reset-20260820-purge
 
                 if [ -e "$marker" ]; then
                   exit 0
                 fi
 
-                mkdir -p "$backup/world" "$backup/plugins" "$backup/server"
-
-                for world in world world_nether world_the_end; do
-                  if [ -e "/data/$world" ] && [ ! -e "$backup/world/$world" ]; then
-                    mv "/data/$world" "$backup/world/$world"
-                  fi
-                done
-
-                if [ -f /data/plugins/LifeStealZ/userData.db ] && [ ! -e "$backup/plugins/LifeStealZ-userData.db" ]; then
-                  mv /data/plugins/LifeStealZ/userData.db "$backup/plugins/LifeStealZ-userData.db"
-                fi
-
-                if [ -f /data/usercache.json ] && [ ! -e "$backup/server/usercache.json" ]; then
-                  mv /data/usercache.json "$backup/server/usercache.json"
-                fi
+                rm -rf \
+                  /data/world \
+                  /data/world_nether \
+                  /data/world_the_end \
+                  /data/plugins/LifeStealZ/userData.db \
+                  /data/usercache.json \
+                  /data/.codex-glitg-smp-reset-backup-20260820 \
+                  /data/.codex-glitg-smp-reset-20260820
 
                 touch "$marker"
             resources:
