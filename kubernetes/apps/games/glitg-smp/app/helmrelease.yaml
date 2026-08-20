@@ -35,6 +35,54 @@ spec:
             fsGroupChangePolicy: OnRootMismatch
             seccompProfile: { type: RuntimeDefault }
         initContainers:
+          reset-world-and-player-data:
+            image:
+              repository: docker.io/library/busybox
+              tag: 1.37.0
+            command:
+              - /bin/sh
+              - -ec
+            args:
+              - |
+                marker=/data/.codex-glitg-smp-reset-20260820
+                backup=/data/.codex-glitg-smp-reset-backup-20260820
+
+                if [ -e "$marker" ]; then
+                  exit 0
+                fi
+
+                mkdir -p "$backup/world" "$backup/plugins" "$backup/server"
+
+                for world in world world_nether world_the_end; do
+                  if [ -e "/data/$world" ] && [ ! -e "$backup/world/$world" ]; then
+                    mv "/data/$world" "$backup/world/$world"
+                  fi
+                done
+
+                if [ -f /data/plugins/LifeStealZ/userData.db ] && [ ! -e "$backup/plugins/LifeStealZ-userData.db" ]; then
+                  mv /data/plugins/LifeStealZ/userData.db "$backup/plugins/LifeStealZ-userData.db"
+                fi
+
+                if [ -f /data/usercache.json ] && [ ! -e "$backup/server/usercache.json" ]; then
+                  mv /data/usercache.json "$backup/server/usercache.json"
+                fi
+
+                touch "$marker"
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsNonRoot: true
+              runAsUser: 1000
+              runAsGroup: 1000
+              capabilities:
+                drop:
+                  - ALL
           remove-spawnprotection:
             image:
               repository: docker.io/itzg/minecraft-server
@@ -76,6 +124,8 @@ spec:
               MAX_PLAYERS: "40"
               OPS: Strxnd
               EXISTING_OPS_FILE: MERGE
+              ENABLE_WHITELIST: "true"
+              ENFORCE_WHITELIST: "true"
               MEMORY: 10G
               VIEW_DISTANCE: "10"
               SIMULATION_DISTANCE: "8"
