@@ -5,3 +5,5 @@ anticheat:
     engine-mode: 3
     update-radius: 2
     use-permission: false
+feature-seeds:
+  generate-random-seeds-for-all: true
