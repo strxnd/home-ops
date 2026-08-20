@@ -1,0 +1,28 @@
+prefix: "<yellow>[CheckHacks] <gray>"
+language: "en"
+
+# The editor is not needed for GLITG operation and stays disabled. No web
+# listener is exposed by this configuration.
+web-editor:
+  enabled: false
+  host: "127.0.0.1"
+  port: 8080
+  token-expire-minutes: 10
+
+# GLITG does not configure an outbound webhook. Alerts go to the console and
+# trusted admins with checkhacks.alerts.
+discord:
+  enabled: false
+  webhook-url: ""
+  embed-color: 16776960
+  message: "**Player:** &name&\n**Checked by:** &checker&\n**Reason:** &reason&\n**Hacks checked:** &hacks&\n**Results:**\n&results&"
+
+# Bedrock clients are skipped using CheckHacks' supported prefix mechanism.
+bedrock:
+  enabled: true
+  prefixes:
+    - "."
+    - "*"
+
+alerts:
+  default-enabled: true

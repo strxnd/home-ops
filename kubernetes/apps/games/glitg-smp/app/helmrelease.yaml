@@ -24,7 +24,7 @@ spec:
         strategy: Recreate
         pod:
           annotations:
-            glitg.home-ops/config-revision: clientid-enforcement-v1
+            glitg.home-ops/config-revision: checkhacks-enforcement-v1
           automountServiceAccountToken: false
           terminationGracePeriodSeconds: 120
           securityContext:
@@ -35,7 +35,7 @@ spec:
             fsGroupChangePolicy: OnRootMismatch
             seccompProfile: { type: RuntimeDefault }
         initContainers:
-          remove-spawnprotection:
+          remove-obsolete-plugin-data:
             image:
               repository: docker.io/itzg/minecraft-server
               tag: 2026.8.0-java25@sha256:e3335993929a1565f73c30b2041bcbc1473fc9c406fdd5a0d0ea24c08ef73320
@@ -43,7 +43,10 @@ spec:
               - /bin/sh
               - -ec
             args:
-              - rm -f /data/plugins/SpawnProtection*.jar
+              - |-
+                rm -f /data/plugins/SpawnProtection*.jar
+                rm -f /data/plugins/ClientID*.jar
+                rm -rf /data/plugins/ClientID
             resources:
               requests:
                 cpu: 10m
@@ -111,6 +114,8 @@ spec:
               # and reconciles these into /data/plugins at container startup.
               # CoreProtect is built from PlayPro/CoreProtect@0bb1d5d with the
               # required 26.2 adapter and development branch metadata.
+              # CheckHacks v1.2.1 is the official GitHub release. Its release
+              # artifact SHA-256 is 66cbfbb527d83e906b568ae92def055bab5116f6da990b360bdab41bda62bdfc.
               PLUGINS: |-
                 https://cdn.modrinth.com/data/l8Uv7FzS/versions/DqixaESV/lifestealz-2.21.1.jar
                 https://cdn.modrinth.com/data/LI8sodAD/versions/6IFR8wxZ/CombatLog.jar
@@ -121,7 +126,7 @@ spec:
                 https://cdn.modrinth.com/data/Yp18gs4n/versions/nX6Kce7A/Grace999-1.0.8.jar
                 https://cdn.modrinth.com/data/j2g3fqUV/versions/t8bMoUaC/cartlimiter-1.7.jar
                 https://cdn.modrinth.com/data/LJNGWSvH/versions/Cflesrfj/grimac-bukkit-2.3.74-0a18c77.jar
-                https://cdn.modrinth.com/data/BfVAPsBN/versions/aHHJkk3e/ClientID-Spigot-1.1.7.jar
+                https://github.com/branduzzo/CheckHacks/releases/download/v1.2.1/CheckHacks-1.2.1.jar
                 https://raw.githubusercontent.com/strxnd/home-ops/fac3475c361a42d26b7c67251ee5806e177a014d/kubernetes/apps/games/glitg-smp/app/artifacts/CoreProtect-24.0-26.2-0bb1d5d.jar
                 https://cdn.modrinth.com/data/bYazc7fd/versions/cAOIkpWF/InvSee%2B%2B.jar
                 https://cdn.modrinth.com/data/nFLmET4i/versions/7a1fv1Yn/SlashString-1.1.0-mc26.2.jar
@@ -244,11 +249,11 @@ spec:
         name: glitg-smp-grim
         globalMounts:
           - path: /config/plugins/GrimAC
-      clientid:
+      checkhacks:
         type: configMap
-        name: glitg-smp-clientid
+        name: glitg-smp-checkhacks
         globalMounts:
-          - path: /config/plugins/ClientID
+          - path: /config/plugins/CheckHacks
       invsee:
         type: configMap
         name: glitg-smp-invsee
