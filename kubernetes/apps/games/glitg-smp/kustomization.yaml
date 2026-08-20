@@ -56,6 +56,9 @@ configMapGenerator:
       - discord.yml=config/plugins/GrimAC/discord.yml
       - messages.yml=config/plugins/GrimAC/messages.yml
       - punishments.yml=config/plugins/GrimAC/punishments.yml
+  - name: glitg-smp-clientid
+    files:
+      - config.yml=config/plugins/ClientID/config.yml
   - name: glitg-smp-invsee
     files:
       - config.yml=config/plugins/InvSeePlusPlus/config.yml
