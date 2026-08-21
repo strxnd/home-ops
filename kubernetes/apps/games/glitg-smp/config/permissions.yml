@@ -3,3 +3,9 @@
 combatlog.bypass:
   description: CombatLog bypass is disabled on GLITG SMP.
   default: false
+
+# Grace999 bundles a deathban system with no direct enable/disable toggle.
+# Enable its permission-based bypass and grant that bypass to every player.
+grace.deathban.ignore:
+  description: Grace999 deathbans are disabled on GLITG SMP.
+  default: true

@@ -17,6 +17,11 @@ grace-starts-from-join: false
 no-damage-everything: false
 no-hunger-loss: false
 
+# Grace999 has no direct deathban toggle. Enabling its permission check lets
+# permissions.yml grant grace.deathban.ignore to every player.
+deathban:
+  ignore-permission: true
+
 default-flags:
   # The active grace timer blocks PvP separately. Keep the inactive baseline
   # permissive so PvP is restored after the timer ends.
