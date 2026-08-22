@@ -11,7 +11,11 @@ generatorOptions:
 configMapGenerator:
   - name: glitg-smp-paper-world-defaults
     files:
+      - paper-global.yml=config/config/paper-global.yml
       - paper-world-defaults.yml=config/config/paper-world-defaults.yml
+  - name: glitg-smp-spigot
+    files:
+      - spigot.yml=config/spigot.yml
   - name: glitg-smp-permissions
     files:
       - permissions.yml=config/permissions.yml
@@ -78,4 +82,5 @@ configMapGenerator:
     files:
       - pack.mcmeta=config/datapacks/GLITGRecipes/pack.mcmeta
       - golden_apple.json=config/datapacks/GLITGRecipes/data/minecraft/recipe/golden_apple.json
+      - anvil.json=config/datapacks/GLITGRecipes/data/glitgrecipes/recipe/anvil.json
       - cobweb.json=config/datapacks/GLITGRecipes/data/glitgrecipes/recipe/cobweb.json

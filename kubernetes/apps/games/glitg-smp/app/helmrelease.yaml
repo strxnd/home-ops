@@ -110,6 +110,7 @@ spec:
                 world/datapacks/EightMinuteStrength/data/minecraft/tags/function</config/glitg-smp-eightminutestrength/tick.json
                 world/datapacks/GLITGRecipes</config/glitg-smp-glitgrecipes/pack.mcmeta
                 world/datapacks/GLITGRecipes/data/minecraft/recipe</config/glitg-smp-glitgrecipes/golden_apple.json
+                world/datapacks/GLITGRecipes/data/glitgrecipes/recipe</config/glitg-smp-glitgrecipes/anvil.json
                 world/datapacks/GLITGRecipes/data/glitgrecipes/recipe</config/glitg-smp-glitgrecipes/cobweb.json
               # Pinned upstream/artifact URLs; the official stock image downloads
               # and reconciles these into /data/plugins at container startup.
@@ -196,6 +197,12 @@ spec:
         globalMounts:
           - path: /config/permissions.yml
             subPath: permissions.yml
+      spigot:
+        type: configMap
+        name: glitg-smp-spigot
+        globalMounts:
+          - path: /config/spigot.yml
+            subPath: spigot.yml
       server-icon:
         type: configMap
         name: glitg-smp-server-icon
