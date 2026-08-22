@@ -24,7 +24,7 @@ spec:
         strategy: Recreate
         pod:
           annotations:
-            glitg.home-ops/config-revision: deathbans-disabled-v1
+            glitg.home-ops/config-revision: withdraw-floor-v1
           automountServiceAccountToken: false
           terminationGracePeriodSeconds: 120
           securityContext:

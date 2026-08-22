@@ -24,7 +24,7 @@ looseHeartsToNature: true
 looseHeartsToPlayer: true
 announceElimination: false
 allowDyingFromWithdraw: false
-minWithdrawHearts: 0
+minWithdrawHearts: 10
 healOnHeartUse: false
 playTotemEffect: false
 heartCooldown: 0
