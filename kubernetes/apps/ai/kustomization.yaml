@@ -9,9 +9,4 @@ components:
 resources:
   - ./namespace.yaml
   - ./cliproxyapi/ks.yaml
-  - ./executor/ks.yaml
-  - ./hermes-2/ks.yaml
   - ./hermes-kn/ks.yaml
-  - ./hermes/ks.yaml
-  - ./open-webui/ks.yaml
-  - ./steel-browser/ks.yaml
