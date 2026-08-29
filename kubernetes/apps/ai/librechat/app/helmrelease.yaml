@@ -1,0 +1,238 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app librechat
+spec:
+  interval: 1h
+  maxHistory: 1
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    timeout: 5m
+    remediation:
+      retries: 1
+  upgrade:
+    timeout: 5m
+    remediation:
+      retries: 1
+  values:
+    controllers:
+      librechat:
+        replicas: 1
+        strategy: Recreate
+        pod:
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile: { type: RuntimeDefault }
+        containers:
+          app:
+            image:
+              repository: ghcr.io/danny-avila/librechat
+              tag: v0.8.7@sha256:c5db3331b845e1f289f8d04c0c77936c4bbe372f76730a804abc1c37e44d23a9
+            env:
+              TZ: Asia/Singapore
+              HOST: 0.0.0.0
+              PORT: &port 3080
+              CONFIG_PATH: /app/librechat.yaml
+              DOMAIN_CLIENT: https://chat.${SECRET_DOMAIN}
+              DOMAIN_SERVER: https://chat.${SECRET_DOMAIN}
+              MONGO_URI:
+                secretKeyRef:
+                  name: librechat-secret
+                  key: MONGO_URI
+              JWT_SECRET:
+                secretKeyRef:
+                  name: librechat-secret
+                  key: JWT_SECRET
+              JWT_REFRESH_SECRET:
+                secretKeyRef:
+                  name: librechat-secret
+                  key: JWT_REFRESH_SECRET
+              CREDS_KEY:
+                secretKeyRef:
+                  name: librechat-secret
+                  key: CREDS_KEY
+              CREDS_IV:
+                secretKeyRef:
+                  name: librechat-secret
+                  key: CREDS_IV
+              ALLOW_REGISTRATION: "true" # TODO: flip to "false" after the first (admin) account is registered
+              ALLOW_EMAIL_LOGIN: "true"
+              ALLOW_SOCIAL_LOGIN: "false"
+              ALLOW_SOCIAL_REGISTRATION: "false"
+              ALLOW_PASSWORD_RESET: "false"
+              ALLOW_UNVERIFIED_EMAIL_LOGIN: "true"
+              ALLOW_SHARED_LINKS: "false"
+              ALLOW_SHARED_LINKS_PUBLIC: "false"
+              NO_INDEX: "true"
+              TRUST_PROXY: "1"
+              SEARCH: "false"
+              LOG_TO_FILE: "false"
+              NODE_OPTIONS: --max-old-space-size=1536
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  failureThreshold: 30
+                  periodSeconds: 5
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+
+      mongodb:
+        replicas: 1
+        strategy: Recreate
+        pod:
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 999
+            runAsGroup: 999
+            seccompProfile: { type: RuntimeDefault }
+        containers:
+          app:
+            image:
+              repository: docker.io/library/mongo
+              tag: 8.0.20@sha256:098862b1339f031900ca66cf8fef799e616d6324fa41b9a263f2ec899552c1ef
+            env:
+              TZ: Asia/Singapore
+              MONGO_INITDB_ROOT_USERNAME:
+                secretKeyRef:
+                  name: librechat-secret
+                  key: MONGO_INITDB_ROOT_USERNAME
+              MONGO_INITDB_ROOT_PASSWORD:
+                secretKeyRef:
+                  name: librechat-secret
+                  key: MONGO_INITDB_ROOT_PASSWORD
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: &mongodb-port 27017
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *mongodb-port
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *mongodb-port
+                  failureThreshold: 30
+                  periodSeconds: 5
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+
+    service:
+      app:
+        controller: librechat
+        ports:
+          http:
+            port: *port
+      mongodb:
+        controller: mongodb
+        ports:
+          http:
+            port: *mongodb-port
+
+    route:
+      app:
+        hostnames:
+          - chat.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+
+    persistence:
+      uploads:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 5Gi
+        storageClass: local-path
+        retain: true
+        advancedMounts:
+          librechat:
+            app:
+              - path: /app/uploads
+      images:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        storageClass: local-path
+        retain: true
+        advancedMounts:
+          librechat:
+            app:
+              - path: /app/client/public/images
+      data:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 10Gi
+        storageClass: local-path
+        retain: true
+        advancedMounts:
+          mongodb:
+            app:
+              - path: /data/db
+      config:
+        type: configMap
+        name: librechat-config
+        advancedMounts:
+          librechat:
+            app:
+              - path: /app/librechat.yaml
+                subPath: librechat.yaml
+                readOnly: true

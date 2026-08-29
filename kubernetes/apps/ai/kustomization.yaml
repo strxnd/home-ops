@@ -9,3 +9,4 @@ components:
 resources:
   - ./namespace.yaml
   - ./cliproxyapi/ks.yaml
+  - ./librechat/ks.yaml
