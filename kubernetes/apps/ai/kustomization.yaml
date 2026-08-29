@@ -9,4 +9,3 @@ components:
 resources:
   - ./namespace.yaml
   - ./cliproxyapi/ks.yaml
-  - ./hermes-kn/ks.yaml
