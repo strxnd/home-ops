@@ -37,9 +37,10 @@ fi
 "${FLUX_LOCAL_VENV}/bin/pip" install --quiet "flux-local==${FLUX_LOCAL_VERSION}"
 
 # 4. Put the toolchain on PATH for every future shell (mise shims work in
-#    non-interactive shells; flux-local from its venv). Guarded so re-runs
-#    do not duplicate the block, and placed before .bashrc's interactive
-#    guard so it applies to login and non-login shells alike.
+#    non-interactive shells; flux-local from its venv). Point kubectl/sops/
+#    talosctl at the gitignored credential paths from .mise.toml. Guarded
+#    so re-runs do not duplicate the block, and placed before .bashrc's
+#    interactive guard so it applies to login and non-login shells alike.
 BASHRC="${HOME}/.bashrc"
 MARKER="# >>> home-ops cloud-agent PATH >>>"
 if [ -f "${BASHRC}" ] && ! grep -qF "${MARKER}" "${BASHRC}"; then
@@ -47,6 +48,9 @@ if [ -f "${BASHRC}" ] && ! grep -qF "${MARKER}" "${BASHRC}"; then
   {
     echo "${MARKER}"
     echo 'export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$HOME/.venv/flux-local/bin:$PATH"'
+    echo "export KUBECONFIG=\"${REPO_ROOT}/kubeconfig\""
+    echo "export SOPS_AGE_KEY_FILE=\"${REPO_ROOT}/age.key\""
+    echo "export TALOSCONFIG=\"${REPO_ROOT}/talos/clusterconfig/talosconfig\""
     echo "# <<< home-ops cloud-agent PATH <<<"
     echo ""
     cat "${BASHRC}"

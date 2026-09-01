@@ -112,6 +112,18 @@ Safe handling expectations:
 - Always pin chart, image, and dependency versions/tags; do not use `latest` because Renovate cannot reliably manage latest tags in this repo.
 - Do not add scope parentheses in commit messages unless asked. Prefer `feat:`, `fix:`, or `chore:`; use `chore:` for routine maintenance.
 
+## Cursor Cloud specific instructions
+
+Cloud Agents install the mise-pinned CLI toolchain (including `kubectl`) via `.cursor/install.sh`. Gitignored credential files are not in the snapshot; `.cursor/start.sh` writes them from environment Runtime Secrets on every boot:
+
+| Secret | Destination |
+| --- | --- |
+| `HOME_OPS_KUBECONFIG` | `./kubeconfig` |
+| `HOME_OPS_AGE_KEY` | `./age.key` |
+| `HOME_OPS_TALOSCONFIG` | `./talos/clusterconfig/talosconfig` |
+
+Paste each file's full contents (not a path). Prefer Runtime Secrets so values stay redacted. Do not commit these files. Reaching the home-cluster API from a Cloud Agent also requires a private-network path (for example Cloudflare Tunnel or Tailscale); credentials alone are not enough if the API is only on the LAN.
+
 ## Agent Behavior
 
 - Read relevant files before editing and summarize changed paths afterward.
