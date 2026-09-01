@@ -11,10 +11,14 @@ MISE_BIN="${HOME}/.local/bin/mise"
 FLUX_LOCAL_VENV="${HOME}/.venv/flux-local"
 FLUX_LOCAL_VERSION="8.4.0"
 PYTHON_VERSION="3.13"
+# Pin mise itself so identical commits always bootstrap the same tooling. The
+# mise.run installer honours MISE_VERSION and verifies the release checksum for
+# the pinned version.
+MISE_VERSION="v2026.9.0"
 
 # 1. Install mise (single static binary) if it is not already present.
 if [ ! -x "${MISE_BIN}" ] && ! command -v mise >/dev/null 2>&1; then
-  curl -fsSL https://mise.run | sh
+  curl -fsSL https://mise.run | MISE_VERSION="${MISE_VERSION}" sh
 fi
 export PATH="${HOME}/.local/bin:${PATH}"
 
