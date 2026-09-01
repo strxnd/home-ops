@@ -1,0 +1,4 @@
+{
+  "name": "home-ops",
+  "install": "./.cursor/install.sh"
+}
