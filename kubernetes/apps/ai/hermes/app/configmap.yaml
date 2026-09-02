@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/config-map_v1.json
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hermes-config-seed
+data:
+  config.yaml: |
+    model:
+      provider: custom
+      base_url: http://cli-proxy-api.ai.svc.cluster.local:8317/v1
+    tool_loop_guardrails:
+      warnings_enabled: true
+      hard_stop_enabled: true
+      hard_stop_after:
+        exact_failure: 5
+        same_tool_failure: 8
+        idempotent_no_progress: 5
+    terminal:
+      backend: local
+      timeout: 180
+      home_mode: auto
+    dashboard:
+      public_url: https://hermes.${SECRET_DOMAIN}
+      trusted_proxies:
+        - 10.0.0.0/8
