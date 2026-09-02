@@ -6,6 +6,16 @@ metadata:
   name: hermes-config-seed
 data:
   config.yaml: |
+    providers:
+      sparks:
+        api: http://192.168.20.21:8888/v1
+        transport: chat_completions
+        extra_body:
+          chat_template_kwargs:
+            enable_thinking: false
+    model:
+      provider: custom:sparks
+      default: GLM-5.3-Flash-EXL3
     tool_loop_guardrails:
       warnings_enabled: true
       hard_stop_enabled: true
