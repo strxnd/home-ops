@@ -122,7 +122,11 @@ Cloud Agents install the mise-pinned CLI toolchain (including `kubectl`) via `.c
 | `HOME_OPS_AGE_KEY` | `./age.key` |
 | `HOME_OPS_TALOSCONFIG` | `./talos/clusterconfig/talosconfig` |
 
-Paste each file's full contents (not a path). Prefer Runtime Secrets so values stay redacted. Do not commit these files. Reaching the home-cluster API from a Cloud Agent also requires a private-network path (for example Cloudflare Tunnel or Tailscale); credentials alone are not enough if the API is only on the LAN.
+Paste each file's full contents (not a path). Prefer Runtime Secrets so values stay redacted. Do not commit these files. The secrets form may flatten YAML onto one line; `.cursor/normalize-cloud-secrets.py` restores kubeconfig and extracts the age identity.
+
+`HOME_OPS_TALOSCONFIG` must be the generated `talos/clusterconfig/talosconfig` (starts with `context:`). Do not paste talhelper `talconfig.yaml`, `cluster.yaml`, or `nodes.yaml`.
+
+Reaching the home-cluster API from a Cloud Agent also requires a private-network path (for example Cloudflare Tunnel or Tailscale); credentials alone are not enough if the API is only on the LAN.
 
 ## Agent Behavior
 
