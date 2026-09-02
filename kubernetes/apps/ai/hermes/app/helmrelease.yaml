@@ -1,0 +1,182 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app hermes
+spec:
+  interval: 1h
+  maxHistory: 1
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    timeout: 15m
+    remediation:
+      retries: 1
+  upgrade:
+    timeout: 15m
+    remediation:
+      retries: 1
+  values:
+    controllers:
+      hermes:
+        replicas: 1
+        strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
+            fsGroup: 10000
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+        initContainers:
+          seed-config:
+            image:
+              repository: docker.io/nousresearch/hermes-agent
+              tag: &imageTag v2026.8.31@sha256:87af7c6a5ee383834f75eb9a3fb509ccaacbab5d54084b086b48b84917e28efc
+            command:
+              - /bin/sh
+              - -ec
+            args:
+              - |
+                umask 077
+                mkdir -p /opt/data
+                if [ ! -s /opt/data/config.yaml ]; then
+                  cp /config-seed/config.yaml /opt/data/config.yaml
+                  chmod 0600 /opt/data/config.yaml
+                  chown 10000:10000 /opt/data/config.yaml
+                fi
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsNonRoot: false
+              runAsUser: 0
+              runAsGroup: 0
+              capabilities:
+                drop:
+                  - ALL
+                add:
+                  - CHOWN
+        containers:
+          app:
+            image:
+              repository: docker.io/nousresearch/hermes-agent
+              tag: *imageTag
+            args:
+              - gateway
+              - run
+            env:
+              TZ: Asia/Singapore
+              HERMES_HOME: /opt/data
+              HOME: /opt/data
+              HERMES_DASHBOARD: "1"
+              HERMES_DASHBOARD_HOST: 0.0.0.0
+              HERMES_DASHBOARD_PORT: &port 9119
+              HERMES_DASHBOARD_TUI: "1"
+              HERMES_UID: "10000"
+              HERMES_GID: "10000"
+              API_SERVER_ENABLED: "true"
+              API_SERVER_HOST: 0.0.0.0
+              API_SERVER_PORT: &api-port 8642
+              API_SERVER_CORS_ORIGINS: https://hermes.${SECRET_DOMAIN}
+            envFrom:
+              - secretRef:
+                  name: hermes-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *api-port
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *probes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *api-port
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 30
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 4Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+                add:
+                  - CHOWN
+                  - DAC_OVERRIDE
+                  - FOWNER
+                  - KILL
+                  - SETGID
+                  - SETUID
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+          api:
+            port: *api-port
+    route:
+      app:
+        hostnames:
+          - hermes.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+    persistence:
+      config-seed:
+        type: configMap
+        name: hermes-config-seed
+        advancedMounts:
+          hermes:
+            seed-config:
+              - path: /config-seed/config.yaml
+                subPath: config.yaml
+                readOnly: true
+      data:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 10Gi
+        storageClass: local-path
+        retain: true
+        advancedMounts:
+          hermes:
+            seed-config:
+              - path: /opt/data
+            app:
+              - path: /opt/data
+      tmp:
+        type: emptyDir
