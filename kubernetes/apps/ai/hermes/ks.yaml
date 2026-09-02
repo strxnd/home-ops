@@ -17,8 +17,6 @@ spec:
       namespace: network
     - name: local-path-provisioner
       namespace: kube-system
-    - name: cli-proxy-api
-      namespace: ai
   interval: 1h
   path: ./kubernetes/apps/ai/hermes/app
   postBuild:

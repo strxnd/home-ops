@@ -6,9 +6,6 @@ metadata:
   name: hermes-config-seed
 data:
   config.yaml: |
-    model:
-      provider: custom
-      base_url: http://cli-proxy-api.ai.svc.cluster.local:8317/v1
     tool_loop_guardrails:
       warnings_enabled: true
       hard_stop_enabled: true

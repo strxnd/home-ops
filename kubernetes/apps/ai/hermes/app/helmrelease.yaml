@@ -90,7 +90,6 @@ spec:
               API_SERVER_HOST: 0.0.0.0
               API_SERVER_PORT: &api-port 8642
               API_SERVER_CORS_ORIGINS: https://hermes.${SECRET_DOMAIN}
-              OPENAI_BASE_URL: http://cli-proxy-api.ai.svc.cluster.local:8317/v1
             envFrom:
               - secretRef:
                   name: hermes-secret
