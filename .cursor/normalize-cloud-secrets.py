@@ -184,6 +184,65 @@ def normalize_talosconfig(value: str) -> str | None:
     return value if value.endswith("\n") else value + "\n"
 
 
+WG_KEYS = (
+    "PrivateKey",
+    "Address",
+    "DNS",
+    "ListenPort",
+    "MTU",
+    "PublicKey",
+    "PresharedKey",
+    "AllowedIPs",
+    "Endpoint",
+    "PersistentKeepalive",
+)
+WG_SPLIT_ALLOWED_IPS = "192.168.20.0/24, 192.168.0.0/24"
+WG_KEY_RE = re.compile(
+    r"(?P<key>" + "|".join(WG_KEYS) + r")\s*=\s*(?P<value>.*?)(?=(?:\s+(?:" + "|".join(WG_KEYS) + r")\s*=|\s*\[|$))",
+    re.DOTALL,
+)
+
+
+def normalize_wireguard(value: str) -> str | None:
+    value = _unescape(value.strip())
+    decoded = _maybe_b64(value)
+    if decoded and "[Interface]" in decoded and "[Peer]" in decoded:
+        value = decoded.strip()
+    if "[Interface]" not in value or "[Peer]" not in value:
+        return None
+
+    sections: list[tuple[str, list[tuple[str, str]]]] = []
+    parts = re.split(r"\[(Interface|Peer)\]", value)
+    # split yields [preamble, name, body, name, body, ...]
+    for i in range(1, len(parts), 2):
+        name = parts[i]
+        body = parts[i + 1] if i + 1 < len(parts) else ""
+        pairs = [(m.group("key"), " ".join(m.group("value").split())) for m in WG_KEY_RE.finditer(body)]
+        sections.append((name, pairs))
+
+    if not any(name == "Interface" for name, _ in sections) or not any(name == "Peer" for name, _ in sections):
+        return None
+
+    lines: list[str] = []
+    for name, pairs in sections:
+        if lines:
+            lines.append("")
+        lines.append(f"[{name}]")
+        seen = set()
+        for key, val in pairs:
+            if key == "DNS":
+                continue
+            if key == "AllowedIPs":
+                val = WG_SPLIT_ALLOWED_IPS
+            lines.append(f"{key} = {val}")
+            seen.add(key)
+        if name == "Peer" and "AllowedIPs" not in seen:
+            lines.append(f"AllowedIPs = {WG_SPLIT_ALLOWED_IPS}")
+        if name == "Peer" and "PersistentKeepalive" not in seen:
+            lines.append("PersistentKeepalive = 25")
+    return "\n".join(lines) + "\n"
+
+
 def write_file(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(f".{path.name}.tmp")
@@ -229,6 +288,20 @@ def main() -> int:
             wrote += 1
     else:
         print("start: HOME_OPS_TALOSCONFIG is unset; talosconfig not written", file=sys.stderr)
+        missing += 1
+
+    wg = os.environ.get("HOME_OPS_WIREGUARD_CONF", "")
+    wg_dest = repo / ".private" / "wg0.conf"
+    if wg:
+        normalized = normalize_wireguard(wg)
+        if normalized is None:
+            print("start: HOME_OPS_WIREGUARD_CONF is not a WireGuard config; wg0.conf not written", file=sys.stderr)
+            missing += 1
+        else:
+            write_file(wg_dest, normalized)
+            wrote += 1
+    else:
+        print(f"start: HOME_OPS_WIREGUARD_CONF is unset; {wg_dest} not written", file=sys.stderr)
         missing += 1
 
     print(f"start: wrote {wrote} credential file(s); {missing} secret(s) unset or skipped")

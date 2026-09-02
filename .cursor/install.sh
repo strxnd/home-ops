@@ -27,8 +27,16 @@ export PATH="${HOME}/.local/bin:${PATH}"
 mise trust --yes "${REPO_ROOT}/.mise.toml"
 mise install --yes
 
-# 3. flux-local >= 8 needs Python >= 3.13; use a mise-managed standalone
-#    interpreter so no system packages (apt) are required.
+# 3. Userspace WireGuard (no kernel module in Cloud Agent VMs). Pinned
+#    Ubuntu 24.04 packages so install stays deterministic.
+sudo -n apt-get update -qq
+sudo -n apt-get install -y --no-install-recommends \
+  iproute2=6.1.0-1ubuntu6.4 \
+  wireguard-tools=1.0.20210914-1ubuntu4 \
+  wireguard-go=0.0.20230223-1ubuntu0.24.04.2
+
+# 4. flux-local >= 8 needs Python >= 3.13; use a mise-managed standalone
+#    interpreter (WireGuard packages above are the only apt dependency).
 mise install --yes "python@${PYTHON_VERSION}"
 if [ ! -x "${FLUX_LOCAL_VENV}/bin/python" ]; then
   mise exec "python@${PYTHON_VERSION}" -- python3 -m venv "${FLUX_LOCAL_VENV}"
@@ -36,7 +44,7 @@ fi
 "${FLUX_LOCAL_VENV}/bin/pip" install --quiet --upgrade pip
 "${FLUX_LOCAL_VENV}/bin/pip" install --quiet "flux-local==${FLUX_LOCAL_VERSION}"
 
-# 4. Put the toolchain on PATH for every future shell (mise shims work in
+# 5. Put the toolchain on PATH for every future shell (mise shims work in
 #    non-interactive shells; flux-local from its venv). Point kubectl/sops/
 #    talosctl at the gitignored credential paths from .mise.toml. Guarded
 #    so re-runs do not duplicate the block, and placed before .bashrc's
