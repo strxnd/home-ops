@@ -143,14 +143,43 @@ def looks_like_talosconfig(value: str) -> bool:
     return all(marker in value for marker in ("context:", "contexts:")) and not looks_like_talhelper(value)
 
 
+def _yaml_list_items(raw: str) -> list[str]:
+    return [part.strip() for part in re.split(r"\s*-\s*", raw.strip()) if part.strip()]
+
+
+def _unflatten_talosconfig(value: str) -> str | None:
+    match = re.search(
+        r"context:\s*(\S+)\s+contexts:\s*(\S+):\s*endpoints:\s*(.*?)"
+        r"(?:\s+nodes:\s*(.*?))?\s+ca:\s*(\S+)\s+crt:\s*(\S+)\s+key:\s*(\S+)\s*$",
+        value,
+    )
+    if not match:
+        return None
+    ctx, ctx2, endpoints_raw, nodes_raw, ca, crt, key = match.groups()
+    lines = [f"context: {ctx}", "contexts:", f"  {ctx2}:", "    endpoints:"]
+    for endpoint in _yaml_list_items(endpoints_raw):
+        lines.append(f"      - {endpoint}")
+    if nodes_raw:
+        lines.append("    nodes:")
+        for node in _yaml_list_items(nodes_raw):
+            lines.append(f"      - {node}")
+    lines.extend([f"    ca: {ca}", f"    crt: {crt}", f"    key: {key}"])
+    return "\n".join(lines) + "\n"
+
+
 def normalize_talosconfig(value: str) -> str | None:
     value = _unescape(value.strip())
     decoded = _maybe_b64(value)
-    if decoded and looks_like_talosconfig(decoded):
+    if decoded and (looks_like_talosconfig(decoded) or looks_like_talhelper(decoded)):
         value = decoded.strip()
     if looks_like_talhelper(value):
         return None
-    if looks_like_talosconfig(value) or _line_count(value) > 2:
+    if _line_count(value) > 2 and looks_like_talosconfig(value):
+        return value if value.endswith("\n") else value + "\n"
+    unflattened = _unflatten_talosconfig(value)
+    if unflattened:
+        return unflattened
+    if looks_like_talosconfig(value):
         return value if value.endswith("\n") else value + "\n"
     return value if value.endswith("\n") else value + "\n"
 
