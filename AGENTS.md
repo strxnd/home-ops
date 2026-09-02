@@ -112,6 +112,23 @@ Safe handling expectations:
 - Always pin chart, image, and dependency versions/tags; do not use `latest` because Renovate cannot reliably manage latest tags in this repo.
 - Do not add scope parentheses in commit messages unless asked. Prefer `feat:`, `fix:`, or `chore:`; use `chore:` for routine maintenance.
 
+## Cursor Cloud specific instructions
+
+Cloud Agents install the mise-pinned CLI toolchain (including `kubectl`) via `.cursor/install.sh`. Gitignored credential files are not in the snapshot; `.cursor/start.sh` writes them from environment Runtime Secrets on every boot:
+
+| Secret | Destination |
+| --- | --- |
+| `HOME_OPS_KUBECONFIG` | `./kubeconfig` |
+| `HOME_OPS_AGE_KEY` | `./age.key` |
+| `HOME_OPS_TALOSCONFIG` | `./talos/clusterconfig/talosconfig` |
+| `HOME_OPS_WIREGUARD_CONF` | `./.private/wg0.conf` |
+
+Paste each file's full contents (not a path). Prefer Runtime Secrets so values stay redacted. Do not commit these files. The secrets form may flatten YAML/INI onto one line; `.cursor/normalize-cloud-secrets.py` restores kubeconfig, talosconfig, and WireGuard INI, and extracts the age identity.
+
+`HOME_OPS_TALOSCONFIG` must be the generated `talos/clusterconfig/talosconfig` (starts with `context:`). Do not paste talhelper `talconfig.yaml`, `cluster.yaml`, or `nodes.yaml`.
+
+`HOME_OPS_WIREGUARD_CONF` is the UniFi WireGuard client `.conf` for server `cursor-cloud` / client `home-ops-agent`. Start always rewrites `AllowedIPs` to `192.168.20.0/24, 192.168.0.0/24` (split tunnel) and brings up `wg0` with userspace `wireguard-go`.
+
 ## Agent Behavior
 
 - Read relevant files before editing and summarize changed paths afterward.
