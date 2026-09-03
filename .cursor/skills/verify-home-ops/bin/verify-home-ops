@@ -1,0 +1,412 @@
+#!/usr/bin/env bash
+# Operator harness for the home-ops GitOps repo.
+# Local commands never touch the cluster. Cluster commands are read-only.
+# Never decrypt SOPS, never print kubeconfig/age/talos/wg files, never kill wg0.
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILL_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+REPO_ROOT="$(cd "${SKILL_DIR}/../../.." && pwd)"
+if git -C "${SKILL_DIR}" rev-parse --show-toplevel >/dev/null 2>&1; then
+  REPO_ROOT="$(git -C "${SKILL_DIR}" rev-parse --show-toplevel)"
+fi
+
+export PATH="${HOME}/.local/bin:${HOME}/.local/share/mise/shims:${HOME}/.venv/flux-local/bin:${PATH}"
+export KUBECONFIG="${KUBECONFIG:-${REPO_ROOT}/kubeconfig}"
+export SOPS_AGE_KEY_FILE="${SOPS_AGE_KEY_FILE:-${REPO_ROOT}/age.key}"
+export TALOSCONFIG="${TALOSCONFIG:-${REPO_ROOT}/talos/clusterconfig/talosconfig}"
+
+NAMESPACES=(ai cert-manager default external-secrets flux-system kube-system network observability)
+FLUX_CLUSTER_PATH="${REPO_ROOT}/kubernetes/flux/cluster"
+APPS_DIR="${REPO_ROOT}/kubernetes/apps"
+ARTIFACTS_ROOT="${SKILL_DIR}/artifacts"
+
+usage() {
+  cat <<'EOF'
+verify-home-ops — drive the home-ops GitOps operator surface
+
+Usage:
+  verify-home-ops launch
+  verify-home-ops doctor
+  verify-home-ops kustomize-build [namespace|all]
+  verify-home-ops kubeconform [namespace|all]
+  verify-home-ops flux-local-test
+  verify-home-ops cluster-status
+  verify-home-ops echo-http
+  verify-home-ops cleanup
+
+Environment:
+  HOME_OPS_VERIFY_RUN_ID   Reuse an existing run (set by launch)
+  KUBECONFIG               Default: <repo>/kubeconfig
+  SOPS_AGE_KEY_FILE        Default: <repo>/age.key
+  TALOSCONFIG              Default: <repo>/talos/clusterconfig/talosconfig
+
+Local commands write under /tmp/home-ops-verify-$RUN_ID and
+.cursor/skills/verify-home-ops/artifacts/$RUN_ID. They do not mutate the cluster.
+Cluster commands are read-only. Do not run task reconcile, bootstrap:*, or
+talos:reset from this harness.
+EOF
+}
+
+die() { echo "error: $*" >&2; exit 1; }
+
+require_cmd() {
+  local missing=()
+  local c
+  for c in "$@"; do
+    command -v "${c}" >/dev/null 2>&1 || missing+=("${c}")
+  done
+  if ((${#missing[@]})); then
+    die "missing required commands: ${missing[*]}"
+  fi
+}
+
+run_id() {
+  if [[ -n "${HOME_OPS_VERIFY_RUN_ID:-}" ]]; then
+    printf '%s\n' "${HOME_OPS_VERIFY_RUN_ID}"
+    return
+  fi
+  if [[ -f "${ARTIFACTS_ROOT}/.latest" ]]; then
+    cat "${ARTIFACTS_ROOT}/.latest"
+    return
+  fi
+  die "no run id; run: verify-home-ops launch"
+}
+
+scratch_dir() { printf '/tmp/home-ops-verify-%s\n' "$(run_id)"; }
+artifact_dir() { printf '%s/%s\n' "${ARTIFACTS_ROOT}" "$(run_id)"; }
+
+ensure_run() {
+  local id scratch art
+  id="$(run_id)"
+  scratch="$(scratch_dir)"
+  art="$(artifact_dir)"
+  mkdir -p "${scratch}" "${art}"
+  export HOME_OPS_VERIFY_RUN_ID="${id}"
+}
+
+log_cmd() {
+  local log="$1"
+  shift
+  {
+    echo "\$ $*"
+    echo "cwd=$(pwd)"
+    echo "started=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  } >>"${log}"
+  set +e
+  "$@" >>"${log}" 2>&1
+  local rc=$?
+  set -e
+  echo "exit=${rc} finished=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >>"${log}"
+  return "${rc}"
+}
+
+summarize_yaml_kinds() {
+  local file="$1"
+  python3 - "$file" <<'PY'
+import re, sys
+from pathlib import Path
+text = Path(sys.argv[1]).read_text()
+docs = re.split(r"(?m)^---\s*$", text)
+for d in docs:
+    kind = re.search(r"(?m)^kind:\s*(.+)$", d)
+    name = re.search(r"(?m)^  name:\s*(.+)$", d)
+    if kind:
+        print(f"{kind.group(1).strip()}\t{name.group(1).strip() if name else '?'}")
+PY
+}
+
+strip_sops_metadata() {
+  local src="$1"
+  local dest="$2"
+  # Drops the SOPS metadata key only. Encrypted ENC[] values stay. Never decrypts.
+  yq eval 'select(.kind == "Secret") |= del(.sops)' "${src}" >"${dest}"
+}
+
+ns_or_all() {
+  local ns="${1:-default}"
+  if [[ "${ns}" == "all" ]]; then
+    printf '%s\n' "${NAMESPACES[@]}"
+    return
+  fi
+  local ok=0
+  local n
+  for n in "${NAMESPACES[@]}"; do
+    [[ "${n}" == "${ns}" ]] && ok=1
+  done
+  [[ "${ok}" == 1 ]] || die "unknown namespace '${ns}'; expected one of: ${NAMESPACES[*]} or all"
+  printf '%s\n' "${ns}"
+}
+
+cmd_launch() {
+  local id scratch art
+  id="${HOME_OPS_VERIFY_RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)-$$}"
+  export HOME_OPS_VERIFY_RUN_ID="${id}"
+  scratch="$(scratch_dir)"
+  art="$(artifact_dir)"
+  mkdir -p "${scratch}" "${art}"
+  printf '%s\n' "${id}" >"${ARTIFACTS_ROOT}/.latest"
+  cat >"${art}/run.env" <<EOF
+HOME_OPS_VERIFY_RUN_ID=${id}
+REPO_ROOT=${REPO_ROOT}
+KUBECONFIG=${KUBECONFIG}
+SOPS_AGE_KEY_FILE=${SOPS_AGE_KEY_FILE}
+TALOSCONFIG=${TALOSCONFIG}
+SCRATCH=${scratch}
+ARTIFACTS=${art}
+EOF
+  cp "${art}/run.env" "${scratch}/run.env"
+  echo "READY run_id=${id}"
+  echo "mode=cli-gitops"
+  echo "repo=${REPO_ROOT}"
+  echo "scratch=${scratch}"
+  echo "artifacts=${art}"
+  echo "ready_when=verify-home-ops doctor exits 0 (local tools). CLUSTER_READY=yes is optional."
+}
+
+cmd_doctor() {
+  require_cmd task kustomize kubeconform flux kubectl jq yq helm
+  local art_root="${ARTIFACTS_ROOT}"
+  mkdir -p "${art_root}"
+  local report="${art_root}/doctor-$(date -u +%Y%m%dT%H%M%SZ).txt"
+  if [[ -n "${HOME_OPS_VERIFY_RUN_ID:-}" || -f "${ARTIFACTS_ROOT}/.latest" ]]; then
+    ensure_run
+    report="$(artifact_dir)/doctor.txt"
+  fi
+
+  {
+    echo "repo=${REPO_ROOT}"
+    echo "kustomize=$(kustomize version 2>/dev/null | head -1)"
+    echo "kubeconform=$(kubeconform -v 2>/dev/null || true)"
+    echo "task=$(task --version 2>/dev/null || true)"
+    echo "flux=$(flux version --client 2>/dev/null | head -1 || true)"
+    echo "kubectl=$(kubectl version --client -o json 2>/dev/null | jq -r '.clientVersion.gitVersion' || true)"
+    echo "yq=$(yq --version 2>/dev/null || true)"
+    if command -v flux-local >/dev/null 2>&1; then
+      echo "flux_local=present"
+    else
+      echo "flux_local=MISSING"
+    fi
+    echo "kubeconfig_present=$( [[ -f ${KUBECONFIG} ]] && echo yes || echo no )"
+    echo "age_key_present=$( [[ -f ${SOPS_AGE_KEY_FILE} ]] && echo yes || echo no )"
+    echo "talosconfig_present=$( [[ -f ${TALOSCONFIG} ]] && echo yes || echo no )"
+    if command -v wg >/dev/null 2>&1 && sudo -n wg show wg0 >/dev/null 2>&1; then
+      echo "wg0=up"
+    else
+      echo "wg0=down_or_missing"
+    fi
+  } | tee "${report}"
+
+  local cluster=no
+  if [[ -f "${KUBECONFIG}" ]] && timeout 15 kubectl get --raw=/readyz >/dev/null 2>&1; then
+    cluster=yes
+    {
+      echo "cluster_api=reachable"
+      echo "cluster_version=$(timeout 15 kubectl get --raw=/version 2>/dev/null | jq -r '.gitVersion')"
+      echo "node=$(timeout 15 kubectl get nodes --no-headers 2>/dev/null | awk '{print $1,$2,$5}' | head -1)"
+    } | tee -a "${report}"
+  else
+    echo "cluster_api=unreachable" | tee -a "${report}"
+  fi
+
+  if ! command -v flux-local >/dev/null 2>&1; then
+    echo "CLUSTER_READY=${cluster}"
+    die "flux-local not on PATH; expected ${HOME}/.venv/flux-local/bin/flux-local"
+  fi
+
+  echo "LOCAL_READY=yes"
+  echo "CLUSTER_READY=${cluster}"
+  echo "doctor_report=${report}"
+}
+
+cmd_kustomize_build() {
+  require_cmd kustomize
+  ensure_run
+  local art scratch
+  art="$(artifact_dir)"
+  scratch="$(scratch_dir)"
+  local ns
+  while IFS= read -r ns; do
+    local src="${APPS_DIR}/${ns}"
+    [[ -f "${src}/kustomization.yaml" ]] || die "missing ${src}/kustomization.yaml"
+    local out="${art}/kustomize-${ns}.yaml"
+    local log="${art}/kustomize-${ns}.log"
+    local summary="${art}/kustomize-${ns}.kinds.txt"
+    {
+      echo "\$ kustomize build ${src}"
+      echo "started=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    } >"${log}"
+    set +e
+    kustomize build "${src}" >"${out}" 2>>"${log}"
+    local rc=$?
+    set -e
+    echo "exit=${rc} finished=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >>"${log}"
+    [[ "${rc}" == 0 ]] || die "kustomize build failed for ${ns}; see ${log}"
+    summarize_yaml_kinds "${out}" >"${summary}"
+    cp "${out}" "${scratch}/kustomize-${ns}.yaml"
+    echo "built namespace=${ns} resources=$(wc -l < "${summary}") out=${out}"
+    echo "kinds:"
+    sed 's/^/  /' "${summary}"
+  done < <(ns_or_all "${1:-default}")
+}
+
+cmd_kubeconform() {
+  require_cmd kustomize kubeconform yq
+  ensure_run
+  local art
+  art="$(artifact_dir)"
+  local ns
+  local failed=0
+  while IFS= read -r ns; do
+    cmd_kustomize_build "${ns}" >/dev/null
+    local src="${art}/kustomize-${ns}.yaml"
+    local stripped="${art}/kustomize-${ns}.nosops.yaml"
+    local report="${art}/kubeconform-${ns}.txt"
+    strip_sops_metadata "${src}" "${stripped}"
+    set +e
+    kubeconform -strict -summary -ignore-missing-schemas "${stripped}" >"${report}" 2>&1
+    local rc=$?
+    set -e
+    echo "kubeconform namespace=${ns} exit=${rc} report=${report}"
+    cat "${report}"
+    if [[ "${rc}" != 0 ]]; then
+      failed=1
+    fi
+  done < <(ns_or_all "${1:-default}")
+  [[ "${failed}" == 0 ]] || die "kubeconform reported invalid resources"
+}
+
+cmd_flux_local_test() {
+  require_cmd flux-local
+  ensure_run
+  local art
+  art="$(artifact_dir)"
+  local log="${art}/flux-local-test.log"
+  [[ -d "${FLUX_CLUSTER_PATH}" ]] || die "missing ${FLUX_CLUSTER_PATH}"
+  echo "running flux-local test --enable-helm --all-namespaces --path ${FLUX_CLUSTER_PATH} -v"
+  set +e
+  flux-local test --enable-helm --all-namespaces --path "${FLUX_CLUSTER_PATH}" -v >"${log}" 2>&1
+  local rc=$?
+  set -e
+  # flux-local prints a deprecation banner; keep it in the log, not as failure.
+  local passed failed
+  passed="$(grep -cE 'PASSED' "${log}" || true)"
+  failed="$(grep -cE 'FAILED|ERROR' "${log}" || true)"
+  echo "flux-local exit=${rc} passed_lines=${passed} failed_or_error_lines=${failed} log=${log}"
+  tail -n 8 "${log}"
+  grep -qE '[0-9]+ passed' "${log}" || die "flux-local log has no pytest summary; see ${log}"
+  [[ "${rc}" == 0 ]] || die "flux-local test failed; see ${log}"
+}
+
+cmd_cluster_status() {
+  require_cmd kubectl
+  ensure_run
+  [[ -f "${KUBECONFIG}" ]] || die "kubeconfig missing; cluster commands unavailable"
+  timeout 15 kubectl get --raw=/readyz >/dev/null 2>&1 || die "cluster API not reachable"
+  local art
+  art="$(artifact_dir)"
+  {
+    echo "=== nodes ==="
+    kubectl get nodes -o wide
+    echo
+    echo "=== flux kustomizations ==="
+    kubectl get kustomizations.kustomize.toolkit.fluxcd.io -A
+    echo
+    echo "=== helmreleases ==="
+    kubectl get helmreleases.helm.toolkit.fluxcd.io -A
+    echo
+    echo "=== httproutes (hostnames only) ==="
+    kubectl get httproute -A -o custom-columns=NS:.metadata.namespace,NAME:.metadata.name,HOSTS:.spec.hostnames
+  } | tee "${art}/cluster-status.txt"
+}
+
+cmd_echo_http() {
+  require_cmd kubectl curl python3
+  ensure_run
+  [[ -f "${KUBECONFIG}" ]] || die "kubeconfig missing; echo-http needs the cluster"
+  timeout 15 kubectl get --raw=/readyz >/dev/null 2>&1 || die "cluster API not reachable"
+  local art
+  art="$(artifact_dir)"
+  local host lb
+  host="$(kubectl -n default get httproute echo -o jsonpath='{.spec.hostnames[0]}')"
+  lb="$(kubectl -n network get svc envoy-external -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"
+  [[ -n "${host}" && -n "${lb}" ]] || die "could not discover echo hostname or envoy-external LB IP"
+  local health="${art}/echo-healthz.json"
+  local root="${art}/echo-root.json"
+  local meta="${art}/echo-http.txt"
+  local code
+  code="$(curl -skS -o "${health}" -w '%{http_code}' --resolve "${host}:443:${lb}" "https://${host}/healthz")"
+  local root_code
+  root_code="$(curl -skS -o "${root}" -w '%{http_code}' --resolve "${host}:443:${lb}" "https://${host}/")"
+  {
+    echo "host=${host}"
+    echo "envoy_external_lb=${lb}"
+    echo "healthz_http=${code}"
+    echo "root_http=${root_code}"
+    echo "via=https://${host}/healthz resolved to ${lb} (not public Cloudflare)"
+  } | tee "${meta}"
+  python3 - "${health}" "${root}" <<'PY'
+import json, sys
+from pathlib import Path
+health = json.loads(Path(sys.argv[1]).read_text())
+root = json.loads(Path(sys.argv[2]).read_text())
+pod = (health.get("os") or {}).get("hostname", "")
+print(f"healthz_path={health.get('path')}")
+print(f"healthz_method={health.get('method')}")
+print(f"echo_pod={pod}")
+print(f"root_path={root.get('path')}")
+print(f"root_method={root.get('method')}")
+if health.get("path") != "/healthz" or health.get("method") != "GET":
+    raise SystemExit("echo healthz JSON did not show GET /healthz")
+if not str(pod).startswith("echo-"):
+    raise SystemExit(f"echo pod hostname {pod!r} does not start with echo-")
+PY
+  [[ "${code}" == "200" && "${root_code}" == "200" ]] || die "echo HTTP did not return 200"
+  echo "echo-http OK artifacts=${art}"
+}
+
+cmd_cleanup() {
+  if [[ -z "${HOME_OPS_VERIFY_RUN_ID:-}" && ! -f "${ARTIFACTS_ROOT}/.latest" ]]; then
+    echo "nothing to clean (no run id)"
+    return 0
+  fi
+  local id scratch art
+  id="$(run_id)"
+  scratch="$(scratch_dir)"
+  art="$(artifact_dir)"
+  if [[ -f "${scratch}/pids" ]]; then
+    local pid
+    while read -r pid; do
+      [[ -n "${pid}" ]] || continue
+      if kill -0 "${pid}" 2>/dev/null; then
+        kill "${pid}" 2>/dev/null || true
+        echo "stopped pid=${pid}"
+      fi
+    done <"${scratch}/pids"
+  fi
+  if [[ -d "${scratch}" ]]; then
+    rm -rf "${scratch}"
+    echo "removed scratch=${scratch}"
+  fi
+  echo "kept artifacts=${art}"
+  echo "did_not_touch=wg0 kubeconfig age.key talosconfig"
+}
+
+main() {
+  local cmd="${1:-help}"
+  shift || true
+  case "${cmd}" in
+    launch) cmd_launch "$@" ;;
+    doctor) cmd_doctor "$@" ;;
+    kustomize-build) cmd_kustomize_build "$@" ;;
+    kubeconform) cmd_kubeconform "$@" ;;
+    flux-local-test) cmd_flux_local_test "$@" ;;
+    cluster-status) cmd_cluster_status "$@" ;;
+    echo-http) cmd_echo_http "$@" ;;
+    cleanup) cmd_cleanup "$@" ;;
+    -h|--help|help) usage ;;
+    *) usage; die "unknown command: ${cmd}" ;;
+  esac
+}
+
+main "$@"
