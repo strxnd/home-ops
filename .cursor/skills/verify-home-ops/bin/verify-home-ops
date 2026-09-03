@@ -123,6 +123,18 @@ strip_sops_metadata() {
   yq eval 'select(.kind == "Secret") |= del(.sops)' "${src}" >"${dest}"
 }
 
+cluster_readyz() {
+  local attempt
+  [[ -f "${KUBECONFIG}" ]] || return 1
+  for attempt in 1 2 3; do
+    if timeout 20 kubectl get --raw=/readyz >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 2
+  done
+  return 1
+}
+
 ns_or_all() {
   local ns="${1:-default}"
   if [[ "${ns}" == "all" ]]; then
@@ -198,12 +210,14 @@ cmd_doctor() {
   } | tee "${report}"
 
   local cluster=no
-  if [[ -f "${KUBECONFIG}" ]] && timeout 15 kubectl get --raw=/readyz >/dev/null 2>&1; then
+  if cluster_readyz; then
     cluster=yes
+  fi
+  if [[ "${cluster}" == "yes" ]]; then
     {
       echo "cluster_api=reachable"
-      echo "cluster_version=$(timeout 15 kubectl get --raw=/version 2>/dev/null | jq -r '.gitVersion')"
-      echo "node=$(timeout 15 kubectl get nodes --no-headers 2>/dev/null | awk '{print $1,$2,$5}' | head -1)"
+      echo "cluster_version=$(timeout 20 kubectl get --raw=/version 2>/dev/null | jq -r '.gitVersion')"
+      echo "node=$(timeout 20 kubectl get nodes --no-headers 2>/dev/null | awk '{print $1,$2,$5}' | head -1)"
     } | tee -a "${report}"
   else
     echo "cluster_api=unreachable" | tee -a "${report}"
@@ -302,7 +316,7 @@ cmd_cluster_status() {
   require_cmd kubectl
   ensure_run
   [[ -f "${KUBECONFIG}" ]] || die "kubeconfig missing; cluster commands unavailable"
-  timeout 15 kubectl get --raw=/readyz >/dev/null 2>&1 || die "cluster API not reachable"
+  cluster_readyz || die "cluster API not reachable"
   local art
   art="$(artifact_dir)"
   {
@@ -324,7 +338,7 @@ cmd_echo_http() {
   require_cmd kubectl curl python3
   ensure_run
   [[ -f "${KUBECONFIG}" ]] || die "kubeconfig missing; echo-http needs the cluster"
-  timeout 15 kubectl get --raw=/readyz >/dev/null 2>&1 || die "cluster API not reachable"
+  cluster_readyz || die "cluster API not reachable"
   local art
   art="$(artifact_dir)"
   local host lb

@@ -33,6 +33,7 @@ Preconditions:
 
 - `CLUSTER_READY=no` means stop. Local features still work; do not claim cluster readiness via flux-local.
 - The API server is `192.168.20.100`. WireGuard must allow `192.168.20.0/24`. A missing `HOME_OPS_WIREGUARD_CONF` looks like a dead cluster.
+- An idle `wg0` can miss the first kubectl. Doctor retries `/readyz` three times. If it still fails, ping `192.168.20.100` before declaring the cluster dead.
 - Never `kubectl get secret` or dump `kubeconfig` to prove this feature.
 - `task reconcile` is a different, mutating entry point. A Ready table taken after an unsolicited reconcile is not this feature.
 - Client `kubectl` may be newer than the server (mise pins `1.36.x`, the node has been seen on `v1.35.2`). A version skew warning is not unreadiness.
