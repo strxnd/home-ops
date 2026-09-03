@@ -23,6 +23,8 @@ spec:
       cli-proxy-api:
         replicas: 1
         strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
         pod:
           automountServiceAccountToken: false
           securityContext:
@@ -43,13 +45,9 @@ spec:
                 umask 077
                 mkdir -p /data/auth
                 chmod 0700 /data/auth
-                if [ ! -s /data/config.yaml ]; then
-                  cp /config-seed/config.yaml /data/config.yaml
-                  chmod 0600 /data/config.yaml
-                  echo "Seeded initial CLIProxyAPI configuration"
-                else
-                  echo "Preserving existing CLIProxyAPI configuration"
-                fi
+                cp /config-seed/config.yaml /data/config.yaml
+                chmod 0600 /data/config.yaml
+                echo "Applied CLIProxyAPI configuration from secret"
             resources:
               requests:
                 cpu: 10m
@@ -128,7 +126,43 @@ spec:
           http:
             port: *port
     route:
-      app:
+      public:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            group: external
+            url: https://cliproxy.${SECRET_DOMAIN}/healthz
+            ui:
+              hide-hostname: true
+              hide-url: true
+        hostnames:
+          - cliproxy.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+            matches:
+              - path:
+                  type: Exact
+                  value: /healthz
+              - path:
+                  type: PathPrefix
+                  value: /v1
+              - path:
+                  type: PathPrefix
+                  value: /v1beta
+              - path:
+                  type: PathPrefix
+                  value: /openai
+              - path:
+                  type: PathPrefix
+                  value: /backend-api/codex
+      internal:
+        annotations:
+          gatus.home-operations.com/enabled: "false"
         hostnames:
           - cliproxy.${SECRET_DOMAIN}
         parentRefs:
