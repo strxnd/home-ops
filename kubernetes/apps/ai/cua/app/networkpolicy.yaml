@@ -1,0 +1,105 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.35.2-standalone-strict/networkpolicy-networking.k8s.io-v1.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cua-vm
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: cua
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ai
+      ports:
+        - port: 8000
+          protocol: TCP
+        - port: 3000
+          protocol: TCP
+        - port: 5900
+          protocol: TCP
+  egress:
+    # Cluster DNS (service IP and backend pods)
+    - to:
+        - ipBlock:
+            cidr: 10.43.0.10/32
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # Internet only; RFC1918, cluster admin, and home LAN are denied by default
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - port: 80
+          protocol: TCP
+        - port: 443
+          protocol: TCP
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.35.2-standalone-strict/networkpolicy-networking.k8s.io-v1.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cua-novnc
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: cua-novnc
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: network
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: envoy
+              gateway.envoyproxy.io/owning-gateway-name: envoy-internal
+      ports:
+        - port: 8080
+          protocol: TCP
+  egress:
+    # Cluster DNS (service IP and backend pods)
+    - to:
+        - ipBlock:
+            cidr: 10.43.0.10/32
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # Bridge to the guest desktop
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: cua
+      ports:
+        - port: 5900
+          protocol: TCP

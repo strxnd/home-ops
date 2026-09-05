@@ -1,0 +1,45 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.35.2-standalone-strict/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: cua-server
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: cua
+  ports:
+    - name: http
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.35.2-standalone-strict/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: cua-mcp
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: cua
+  ports:
+    - name: http
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.35.2-standalone-strict/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: cua-vnc
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: cua
+  ports:
+    - name: vnc
+      port: 5900
+      protocol: TCP
+      targetPort: 5900

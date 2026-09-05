@@ -1,0 +1,67 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.35.2-standalone-strict/deployment-apps-v1.json
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cua-novnc
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cua-novnc
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cua-novnc
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: novnc
+          image: docker.io/library/python:3.13-alpine@sha256:7415fbc3c9e4979cc717d92377ab2bc7b2b4a2af1ac03cc52b5f3f88efedaf3a
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              pip install --no-cache-dir -q websockify==0.13.0
+              mkdir -p /opt
+              wget -qO- https://github.com/novnc/noVNC/archive/refs/tags/v1.7.0.tar.gz | tar -xz -C /opt
+              cp /opt/noVNC-1.7.0/vnc.html /opt/noVNC-1.7.0/index.html
+              exec websockify --web /opt/noVNC-1.7.0 0.0.0.0:8080 cua-vnc:5900
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /vnc.html
+              port: 8080
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /vnc.html
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /vnc.html
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
