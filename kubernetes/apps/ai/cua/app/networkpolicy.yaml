@@ -21,7 +21,7 @@ spec:
           protocol: TCP
         - port: 3000
           protocol: TCP
-        - port: 5900
+        - port: 5901
           protocol: TCP
   egress:
     # Cluster DNS (service IP and backend pods)
@@ -101,7 +101,7 @@ spec:
             matchLabels:
               app.kubernetes.io/name: cua
       ports:
-        - port: 5900
+        - port: 5901
           protocol: TCP
     # Setup only: pip and noVNC downloads (internet only, no RFC1918)
     - to:
