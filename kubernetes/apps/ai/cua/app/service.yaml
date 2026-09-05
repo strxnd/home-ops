@@ -42,4 +42,4 @@ spec:
     - name: vnc
       port: 5900
       protocol: TCP
-      targetPort: 5900
+      targetPort: 5901

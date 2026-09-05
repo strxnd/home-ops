@@ -30,7 +30,7 @@ spec:
                   protocol: TCP
                 - port: 3000
                   protocol: TCP
-                - port: 5900
+                - port: 5901
                   protocol: TCP
       networks:
         - name: default
