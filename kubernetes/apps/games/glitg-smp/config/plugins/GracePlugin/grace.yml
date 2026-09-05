@@ -1,0 +1,15 @@
+global-flags:
+  # Global flags are persistent master switches, including when grace is
+  # inactive. The active timer performs the temporary PvP block.
+  allow-pvp: true
+  allow-block-breaking: true
+  allow-block-placing: true
+  allow-mob-damage: true
+  allow-mob-spawning: true
+  allow-player-damage: true
+  allow-commands: true
+  allow-flight: false
+  allow-item-drop: true
+  allow-item-pickup: true
+
+regions: {}

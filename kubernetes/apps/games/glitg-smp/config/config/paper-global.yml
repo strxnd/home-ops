@@ -1,0 +1,45 @@
+---
+_version: 31
+commands:
+  suggest-player-names-when-null-tab-completions: false
+item-validation:
+  book:
+    author: 2147483647
+    page: 2147483647
+    title: 2147483647
+  book-size:
+    page-max: disabled
+  display-name: 2147483647
+  lore-line: 2147483647
+  resolve-selectors-in-books: true
+misc:
+  fix-far-end-terrain-generation: false
+  max-joins-per-tick: 2147483647
+  max-tracking-combat-entries: disabled
+packet-limiter:
+  all-packets:
+    action: KICK
+    interval: -1
+    max-packet-rate: 500.0
+  overrides:
+    minecraft:place_recipe:
+      action: DROP
+      interval: -1
+      max-packet-rate: 5.0
+spam-limiter:
+  incoming-packet-threshold: disabled
+time:
+  affects-all-worlds: true
+unsupported-settings:
+  allow-headless-pistons: true
+  allow-permanent-block-break-exploits: true
+  allow-piston-duplication: true
+  allow-unsafe-end-portal-teleportation: true
+  oversized-item-component-sanitizer:
+    dont-sanitize:
+      - minecraft:container
+      - minecraft:charged_projectiles
+      - minecraft:bundle_contents
+  perform-username-validation: false
+  skip-tripwire-hook-placement-validation: true
+  update-equipment-on-player-actions: false

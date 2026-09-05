@@ -1,0 +1,284 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app glitg-smp
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    timeout: 15m
+    remediation:
+      retries: 1
+  interval: 1h
+  maxHistory: 1
+  upgrade:
+    timeout: 15m
+    remediation:
+      retries: 1
+  values:
+    controllers:
+      glitg-smp:
+        strategy: Recreate
+        pod:
+          annotations:
+            glitg.home-ops/config-revision: ranked-smp-v2
+          automountServiceAccountToken: false
+          terminationGracePeriodSeconds: 120
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+        initContainers:
+          remove-obsolete-plugin-data:
+            image:
+              repository: docker.io/itzg/minecraft-server
+              tag: 2026.8.0-java25@sha256:e3335993929a1565f73c30b2041bcbc1473fc9c406fdd5a0d0ea24c08ef73320
+            command:
+              - /bin/sh
+              - -ec
+            args:
+              - |-
+                rm -f /data/plugins/SpawnProtection*.jar
+                rm -f /data/plugins/ClientID*.jar
+                rm -f /data/plugins/CheckHacks*.jar
+                rm -f /data/plugins/lifestealz-*.jar
+                rm -rf /data/plugins/ClientID /data/plugins/CheckHacks
+                rm -rf /data/plugins/LifeStealZ
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
+        containers:
+          app:
+            image:
+              repository: docker.io/itzg/minecraft-server
+              tag: 2026.8.0-java25@sha256:e3335993929a1565f73c30b2041bcbc1473fc9c406fdd5a0d0ea24c08ef73320
+            env:
+              TZ: Asia/Singapore
+              EULA: "TRUE"
+              TYPE: PAPER
+              VERSION: "26.2"
+              PAPER_BUILD: "112"
+              LEVEL: world
+              SEED: "-3085124641489919468"
+              MODE: survival
+              FORCE_GAMEMODE: "false"
+              DIFFICULTY: hard
+              HARDCORE: "false"
+              ALLOW_NETHER: "true"
+              # Keep vanilla block spawn protection disabled; no protected spawn area is configured.
+              SPAWN_PROTECTION: "0"
+              SERVER_IP: ""
+              SERVER_PORT: "25565"
+              ENABLE_COMMAND_BLOCK: "false"
+              MAX_PLAYERS: "40"
+              OPS: Strxnd
+              EXISTING_OPS_FILE: MERGE
+              ENABLE_WHITELIST: "true"
+              ENFORCE_WHITELIST: "true"
+              MEMORY: 10G
+              VIEW_DISTANCE: "10"
+              SIMULATION_DISTANCE: "8"
+              # The image's internal startup command runner uses RCON. No RCON
+              # port is exposed by this Service.
+              ENABLE_RCON: "true"
+              RCON_CMDS_STARTUP: |-
+                worldborder set 4000
+                gamerule locator_bar false
+              PVP: "true"
+              MOTD: GLITG SMP S1 - Ranked
+              ICON: /config/server-icon.png
+              OVERRIDE_ICON: "true"
+              COPY_CONFIG_DEST: /data
+              # Checked-in plugin files are authoritative and are synchronized
+              # into the persistent data volume on every container start.
+              SYNC_SKIP_NEWER_IN_DESTINATION: "false"
+              APPLY_EXTRA_FILES: |-
+                world/datapacks/DoubleBreezeRods</config/glitg-smp-doublebreezerods/pack.mcmeta
+                world/datapacks/DoubleBreezeRods/data/doublebreezerods/loot_table/entities</config/glitg-smp-doublebreezerods/breeze.json
+                world/datapacks/EightMinuteStrength</config/glitg-smp-eightminutestrength/pack.mcmeta
+                world/datapacks/EightMinuteStrength/data/eightminutestrength/advancement</config/glitg-smp-eightminutestrength/consume_strong_strength.json
+                world/datapacks/EightMinuteStrength/data/eightminutestrength/function</config/glitg-smp-eightminutestrength/extend_strength.mcfunction
+                world/datapacks/EightMinuteStrength/data/eightminutestrength/function</config/glitg-smp-eightminutestrength/scale_thrown_strength.mcfunction
+                world/datapacks/EightMinuteStrength/data/eightminutestrength/item_modifier</config/glitg-smp-eightminutestrength/set_duration_scale.json
+                world/datapacks/EightMinuteStrength/data/minecraft/tags/function</config/glitg-smp-eightminutestrength/tick.json
+                world/datapacks/GLITGRecipes</config/glitg-smp-glitgrecipes/pack.mcmeta
+                world/datapacks/GLITGRecipes/data/minecraft/recipe</config/glitg-smp-glitgrecipes/golden_apple.json
+                world/datapacks/GLITGRecipes/data/glitgrecipes/recipe</config/glitg-smp-glitgrecipes/anvil.json
+                world/datapacks/GLITGRecipes/data/glitgrecipes/recipe</config/glitg-smp-glitgrecipes/cobweb.json
+              # Pinned upstream/artifact URLs; the official stock image downloads
+              # and reconciles these into /data/plugins at container startup.
+              # CoreProtect is built from PlayPro/CoreProtect@0bb1d5d with the
+              # required 26.2 adapter and development branch metadata.
+              PLUGINS: |-
+                https://cdn.modrinth.com/data/KBZLXOKb/versions/lODrEuHv/RankedSMP-2.3.jar
+                https://cdn.modrinth.com/data/OQrFoWOz/versions/ZInwy9bu/OneMace-1.07.jar
+                https://cdn.modrinth.com/data/LI8sodAD/versions/6IFR8wxZ/CombatLog.jar
+                https://cdn.modrinth.com/data/BITzwT7B/versions/iMS3EoIW/ClickVillagers-paper-1.6.3.jar
+                https://cdn.modrinth.com/data/7pdfxYHV/versions/evMqQmJi/instantrestock_2.6.4.jar
+                https://cdn.modrinth.com/data/rSEEI32A/versions/LwHnS6dM/lock-end-1.5.0.jar
+                https://cdn.modrinth.com/data/NiJ6gIEq/versions/lO8gD88d/ItemControl-1.2.0.jar
+                https://cdn.modrinth.com/data/6owv5fWs/versions/v88A9PFQ/BukkitOfUtils-1.19.0.jar
+                https://cdn.modrinth.com/data/Yp18gs4n/versions/nX6Kce7A/Grace999-1.0.8.jar
+                https://cdn.modrinth.com/data/j2g3fqUV/versions/t8bMoUaC/cartlimiter-1.7.jar
+                https://cdn.modrinth.com/data/LJNGWSvH/versions/Cflesrfj/grimac-bukkit-2.3.74-0a18c77.jar
+                https://raw.githubusercontent.com/strxnd/home-ops/fac3475c361a42d26b7c67251ee5806e177a014d/kubernetes/apps/games/glitg-smp/app/artifacts/CoreProtect-24.0-26.2-0bb1d5d.jar
+                https://cdn.modrinth.com/data/bYazc7fd/versions/cAOIkpWF/InvSee%2B%2B.jar
+                https://cdn.modrinth.com/data/nFLmET4i/versions/7a1fv1Yn/SlashString-1.1.0-mc26.2.jar
+                https://cdn.modrinth.com/data/9eGKb6K1/versions/62MVmInV/voicechat-bukkit-2.6.21.jar
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: &port 25565
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *probe
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 90
+            resources:
+              requests:
+                cpu: 4000m
+                memory: 12Gi
+              limits:
+                cpu: 8000m
+                memory: 16Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+    service:
+      app:
+        controller: *app
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: "192.168.20.12"
+        externalTrafficPolicy: Local
+        ports:
+          minecraft:
+            port: *port
+            protocol: TCP
+          voice-chat:
+            port: 24454
+            protocol: UDP
+    persistence:
+      data:
+        type: persistentVolumeClaim
+        suffix: 26-2
+        accessMode: ReadWriteOnce
+        size: 20Gi
+        storageClass: local-path
+        retain: true
+        globalMounts:
+          - path: /data
+      paper-world-defaults:
+        type: configMap
+        name: glitg-smp-paper-world-defaults
+        globalMounts:
+          - path: /config/config
+      permissions:
+        type: configMap
+        name: glitg-smp-permissions
+        globalMounts:
+          - path: /config/permissions.yml
+            subPath: permissions.yml
+      spigot:
+        type: configMap
+        name: glitg-smp-spigot
+        globalMounts:
+          - path: /config/spigot.yml
+            subPath: spigot.yml
+      server-icon:
+        type: configMap
+        name: glitg-smp-server-icon
+        globalMounts:
+          - path: /config/server-icon.png
+            subPath: server-icon.png
+      combatlog:
+        type: configMap
+        name: glitg-smp-combatlog
+        globalMounts:
+          - path: /config/plugins/CombatLog
+      instantrestock:
+        type: configMap
+        name: glitg-smp-instantrestock
+        globalMounts:
+          - path: /config/plugins/InstantRestock
+      endlock:
+        type: configMap
+        name: glitg-smp-endlock
+        globalMounts:
+          - path: /config/plugins/EndLock
+      grace999:
+        type: configMap
+        name: glitg-smp-grace999
+        globalMounts:
+          - path: /config/plugins/GracePlugin
+      cartlimiter:
+        type: configMap
+        name: glitg-smp-cartlimiter
+        globalMounts:
+          - path: /config/plugins/CartLimiter
+      slashstring:
+        type: configMap
+        name: glitg-smp-slashstring
+        globalMounts:
+          - path: /config/plugins/SlashString
+      itemcontrol:
+        type: configMap
+        name: glitg-smp-itemcontrol
+        globalMounts:
+          - path: /config/plugins/ItemControl
+      coreprotect:
+        type: configMap
+        name: glitg-smp-coreprotect
+        globalMounts:
+          - path: /config/plugins/CoreProtect
+      grim:
+        type: configMap
+        name: glitg-smp-grim
+        globalMounts:
+          - path: /config/plugins/GrimAC
+      invsee:
+        type: configMap
+        name: glitg-smp-invsee
+        globalMounts:
+          - path: /config/plugins/InvSeePlusPlus
+      bukkitofutils:
+        type: configMap
+        name: glitg-smp-bukkitofutils
+        globalMounts:
+          - path: /config/plugins/BukkitOfUtils
+      doublebreezerods-datapack:
+        type: configMap
+        name: glitg-smp-doublebreezerods
+        globalMounts:
+          - path: /config/glitg-smp-doublebreezerods
+      eightminutestrength-datapack:
+        type: configMap
+        name: glitg-smp-eightminutestrength
+        globalMounts:
+          - path: /config/glitg-smp-eightminutestrength
+      glitgrecipes-datapack:
+        type: configMap
+        name: glitg-smp-glitgrecipes
+        globalMounts:
+          - path: /config/glitg-smp-glitgrecipes
