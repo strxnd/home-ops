@@ -134,6 +134,10 @@ spec:
                 https://cdn.modrinth.com/data/bYazc7fd/versions/cAOIkpWF/InvSee%2B%2B.jar
                 https://cdn.modrinth.com/data/nFLmET4i/versions/7a1fv1Yn/SlashString-1.1.0-mc26.2.jar
                 https://cdn.modrinth.com/data/9eGKb6K1/versions/62MVmInV/voicechat-bukkit-2.6.21.jar
+                # ViaVersion + ViaBackwards let older clients join the 26.2 server;
+                # ViaBackwards requires ViaVersion to be installed.
+                https://github.com/ViaVersion/ViaVersion/releases/download/5.11.0/ViaVersion-5.11.0.jar
+                https://github.com/ViaVersion/ViaBackwards/releases/download/5.11.0/ViaBackwards-5.11.0.jar
             probes:
               liveness: &probe
                 enabled: true
