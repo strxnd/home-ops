@@ -1,4 +1,19 @@
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.35.2-standalone-strict/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: cua-novnc
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: cua-novnc
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.35.2-standalone-strict/deployment-apps-v1.json
 apiVersion: apps/v1
 kind: Deployment
