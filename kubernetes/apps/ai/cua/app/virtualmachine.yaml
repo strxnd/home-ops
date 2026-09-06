@@ -38,5 +38,5 @@ spec:
       terminationGracePeriodSeconds: 60
       volumes:
         - name: rootdisk
-          containerDisk:
-            image: public.ecr.aws/k5j5w0x5/cua-omarchy-workspace@sha256:bc3895e1539ff1c108bf6cfc6c5bc4ac4d2e44d2f214d646956b4d7185f00ee2
+          persistentVolumeClaim:
+            claimName: cua-desktop-rootdisk
