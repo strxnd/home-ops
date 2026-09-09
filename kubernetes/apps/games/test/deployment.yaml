@@ -30,7 +30,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile: { type: RuntimeDefault }
       initContainers:
-        claim:
+        - name: claim
           image: ghcr.io/playit-cloud/playit-agent:0.17.1
           # Prints a claim URL, waits (up to 1h) for it to be claimed in the
           # browser, then writes the agent secret to the shared volume. On
