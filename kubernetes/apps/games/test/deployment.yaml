@@ -38,11 +38,24 @@ spec:
           command: ["/bin/sh", "-ec"]
           args:
             - |-
-              CODE=$(/usr/local/bin/playit claim generate)
-              echo "CLAIM URL: $(/usr/local/bin/playit claim url --name test "$CODE")"
-              SECRET=$(/usr/local/bin/playit claim exchange --wait 3600 "$CODE")
-              printf '%s' "$SECRET" > /etc/playit/secret.key
-              echo "claim exchanged, secret written"
+              export HOME=/etc/playit
+              OUT=$(/usr/local/bin/playit -s claim generate 2>&1)
+              CODE=$(printf '%s' "$OUT" | grep -oE '[a-f0-9]{6,}' | tail -1)
+              URL=$(printf '%s' "$OUT" | grep -oE 'https://playit.gg/claim/[a-f0-9]+' | tail -1)
+              echo "CLAIM CODE: $CODE"
+              echo "CLAIM URL: https://playit.gg/claim/$CODE"
+              i=0
+              until [ -f /etc/playit/secret.key ] || [ $i -ge 120 ]; do
+                EX=$(timeout 35 /usr/local/bin/playit -s claim exchange --wait 30 "$CODE" 2>&1 || true)
+                SECRET=$(printf '%s' "$EX" | grep -oE '[a-f0-9]{20,}' | tail -1)
+                if [ -n "$SECRET" ]; then
+                  printf '%s' "$SECRET" > /etc/playit/secret.key
+                  echo "claim exchanged, secret written"
+                  break
+                fi
+                i=$((i+1))
+              done
+              [ -f /etc/playit/secret.key ] || { echo 'claim was not completed in time; pod will restart with a new claim URL'; exit 1; }
           volumeMounts:
             - name: config
               mountPath: /etc/playit
