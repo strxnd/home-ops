@@ -29,12 +29,38 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile: { type: RuntimeDefault }
+      initContainers:
+        claim:
+          image: ghcr.io/playit-cloud/playit-agent:0.17.1
+          # Prints a claim URL, waits (up to 1h) for it to be claimed in the
+          # browser, then writes the agent secret to the shared volume. On
+          # timeout the init fails and a fresh claim is generated on retry.
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |-
+              CODE=$(/usr/local/bin/playit claim generate)
+              echo "CLAIM URL: $(/usr/local/bin/playit claim url --name test "$CODE")"
+              SECRET=$(/usr/local/bin/playit claim exchange --wait 3600 "$CODE")
+              printf '%s' "$SECRET" > /etc/playit/secret.key
+              echo "claim exchanged, secret written"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/playit
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
       containers:
         - name: playit
           image: ghcr.io/playit-cloud/playit-agent:0.17.1
-          # On first start (empty config) the agent prints a claim URL to the
-          # logs; visit it to bind this agent to a playit.gg account and set
-          # up tunnels. Config is persisted to the emptyDir volume.
+          command: ["/usr/local/bin/playit"]
+          args:
+            - --secret_path
+            - /etc/playit/secret.key
+            - start
+            - -s
           volumeMounts:
             - name: config
               mountPath: /etc/playit
