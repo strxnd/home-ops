@@ -10,7 +10,8 @@ spec:
   replicas: 1
   # Keep the same agent identity across restarts so the playit.gg claim
   # survives pod recreation.
-  strategy: Recreate
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: test
