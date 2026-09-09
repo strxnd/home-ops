@@ -72,8 +72,8 @@ spec:
           args:
             - --secret_path
             - /etc/playit/secret.key
-            - start
             - -s
+            - start
           volumeMounts:
             - name: config
               mountPath: /etc/playit
