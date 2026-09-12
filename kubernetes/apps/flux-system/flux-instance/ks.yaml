@@ -5,7 +5,11 @@ metadata:
   name: flux-instance
 spec:
   dependsOn:
+    - name: external-secrets
+      namespace: external-secrets
     - name: flux-operator
+    - name: onepassword-connect
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/flux-system/flux-instance/app
   postBuild:
