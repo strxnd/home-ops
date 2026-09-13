@@ -8,4 +8,3 @@ components:
 resources:
   - ./namespace.yaml
   - ./glitg-smp/ks.yaml
-  - ./test/ks.yaml
