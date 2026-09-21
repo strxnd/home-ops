@@ -57,7 +57,9 @@ spec:
               OPS: Strxnd
               ENABLE_WHITELIST: "true"
               ENFORCE_WHITELIST: "true"
-              WHITELIST: "_GamingPerfect_,Kepta_,Strxnd,wembbofann,OiKatzoz,leafberries,_Inverno_,Itouchyouu,yibong_james,rodeymacaroni,daisyXD,Itz_Seas,lord_plus,greenwooll,dimsummuncher,obvSleepy,Dylan223315,ItxzK3_,Fr0st3146,ImmyZpommel,tax3s_,Funnyfish321,NEKKKK0,Macornabort_,Solbitple,Nekkk0"
+              # Dylan223315 renamed to 0kytrix; the old name no longer resolves
+              # on Mojang and blocks itzg's whitelist init.
+              WHITELIST: "_GamingPerfect_,Kepta_,Strxnd,wembbofann,OiKatzoz,leafberries,_Inverno_,Itouchyouu,yibong_james,rodeymacaroni,daisyXD,Itz_Seas,lord_plus,greenwooll,dimsummuncher,obvSleepy,0kytrix,ItxzK3_,Fr0st3146,ImmyZpommel,tax3s_,Funnyfish321,NEKKKK0,Macornabort_,Solbitple,Nekkk0"
               MEMORY: 12G
               # Trimmed view distance; bot AI ticking dominates CPU, not chunk rendering.
               VIEW_DISTANCE: "8"
