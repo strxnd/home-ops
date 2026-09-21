@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app glitg-smp
+  name: &app vexbot-lab
 spec:
   commonMetadata:
     labels:
@@ -12,7 +12,7 @@ spec:
     - name: local-path-provisioner
       namespace: kube-system
   interval: 1h
-  path: ./kubernetes/apps/games/glitg-smp
+  path: ./kubernetes/apps/games/vexbot-lab
   postBuild:
     substituteFrom:
       - name: cluster-secrets

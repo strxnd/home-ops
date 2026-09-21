@@ -1,0 +1,128 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app vexbot-lab
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    timeout: 15m
+    remediation:
+      retries: 1
+  interval: 1h
+  maxHistory: 1
+  upgrade:
+    timeout: 15m
+    remediation:
+      retries: 1
+  values:
+    controllers:
+      vexbot-lab:
+        strategy: Recreate
+        pod:
+          automountServiceAccountToken: false
+          terminationGracePeriodSeconds: 120
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+        containers:
+          app:
+            image:
+              repository: docker.io/itzg/minecraft-server
+              tag: 2026.8.0-java25@sha256:e3335993929a1565f73c30b2041bcbc1473fc9c406fdd5a0d0ea24c08ef73320
+            env:
+              TZ: Asia/Singapore
+              EULA: "TRUE"
+              TYPE: FABRIC
+              VERSION: "26.2"
+              FABRIC_LOADER_VERSION: "0.19.5"
+              LEVEL: world
+              MODE: survival
+              FORCE_GAMEMODE: "false"
+              DIFFICULTY: hard
+              HARDCORE: "false"
+              ALLOW_NETHER: "true"
+              SPAWN_PROTECTION: "0"
+              SERVER_IP: ""
+              SERVER_PORT: "25565"
+              ENABLE_COMMAND_BLOCK: "false"
+              MAX_PLAYERS: "40"
+              OPS: Strxnd
+              ENABLE_WHITELIST: "true"
+              ENFORCE_WHITELIST: "true"
+              WHITELIST: "_GamingPerfect_,Kepta_,Strxnd,wembbofann,OiKatzoz,leafberries,_Inverno_,Itouchyouu,yibong_james,rodeymacaroni,daisyXD,Itz_Seas,lord_plus,greenwooll,dimsummuncher,obvSleepy,Dylan223315,ItxzK3_,Fr0st3146,ImmyZpommel,tax3s_,Funnyfish321,NEKKKK0,Macornabort_,Solbitple,Nekkk0"
+              MEMORY: 12G
+              # Trimmed view distance; bot AI ticking dominates CPU, not chunk rendering.
+              VIEW_DISTANCE: "8"
+              SIMULATION_DISTANCE: "8"
+              # The image's internal startup command runner uses RCON. No RCON
+              # port is exposed by this Service.
+              ENABLE_RCON: "true"
+              PVP: "true"
+              MOTD: VexBot Lab
+              # Pinned mod URLs; the image downloads these into /data/mods at
+              # container startup. Fabric API is required by VexBot, Lithium
+              # optimizes entity AI/pathfinding ticking for high bot counts.
+              MODS: |-
+                https://cdn.modrinth.com/data/P7dR8mSH/versions/ewUK83HI/fabric-api-0.161.0%2B26.2.jar
+                https://cdn.modrinth.com/data/gvQqBUqZ/versions/f7vZ0VWU/lithium-fabric-0.25.3%2Bmc26.2.jar
+                https://cdn.modrinth.com/data/EPgNYyCG/versions/bFCq1xvx/vexbot-2.2.24%2Bmc26.2.jar
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: &port 25565
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *probe
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 90
+            resources:
+              requests:
+                cpu: 4000m
+                memory: 14Gi
+              limits:
+                cpu: 8000m
+                memory: 16Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+    service:
+      app:
+        controller: *app
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: "192.168.20.13"
+        externalTrafficPolicy: Local
+        ports:
+          minecraft:
+            port: *port
+            protocol: TCP
+    persistence:
+      data:
+        type: persistentVolumeClaim
+        suffix: 26-2
+        accessMode: ReadWriteOnce
+        size: 20Gi
+        storageClass: local-path
+        retain: true
+        globalMounts:
+          - path: /data
