@@ -102,6 +102,7 @@ spec:
                 luckperms:DzQPkkXY
                 vanilla-permissions:bpq3ZDRl
                 elytra-trims:6vl1Qyl0
+                infinite-trading:zQiH9AlJ
             probes:
               liveness: &probe
                 enabled: true
