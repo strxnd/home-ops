@@ -7,9 +7,13 @@ metadata:
 spec:
   interval: 1h
   maxHistory: 1
-  chartRef:
-    kind: GitRepository
-    name: firecrawl
+  chart:
+    spec:
+      chart: examples/kubernetes/firecrawl-helm
+      sourceRef:
+        kind: GitRepository
+        name: firecrawl
+      interval: 1h
   install:
     timeout: 15m
     remediation:
