@@ -9,4 +9,6 @@ components:
 resources:
   - ./namespace.yaml
   - ./cliproxyapi/ks.yaml
+  - ./firecrawl/ks.yaml
   - ./omarchy/ks.yaml
+  - ./searxng/ks.yaml

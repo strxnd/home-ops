@@ -1,0 +1,49 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: firecrawl
+spec:
+  interval: 1h
+  maxHistory: 1
+  chartRef:
+    kind: GitRepository
+    name: firecrawl
+  install:
+    timeout: 15m
+    remediation:
+      retries: 1
+  upgrade:
+    timeout: 15m
+    remediation:
+      retries: 1
+  values:
+    fullnameOverride: firecrawl
+    resources:
+      enabled: true
+    image:
+      repository: ghcr.io/firecrawl/firecrawl
+      # Built from commit 31522cf981bf51e884a94a794f94fe7aca56d9b3
+      tag: sha-31522cf981bf-linux-amd64@sha256:8bcd5b299fc330444f4c3006ba2375a38f34b2dd1cbae63886a02c1f572d8cfb
+      pullPolicy: IfNotPresent
+    playwright:
+      repository: ghcr.io/firecrawl/playwright-service
+      tag: linux-amd64@sha256:5cd4c2590eebcb8e0932553187d36ab7e76249165712b2bdbae6438b0b033d40
+    nuqPostgres:
+      image:
+        repository: ghcr.io/firecrawl/nuq-postgres
+        tag: linux-amd64@sha256:a582bc385702f3a93cafe2d8c749d55b6676e7c2761e94923113badf7af4b54f
+      persistence:
+        enabled: true
+        size: 10Gi
+        storageClass: local-path
+    # Scraping queue, no valuable state; keep the default 5 nuq workers lean
+    nuqWorker:
+      replicaCount: 2
+    redis:
+      image: redis:alpine@sha256:ba6e394f6acc2a695ef1b6944f161b9ca813711739be68319fa0db3470673f1d
+    rabbitmq:
+      image: rabbitmq:3-management@sha256:e582c0bc7766f3342496d8485efb5a1df782b5ce3886ad017e2eaae442311f69
+    config:
+      SEARXNG_ENDPOINT: http://searxng.ai.svc.cluster.local:8080

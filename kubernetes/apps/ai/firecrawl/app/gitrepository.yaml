@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/gitrepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: firecrawl
+spec:
+  interval: 30m
+  url: https://github.com/firecrawl/firecrawl.git
+  ref:
+    commit: 31522cf981bf51e884a94a794f94fe7aca56d9b3
+  ignore: |
+    /*
+    !/examples
+    /examples/*
+    !/examples/kubernetes
+    /examples/kubernetes/*
+    !/examples/kubernetes/firecrawl-helm

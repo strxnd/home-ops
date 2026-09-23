@@ -1,0 +1,133 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app searxng
+spec:
+  interval: 1h
+  maxHistory: 1
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    timeout: 5m
+    remediation:
+      retries: 1
+  upgrade:
+    timeout: 5m
+    remediation:
+      retries: 1
+  values:
+    fullnameOverride: *app
+    controllers:
+      searxng:
+        replicas: 1
+        strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 977
+            runAsGroup: 977
+            fsGroup: 977
+            fsGroupChangePolicy: OnRootMismatch
+        containers:
+          app:
+            image:
+              repository: ghcr.io/searxng/searxng
+              tag: 2026.9.23-783a09462@sha256:5ea5f6804364e6075a44cb776a291a6ca1715380d653c8a4784ede436d5080cf
+            env:
+              TZ: Asia/Singapore
+              SEARXNG_BASE_URL: http://searxng.ai.svc.cluster.local:8080
+              SEARXNG_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: searxng-secret
+                    key: SEARXNG_SECRET
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 8080
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 8080
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 8080
+                  periodSeconds: 5
+                  timeoutSeconds: 5
+                  failureThreshold: 30
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: 8080
+    route:
+      internal:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            conditions:
+              - "[STATUS] == 200"
+        hostnames:
+          - searxng.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: 8080
+    configMaps:
+      settings:
+        data:
+          settings.yml: |
+            use_default_settings: true
+            server:
+              limiter: false
+              image_proxy: false
+            search:
+              formats:
+                - html
+                - json
+    persistence:
+      settings:
+        type: configMap
+        name: searxng-settings
+        advancedMounts:
+          searxng:
+            app:
+              - path: /etc/searxng/settings.yml
+                subPath: settings.yml
+                readOnly: true
