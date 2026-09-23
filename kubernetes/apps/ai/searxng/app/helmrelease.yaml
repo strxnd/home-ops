@@ -124,7 +124,7 @@ spec:
     persistence:
       settings:
         type: configMap
-        name: searxng-settings
+        name: searxng
         advancedMounts:
           searxng:
             app:
