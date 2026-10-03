@@ -103,6 +103,7 @@ spec:
                 vanilla-permissions:bpq3ZDRl
                 elytra-trims:6vl1Qyl0
                 infinite-trading:zQiH9AlJ
+                vexbot:bFCq1xvx
             probes:
               liveness: &probe
                 enabled: true
