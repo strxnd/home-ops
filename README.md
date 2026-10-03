@@ -25,6 +25,26 @@ This is a monorepo for my home infrastructure and Kubernetes cluster, built on t
 
 ---
 
+## Development environment
+
+With Nix installed and flakes enabled, run these commands from the repository root:
+
+```sh
+nix develop
+task --list
+```
+
+The shell includes the CLI tools used by this repository. `flake.lock` pins their
+versions through nixpkgs. It sets credential paths to local files without reading
+or copying their contents into the Nix store. Credentials are not required to
+enter the shell or list tasks.
+
+Run `nix fmt flake.nix` to format it and `nix flake check --no-build` to evaluate the
+flake. The existing mise configuration remains available as a fallback. Nix and
+mise versions may differ; check compatibility before running cluster operations.
+
+---
+
 ## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f331/512.gif" alt="🌱" width="20" height="20"> Kubernetes
 
 My Kubernetes cluster is deployed with [Talos](https://www.talos.dev) on a single node. Workloads and storage share the same available resources on the node.
