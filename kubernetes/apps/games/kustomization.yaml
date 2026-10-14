@@ -7,4 +7,4 @@ components:
   - ../../components/sops
 resources:
   - ./namespace.yaml
-  - ./vexbot-lab/ks.yaml
+  - ./gang-smp/ks.yaml

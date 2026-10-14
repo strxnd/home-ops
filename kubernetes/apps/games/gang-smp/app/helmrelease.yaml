@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app vexbot-lab
+  name: &app gang-smp
 spec:
   chartRef:
     kind: OCIRepository
@@ -13,14 +13,14 @@ spec:
     remediation:
       retries: 1
   interval: 1h
-  maxHistory: 1
+  maxHistory: 3
   upgrade:
     timeout: 15m
     remediation:
       retries: 1
   values:
     controllers:
-      vexbot-lab:
+      gang-smp:
         strategy: Recreate
         pod:
           automountServiceAccountToken: false
@@ -36,12 +36,10 @@ spec:
           check-world:
             image:
               repository: docker.io/itzg/minecraft-server
-              tag: 2026.8.0-java25@sha256:e3335993929a1565f73c30b2041bcbc1473fc9c406fdd5a0d0ea24c08ef73320
-            command:
-              - /bin/sh
-              - -ec
+              tag: &imageTag 2026.8.0-java25@sha256:e3335993929a1565f73c30b2041bcbc1473fc9c406fdd5a0d0ea24c08ef73320
+            command: [/bin/sh, -ec]
             args:
-              - test -f /data/world/level.dat || { echo 'Import the world to /data/world before starting the server'; exit 1; }
+              - test -f /data/world/level.dat || { echo 'Import the Aternos world to /data/world before starting'; exit 1; }
             resources:
               requests:
                 cpu: 10m
@@ -55,55 +53,58 @@ spec:
           app:
             image:
               repository: docker.io/itzg/minecraft-server
-              tag: 2026.8.0-java25@sha256:e3335993929a1565f73c30b2041bcbc1473fc9c406fdd5a0d0ea24c08ef73320
+              tag: *imageTag
             env:
               TZ: Asia/Singapore
               EULA: "TRUE"
               TYPE: FABRIC
-              VERSION: "26.2"
+              VERSION: "26.3"
               FABRIC_LOADER_VERSION: "0.19.5"
               LEVEL: world
               MODE: survival
               FORCE_GAMEMODE: "false"
-              DIFFICULTY: hard
+              DIFFICULTY: easy
               HARDCORE: "false"
               ALLOW_NETHER: "true"
+              ALLOW_FLIGHT: "true"
               SPAWN_PROTECTION: "0"
               SERVER_IP: ""
               SERVER_PORT: "25565"
               ENABLE_COMMAND_BLOCK: "false"
-              MAX_PLAYERS: "40"
+              MAX_PLAYERS: "20"
+              ONLINE_MODE: "true"
               OPS: Strxnd
               ENABLE_WHITELIST: "true"
               ENFORCE_WHITELIST: "true"
-              WHITELIST: Strxnd
-              MEMORY: 12G
-              VIEW_DISTANCE: "8"
-              SIMULATION_DISTANCE: "8"
-              # The image's internal startup command runner uses RCON. No RCON
-              # port is exposed by this Service.
+              WHITELIST: Strxnd,COOPHEGOD,JchanandDanchan
+              MEMORY: 7G
+              VIEW_DISTANCE: "5"
+              SIMULATION_DISTANCE: "5"
+              ENABLE_ROLLING_LOGS: "true"
+              # RCON is used by the image locally, with no Service port.
               ENABLE_RCON: "true"
               PVP: "true"
-              MOTD: avyaan and lillie 2.0
+              MOTD: Gang SMP
               MODRINTH_DOWNLOAD_DEPENDENCIES: required
               MODRINTH_PROJECTS: |-
-                fabric-api:ewUK83HI
-                fabric-language-kotlin:eRRZzGMc
-                carpet:bGrLxJ8v
-                carpet-extra:Z5BJRYil
-                carpet-tis-addition:lW1s6HL1
-                lithium:f7vZ0VWU
+                fabric-api:bq3SsNGk
+                fabric-language-kotlin:SKW1BTL3
+                carpet:yt9oDFOj
+                carpet-tis-addition:GN7VqWFY
+                lithium:xS0Q8LSi
                 ferrite-core:d5ddUdiB
-                krypton:5WeL0Nkz
+                krypton:UugdIYJw
                 spark:e3hsPc1o
-                syncmatica:POv0nHxV
-                servux:cjAxEbhD
-                no-chat-reports:aDbxaVTi
+                syncmatica:uT7TJ2Wp
+                servux:azA4UG3T
+                no-chat-reports:6g96avt2
                 luckperms:DzQPkkXY
                 vanilla-permissions:bpq3ZDRl
-                elytra-trims:6vl1Qyl0
-                infinite-trading:zQiH9AlJ
-                vexbot:bFCq1xvx
+                elytra-trims:KiDLWRiF
+                simple-voice-chat:OLnMVWXy
+                viafabric:qiAP0t9R
+                voxy-server-side:P5EImGnN
+                clickvillagers:cBWjtfYp
             probes:
               liveness: &probe
                 enabled: true
@@ -126,11 +127,11 @@ spec:
                   failureThreshold: 90
             resources:
               requests:
-                cpu: 4000m
-                memory: 14Gi
+                cpu: 500m
+                memory: 8Gi
               limits:
                 cpu: 8000m
-                memory: 16Gi
+                memory: 10Gi
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
@@ -146,13 +147,16 @@ spec:
           minecraft:
             port: *port
             protocol: TCP
+          voice-chat:
+            port: 24454
+            protocol: UDP
     persistence:
       data:
         type: persistentVolumeClaim
-        suffix: avyaan-26-2
+        suffix: aternos-26-3
         accessMode: ReadWriteOnce
-        size: 20Gi
+        size: 50Gi
         storageClass: local-path
-        retain: true
+        retain: false
         globalMounts:
           - path: /data
