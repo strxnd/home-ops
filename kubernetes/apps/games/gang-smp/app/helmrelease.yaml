@@ -85,6 +85,7 @@ spec:
               ENABLE_RCON: "true"
               PVP: "true"
               MOTD: Gang SMP
+              DATAPACKS: https://cdn.modrinth.com/data/yjtGEwyb/versions/gkny6mFf/Faster%20Happy%20Ghasts%20V2.zip
               MODRINTH_DOWNLOAD_DEPENDENCIES: required
               MODRINTH_PROJECTS: |-
                 fabric-api:bq3SsNGk
