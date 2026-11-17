@@ -12,8 +12,7 @@ Flux reconciles `kubernetes/` from Git into the cluster. Most changes should be 
 
 - `README.md` — high-level repo, cluster, DNS, hardware, and GitOps overview.
 - `Taskfile.yaml` — main Task entrypoint; includes bootstrap and Talos taskfiles.
-- `.mise.toml` — existing pinned CLI tools and credential paths, retained as a fallback.
-- `flake.nix` and `flake.lock` — Nix development shell with CLI tools pinned through nixpkgs. Sets `KUBECONFIG`, `SOPS_AGE_KEY_FILE`, and `TALOSCONFIG` to local paths at shell startup.
+- `.mise.toml` — pinned CLI tools and local credential paths for the development environment. Sets `KUBECONFIG`, `SOPS_AGE_KEY_FILE`, and `TALOSCONFIG`.
 - `kubernetes/flux/cluster/ks.yaml` — root Flux `Kustomization` for `./kubernetes/apps`; applies common SOPS and HelmRelease defaults.
 - `kubernetes/apps/` — Flux-managed apps grouped by namespace/category (`ai`, `cert-manager`, `default`, `external-secrets`, `flux-system`, `games`, `kube-system`, `network`, `observability`, `selfhosted`).
 - `kubernetes/apps/*/kustomization.yaml` — namespace-level Kustomize entries with `namespace.yaml`, optional components, and child app `ks.yaml` files.
