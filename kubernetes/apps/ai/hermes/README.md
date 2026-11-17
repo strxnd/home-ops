@@ -26,17 +26,24 @@ Secret and restarting Hermes.
 
 ## State and configuration
 
-The retained 50 GiB `local-path` PVC `hermes-data` at `/opt/data` contains Hermes configuration,
-provider logins, profiles, conversations, memories, skills, routines, browser
-state, and files. Configure these in Hermes; Git does not define them.
+The retained 50 GiB `local-path` PVC `hermes-data` at `/opt/data` contains Hermes
+configuration, provider logins, profiles, conversations, memories, skills,
+routines, browser state, and files. Configure these in Hermes; Git does not
+define them.
 
-The init container copies only the Webapp listener and reverse-proxy settings on
-the first boot. It never replaces an existing `config.yaml`. Ingress is restricted
+The init container makes the data directory private (required by Hermes's control
+socket) and copies only the Webapp listener and reverse-proxy settings on the
+first boot. It never replaces an existing `config.yaml`. Ingress is restricted
 to the internal Envoy proxy; this makes the bounded pod CIDR in
 `dashboard.trusted_proxies` appropriate for forwarded HTTPS headers.
 
 Update Hermes by changing the pinned container image through Git, not by running
 `hermes update` inside the container. PVC retention is not an off-node backup.
+
+Optional tools install through Hermes's package manager into the persistent data
+directory. Computer use can prepare its pinned driver with
+`hermes computer-use install`; its Linux support is currently alpha. No driver or
+agent settings are patched by this deployment.
 
 ## Official references
 

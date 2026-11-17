@@ -44,6 +44,7 @@ spec:
               - -ec
             args:
               - |
+                chmod 0700 /opt/data
                 if [ ! -f /opt/data/config.yaml ]; then
                   cp /config-seed/config.yaml /opt/data/config.yaml
                 fi
