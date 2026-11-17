@@ -26,7 +26,7 @@ Secret and restarting Hermes.
 
 ## State and configuration
 
-The retained 50 GiB `local-path` PVC at `/opt/data` contains Hermes configuration,
+The retained 50 GiB `local-path` PVC `hermes-data` at `/opt/data` contains Hermes configuration,
 provider logins, profiles, conversations, memories, skills, routines, browser
 state, and files. Configure these in Hermes; Git does not define them.
 
