@@ -1,0 +1,166 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app hermes
+spec:
+  interval: 1h
+  maxHistory: 2
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    timeout: 10m
+    remediation:
+      retries: 1
+  upgrade:
+    timeout: 10m
+    remediation:
+      retries: 1
+  values:
+    controllers:
+      hermes:
+        replicas: 1
+        strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          automountServiceAccountToken: false
+          terminationGracePeriodSeconds: 60
+          securityContext:
+            # The official s6 entrypoint starts as root, then drops to hermes.
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
+            seccompProfile: { type: RuntimeDefault }
+        initContainers:
+          seed-config:
+            image: &image
+              repository: docker.io/nousresearch/hermes-agent
+              tag: v0.23.2-desktop@sha256:87f24ae4be14980a3f2334bfe6516695253cb36dee5e9113b4348feea304c2ca
+            command:
+              - /bin/sh
+              - -ec
+            args:
+              - |
+                if [ ! -f /opt/data/config.yaml ]; then
+                  cp /config-seed/config.yaml /opt/data/config.yaml
+                fi
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+        containers:
+          app:
+            image: *image
+            # Preserve the official entrypoint and supervised gateway lifecycle.
+            args:
+              - gateway
+              - run
+            env:
+              TZ: Asia/Singapore
+              HERMES_DASHBOARD_BASIC_AUTH_USERNAME: kumar
+            envFrom:
+              - secretRef:
+                  name: hermes-auth
+            probes:
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: &port 9120
+                  periodSeconds: 5
+                  failureThreshold: 120
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *port
+                  periodSeconds: 10
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *port
+                  periodSeconds: 30
+                  failureThreshold: 5
+            resources:
+              requests:
+                cpu: 250m
+                memory: 1Gi
+              limits:
+                memory: 8Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+    route:
+      internal:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            conditions:
+              - "[STATUS] == 200"
+        hostnames:
+          - hermes.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+    configMaps:
+      config-seed:
+        data:
+          # Only deployment settings are seeded, and only on an empty volume.
+          # All subsequent changes through Hermes remain on the writable PVC.
+          config.yaml: |
+            webapp:
+              enabled: true
+              host: 0.0.0.0
+              port: 9120
+              public_url: https://hermes.${SECRET_DOMAIN}
+            dashboard:
+              trusted_proxies:
+                - 10.42.0.0/16
+    persistence:
+      config-seed:
+        type: configMap
+        name: hermes-config-seed
+        advancedMounts:
+          hermes:
+            seed-config:
+              - path: /config-seed
+                readOnly: true
+      data:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 50Gi
+        storageClass: local-path
+        retain: true
+        advancedMounts:
+          hermes:
+            seed-config:
+              - path: /opt/data
+            app:
+              - path: /opt/data
+      shm:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 1Gi
+        advancedMounts:
+          hermes:
+            app:
+              - path: /dev/shm
