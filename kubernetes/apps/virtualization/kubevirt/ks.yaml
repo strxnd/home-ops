@@ -25,5 +25,5 @@ spec:
     - apiVersion: kubevirt.io/v1
       kind: KubeVirt
       current: >-
-        has(status) && has(status.conditions) &&
+        has(status.conditions) &&
         status.conditions.exists(c, c.type == 'Available' && c.status == 'True')

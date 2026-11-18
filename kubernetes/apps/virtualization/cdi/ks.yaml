@@ -24,5 +24,5 @@ spec:
     - apiVersion: cdi.kubevirt.io/v1beta1
       kind: CDI
       current: >-
-        has(status) && has(status.conditions) &&
+        has(status.conditions) &&
         status.conditions.exists(c, c.type == 'Available' && c.status == 'True')
