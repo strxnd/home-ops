@@ -1,0 +1,98 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: omarchy-console
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: omarchy-console
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: omarchy-console
+    spec:
+      serviceAccountName: omarchy-console
+      securityContext:
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: virtctl
+          image: docker.io/curlimages/curl:8.17.0
+          command: [/bin/sh, -ec]
+          args:
+            - |
+              curl --fail --location --retry 3 \
+                https://github.com/kubevirt/kubevirt/releases/download/v1.9.1/virtctl-v1.9.1-linux-amd64 \
+                --output /tools/virtctl
+              echo 'c289393c8186a258653594605f5199b4c171a3131e6e409ed204a96b491b782a  /tools/virtctl' | sha256sum -c -
+              chmod 0755 /tools/virtctl
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          securityContext: &securityContext
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts: &volumeMounts
+            - name: tools
+              mountPath: /tools
+      containers:
+        - name: vnc
+          image: docker.io/library/alpine:3.22.2
+          command: [/bin/sh, -ec]
+          args:
+            - |
+              while true; do
+                /tools/virtctl -n virtualization vnc omarchy \
+                  --proxy-only --address=127.0.0.1 --port=5900 || true
+                sleep 1
+              done
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            <<: *securityContext
+            runAsNonRoot: true
+            runAsUser: 1000
+            readOnlyRootFilesystem: true
+          volumeMounts: *volumeMounts
+        - name: web
+          image: docker.io/bonigarcia/novnc:1.3.0@sha256:a5be468dc8967a55ffe870e809fa36dbbfc19b67d8156c1e7cb2d26aaa4f32c2
+          env:
+            - name: VNC_SERVER
+              value: 127.0.0.1:5900
+            - name: AUTOCONNECT
+              value: "true"
+          ports:
+            - name: http
+              containerPort: 6080
+          readinessProbe:
+            httpGet:
+              path: /vnc.html
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /vnc.html
+              port: http
+            initialDelaySeconds: 10
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          securityContext: *securityContext
+      volumes:
+        - name: tools
+          emptyDir: {}

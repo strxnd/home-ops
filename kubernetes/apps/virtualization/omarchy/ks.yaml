@@ -11,6 +11,8 @@ spec:
       namespace: virtualization
     - name: local-path-provisioner
       namespace: kube-system
+    - name: envoy-gateway
+      namespace: network
   interval: 1h
   path: ./kubernetes/apps/virtualization/omarchy/app
   prune: true
@@ -23,6 +25,10 @@ spec:
   timeout: 30m
   wait: false
   healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: omarchy-console
+      namespace: virtualization
     - apiVersion: kubevirt.io/v1
       kind: VirtualMachine
       name: omarchy

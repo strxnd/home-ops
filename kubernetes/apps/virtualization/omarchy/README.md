@@ -2,8 +2,8 @@
 
 This deploys VM infrastructure only: KubeVirt, CDI, a blank system disk, and the
 Omarchy 4.5.0 x86 installer. Complete the OS installation interactively. There is
-no cloud-init, guest account, package configuration, T3 setup, or remote desktop
-service declared here.
+no cloud-init, guest account, package configuration, T3 setup, or guest remote
+desktop service declared here.
 
 ## Deployment
 
@@ -23,6 +23,20 @@ provisioned on the same node as the rest of the cluster; the PVC size does not
 reserve physical disk capacity. Leave room for other workloads and the importer.
 
 ## Install through the console
+
+Open [omarchy.kumaraarav.dev](https://omarchy.kumaraarav.dev) from the lab network.
+The internal Envoy HTTPS gateway serves a noVNC console connected to KubeVirt.
+The web console works before installation and during boot without guest software.
+It has full keyboard/display access with no separate console login, so access is
+limited to the internal gateway; it is not routed through the public gateway.
+
+The console service account can only read the `omarchy` VMI and open its VNC
+subresource. An init container fetches checksum-verified virtctl v1.9.1; the
+stock bonigarcia/novnc v1.3.0 image supplies the web client and WebSocket proxy.
+Nothing is installed in the VM.
+One console connection is supported at a time; reconnect after a VM restart.
+
+For direct access through the Kubernetes API instead:
 
 Install `virtctl` matching KubeVirt v1.9.1 and a VNC viewer such as TigerVNC on
 your own computer. Using this repository's kubeconfig:
@@ -60,9 +74,9 @@ adjustments. A booting installer/console does not establish desktop performance.
 
 ## Lifecycle and storage
 
-Guest networking uses pod-network masquerading for outbound access. No LAN IP,
-SSH service, ingress, or desktop streaming service is provisioned. The VNC
-console remains available without guest software.
+Guest networking uses pod-network masquerading for outbound access. No guest LAN
+IP or SSH service is provisioned. The browser console's ingress is outside the VM,
+and the VNC console remains available without guest software.
 
 Flux owns `runStrategy: Always`; change it to `Halted` in Git for a persistent
 stop. Reboot from inside the guest as needed. Guest shutdown alone causes an
