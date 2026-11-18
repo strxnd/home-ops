@@ -74,9 +74,13 @@ adjustments. A booting installer/console does not establish desktop performance.
 
 ## Lifecycle and storage
 
-Guest networking uses pod-network masquerading for outbound access. No guest LAN
-IP or SSH service is provisioned. The browser console's ingress is outside the VM,
-and the VNC console remains available without guest software.
+Guest networking uses pod-network masquerading for outbound access. Cilium exposes
+SSH on VLAN 20 at `192.168.20.14:22` through the `omarchy-ssh` LoadBalancer Service.
+This forwards only SSH; it does not bridge the guest NIC onto the VLAN.
+Enable `sshd` manually inside Omarchy with `sudo systemctl enable --now sshd`,
+then connect with `ssh <your-username>@192.168.20.14` using your guest credentials.
+The browser console's ingress is outside the VM, and the VNC console remains
+available without guest software.
 
 Flux owns `runStrategy: Always`; change it to `Halted` in Git for a persistent
 stop. Reboot from inside the guest as needed. Guest shutdown alone causes an

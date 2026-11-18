@@ -6,4 +6,5 @@ resources:
   - ./console
   - ./datavolume.yaml
   - ./pvc.yaml
+  - ./ssh-service.yaml
   - ./virtualmachine.yaml
