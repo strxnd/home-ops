@@ -18,7 +18,7 @@ configuration changes are included. KubeVirt requires privileged host access;
 the VM namespace also permits privileged workloads.
 
 The VM has 8 virtual CPUs (2 CPUs requested, capped at 8), 32 GiB guest RAM, a
-250 GiB local-path system PVC, and persistent UEFI state. The disk is thin
+250 GiB local-path system PVC, and UEFI firmware. The disk is thin
 provisioned on the same node as the rest of the cluster; the PVC size does not
 reserve physical disk capacity. Leave room for other workloads and the importer.
 
@@ -45,6 +45,10 @@ Select the blank 250 GiB VirtIO disk in the Omarchy installer. Guest credentials
 disk encryption, and all other installation choices are entered manually. Disk
 encryption may require console unlock after each cold boot.
 
+UEFI variables are ephemeral: persistent NVRAM failed with a file permission
+error on this local-path setup. Omarchy's installer enables the standard EFI
+fallback boot path, so the installed disk can boot without saved firmware entries.
+
 The system disk has first boot priority. Before installation, firmware falls
 back to the ISO; after installation, it boots the system disk. If necessary, use
 the UEFI boot menu to select the installer. The ISO can remain attached or be
@@ -65,8 +69,8 @@ stop. Reboot from inside the guest as needed. Guest shutdown alone causes an
 automatic restart.
 
 The system PVC and installer DataVolume are protected from Flux pruning.
-Removing the VM manifests stops/deletes the VM but keeps those disks. UEFI state
-is managed by KubeVirt with the VM lifecycle. Explicit PVC deletion is destructive
+Removing the VM manifests stops/deletes the VM but keeps those disks.
+Explicit PVC deletion is destructive
 because the existing local-path storage class uses reclaim policy Delete.
 There is no backup configured, and node maintenance takes the VM offline.
 

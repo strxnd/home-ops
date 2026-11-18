@@ -22,3 +22,14 @@ spec:
   targetNamespace: virtualization
   timeout: 30m
   wait: false
+  healthChecks:
+    - apiVersion: kubevirt.io/v1
+      kind: VirtualMachine
+      name: omarchy
+      namespace: virtualization
+  healthCheckExprs:
+    - apiVersion: kubevirt.io/v1
+      kind: VirtualMachine
+      current: >-
+        has(status.conditions) &&
+        status.conditions.exists(c, c.type == 'Ready' && c.status == 'True')

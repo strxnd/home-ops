@@ -27,7 +27,6 @@ spec:
         firmware:
           bootloader:
             efi:
-              persistent: true
               secureBoot: false
         devices:
           video:
