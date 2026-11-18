@@ -1,0 +1,24 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: omarchy
+spec:
+  dependsOn:
+    - name: cdi
+      namespace: virtualization
+    - name: kubevirt
+      namespace: virtualization
+    - name: local-path-provisioner
+      namespace: kube-system
+  interval: 1h
+  path: ./kubernetes/apps/virtualization/omarchy/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: virtualization
+  timeout: 30m
+  wait: false

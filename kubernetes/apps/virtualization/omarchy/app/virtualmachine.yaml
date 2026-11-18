@@ -1,0 +1,62 @@
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: omarchy
+spec:
+  runStrategy: Always
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: omarchy
+    spec:
+      terminationGracePeriodSeconds: 120
+      domain:
+        cpu:
+          cores: 8
+          sockets: 1
+          threads: 1
+        memory:
+          guest: 32Gi
+        resources:
+          requests:
+            cpu: "2"
+            memory: 32Gi
+          limits:
+            cpu: "8"
+        firmware:
+          bootloader:
+            efi:
+              persistent: true
+              secureBoot: false
+        devices:
+          video:
+            type: virtio
+          disks:
+            - name: system
+              bootOrder: 1
+              disk:
+                bus: virtio
+            - name: installer
+              bootOrder: 2
+              cdrom:
+                bus: sata
+                readonly: true
+          interfaces:
+            - name: default
+              model: virtio
+              masquerade: {}
+          inputs:
+            - name: tablet
+              bus: usb
+              type: tablet
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: system
+          persistentVolumeClaim:
+            claimName: omarchy-system
+        - name: installer
+          dataVolume:
+            name: omarchy-installer-4-5-0

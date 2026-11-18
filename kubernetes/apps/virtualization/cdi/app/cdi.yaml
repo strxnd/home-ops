@@ -1,0 +1,16 @@
+---
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: CDI
+metadata:
+  name: cdi
+spec:
+  config:
+    scratchSpaceStorageClass: local-path
+    podResourceRequirements:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+  uninstallStrategy: BlockUninstallIfWorkloadsExist

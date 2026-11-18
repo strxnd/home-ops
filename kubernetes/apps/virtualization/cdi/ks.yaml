@@ -1,0 +1,28 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cdi
+spec:
+  dependsOn:
+    - name: local-path-provisioner
+      namespace: kube-system
+  interval: 1h
+  path: ./kubernetes/apps/virtualization/cdi/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  timeout: 15m
+  healthChecks:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: CDI
+      name: cdi
+  healthCheckExprs:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: CDI
+      current: >-
+        has(status) && has(status.conditions) &&
+        status.conditions.exists(c, c.type == 'Available' && c.status == 'True')

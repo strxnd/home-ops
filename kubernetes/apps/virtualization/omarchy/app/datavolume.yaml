@@ -1,0 +1,20 @@
+---
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: omarchy-installer-4-5-0
+  annotations:
+    cdi.kubevirt.io/storage.bind.immediate.requested: "true"
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  source:
+    http:
+      url: https://iso.omarchy.org/omarchy-4.5.0-x86.iso
+  storage:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+    storageClassName: local-path
+    volumeMode: Filesystem
